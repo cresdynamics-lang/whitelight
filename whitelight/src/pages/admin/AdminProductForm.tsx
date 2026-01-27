@@ -23,6 +23,7 @@ const CATEGORIES: { value: ProductCategory; label: string }[] = [
   { value: "trail", label: "Trail" },
   { value: "gym", label: "Gym" },
   { value: "basketball", label: "Basketball" },
+  { value: "accessories", label: "Accessories" },
 ];
 
 const AdminProductForm = () => {

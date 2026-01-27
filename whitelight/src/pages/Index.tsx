@@ -7,6 +7,7 @@ import { CategoryBanner } from "@/components/sections/CategoryBanner";
 import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
 import { Newsletter } from "@/components/sections/Newsletter";
 import { CtaBanner } from "@/components/sections/CtaBanner";
+import { ServicesSection } from "@/components/sections/ServicesSection";
 import { useBestSellers, useNewArrivals } from "@/hooks/useProducts";
 import { siteConfig } from "@/config/site";
 
@@ -45,6 +46,9 @@ const Index = () => {
           className="bg-secondary/30"
           itemsPerPage={8}
         />
+
+        {/* Services Section */}
+        <ServicesSection />
 
         {/* Newsletter */}
         <Newsletter />

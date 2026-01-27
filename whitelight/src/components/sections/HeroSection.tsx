@@ -80,7 +80,7 @@ export function HeroSection({
 
 
   return (
-    <section className="relative h-[70vh] md:h-[85vh] overflow-hidden">
+    <section className="relative py-20 overflow-hidden">
       {/* Background carousel */}
       <div className="absolute inset-0">
         <ImageCarousel 
@@ -98,7 +98,7 @@ export function HeroSection({
       </div>
 
       {/* Content */}
-      <div className="relative h-full flex items-center justify-center text-center px-4">
+      <div className="relative flex items-center justify-center text-center px-4 py-12">
         <div className="animate-slide-up">
           <h1 className="font-heading text-5xl md:text-7xl lg:text-9xl font-black text-white mb-6 tracking-tight bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent drop-shadow-2xl">
             {displayTitle}

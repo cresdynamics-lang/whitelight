@@ -34,7 +34,8 @@ export const siteConfig = {
     { label: "Trail", href: "/category/trail" },
     { label: "Gym", href: "/category/gym" },
     { label: "Basketball", href: "/category/basketball" },
-    { label: "Orthopedic", href: "/category/orthopedic" },
+    { label: "Accessories", href: "/category/accessories" },
+    { label: "Buying Guide", href: "/buying-guide" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ],
@@ -43,8 +44,14 @@ export const siteConfig = {
     { id: "trail", label: "Trail Shoes", href: "/category/trail" },
     { id: "gym", label: "Gym Shoes", href: "/category/gym" },
     { id: "basketball", label: "Basketball Shoes", href: "/category/basketball" },
-    { id: "orthopedic", label: "Orthopedic Shoes", href: "/category/orthopedic" },
+    { id: "accessories", label: "Accessories", href: "/category/accessories" },
   ],
+  services: {
+    sameDayDelivery: "Same day delivery in Nairobi and its environs",
+    nationwideDelivery: "Nationwide delivery - parcel charges apply",
+    codNairobi: "Payment on delivery within Nairobi CBD",
+    location: "Rware Building, Luthuli Avenue"
+  },
 } as const;
 
 export type SiteConfig = typeof siteConfig;

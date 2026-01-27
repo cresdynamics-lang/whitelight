@@ -48,7 +48,7 @@ export default function AboutPage() {
       <Header />
       
       {/* Hero Section */}
-      <section className="relative py-24 overflow-hidden">
+      <section className="relative py-20 overflow-hidden">
         {/* Background carousel */}
         <div className="absolute inset-0">
           <div className="flex animate-scroll h-full">

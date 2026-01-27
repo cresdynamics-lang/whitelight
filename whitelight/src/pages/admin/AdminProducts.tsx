@@ -80,12 +80,13 @@ const AdminProducts = () => {
       trail: "bg-green-500/10 text-green-500",
       gym: "bg-orange-500/10 text-orange-500",
       basketball: "bg-purple-500/10 text-purple-500",
+      accessories: "bg-pink-500/10 text-pink-500",
     };
     return colors[category] || "bg-muted text-muted-foreground";
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-x-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Products</h1>
@@ -122,17 +123,17 @@ const AdminProducts = () => {
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
         </div>
       ) : (
-        <div className="border rounded-lg overflow-hidden">
-          <Table>
+        <div className="w-full overflow-x-auto border rounded-lg">
+          <Table className="w-full">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-16">Image</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Brand</TableHead>
-                <TableHead>Category</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-center">Status</TableHead>
-                <TableHead className="text-right w-24">Actions</TableHead>
+                <TableHead className="w-16 whitespace-nowrap">Image</TableHead>
+                <TableHead className="min-w-[200px] whitespace-nowrap">Name</TableHead>
+                <TableHead className="min-w-[120px] whitespace-nowrap">Brand</TableHead>
+                <TableHead className="min-w-[120px] whitespace-nowrap">Category</TableHead>
+                <TableHead className="text-right min-w-[100px] whitespace-nowrap">Price</TableHead>
+                <TableHead className="text-center min-w-[100px] whitespace-nowrap">Status</TableHead>
+                <TableHead className="text-right w-24 whitespace-nowrap">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -145,24 +146,24 @@ const AdminProducts = () => {
               ) : (
                 filteredProducts.map((product) => (
                   <TableRow key={product.id}>
-                    <TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <img
                         src={product.images[0]?.url}
                         alt={product.name}
                         className="w-12 h-12 object-cover rounded-md"
                       />
                     </TableCell>
-                    <TableCell className="font-medium">{product.name}</TableCell>
-                    <TableCell>{product.brand}</TableCell>
-                    <TableCell>
+                    <TableCell className="font-medium whitespace-nowrap">{product.name}</TableCell>
+                    <TableCell className="whitespace-nowrap">{product.brand}</TableCell>
+                    <TableCell className="whitespace-nowrap">
                       <Badge variant="secondary" className={getCategoryColor(product.category)}>
                         {product.category}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right whitespace-nowrap">
                       KSh {product.price.toLocaleString()}
                     </TableCell>
-                    <TableCell className="text-center">
+                    <TableCell className="text-center whitespace-nowrap">
                       <div className="flex justify-center gap-1">
                         {product.isNew && (
                           <Badge variant="default" className="text-xs">New</Badge>
@@ -172,7 +173,7 @@ const AdminProducts = () => {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right whitespace-nowrap">
                       <div className="flex justify-end gap-1">
                         <Button variant="ghost" size="icon" asChild>
                           <Link to={`/admin/products/edit/${product.id}`}>

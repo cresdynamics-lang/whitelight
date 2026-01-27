@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ProductGrid } from "@/components/sections/ProductGrid";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import { useProductsByCategory } from "@/hooks/useProducts";
+import { useSearch } from "@/context/SearchContext";
 import type { ProductCategory } from "@/types/product";
 import { siteConfig } from "@/config/site";
 
@@ -12,7 +13,7 @@ const categoryTitles: Record<ProductCategory, string> = {
   trail: "Trail Shoes",
   gym: "Gym Shoes",
   basketball: "Basketball Shoes",
-  orthopedic: "Orthopedic Shoes",
+  accessories: "Accessories",
 };
 
 const categoryDescriptions: Record<ProductCategory, string> = {
@@ -20,7 +21,7 @@ const categoryDescriptions: Record<ProductCategory, string> = {
   trail: "Built for rugged terrain and outdoor adventures",
   gym: "Designed for training, lifting, and high-intensity workouts",
   basketball: "Performance footwear for the court",
-  orthopedic: "Medical-grade comfort and support for your feet",
+  accessories: "Complete your footwear experience with premium accessories",
 };
 
 // Category-specific images from local folders
@@ -52,19 +53,24 @@ const categoryImages: Record<ProductCategory, string[]> = {
     "/couresel_images/basketball/bk3.jpg",
     "/couresel_images/basketball/bk5.jpg",
   ],
-  orthopedic: [
-    "/couresel_images/orthopedic/orth1.jpg",
-    "/couresel_images/orthopedic/orth2.jpg",
-    "/couresel_images/orthopedic/orth3.jpg",
-    "/couresel_images/orthopedic/orth4.jpg",
+  accessories: [
+    "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800",
+    "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?w=800",
+    "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800",
   ],
 };
 
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
   const validCategory = category as ProductCategory;
+  const { searchQuery, filteredProducts, isSearching } = useSearch();
   
   const { data: products = [], isLoading } = useProductsByCategory(validCategory);
+  
+  // Use filtered products if searching, otherwise use category products
+  const displayProducts = isSearching && searchQuery 
+    ? filteredProducts.filter(p => p.category === validCategory)
+    : products;
   
   const title = categoryTitles[validCategory] || "Products";
   const description = categoryDescriptions[validCategory] || "";
@@ -81,7 +87,7 @@ export default function CategoryPage() {
       
       <main className="flex-1">
         {/* Category Header with Carousel Background */}
-        <section className="relative py-24 md:py-32 overflow-hidden">
+        <section className="relative py-20 overflow-hidden">
           <div className="absolute inset-0">
             <ImageCarousel 
               images={carouselImages}
@@ -102,6 +108,11 @@ export default function CategoryPage() {
             <p className="text-white/90 font-body text-xl md:text-2xl max-w-2xl mx-auto font-semibold">
               {description}
             </p>
+            {isSearching && searchQuery && (
+              <p className="text-white/80 text-lg mt-4">
+                Showing results for "{searchQuery}" in {title}
+              </p>
+            )}
           </div>
         </section>
 
@@ -120,7 +131,11 @@ export default function CategoryPage() {
             </div>
           </div>
         ) : (
-          <ProductGrid products={products} columns={4} />
+          <ProductGrid 
+            products={displayProducts} 
+            columns={4} 
+            title={isSearching && searchQuery ? `Search Results in ${title}` : undefined}
+          />
         )}
       </main>
 

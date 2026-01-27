@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Search, ShoppingCart, Menu, X } from "lucide-react";
+import { ShoppingCart, Menu, X } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
+import { SearchBar } from "@/components/SearchBar";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 
@@ -50,6 +51,7 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          <SearchBar />
           <Button 
             variant="ghost" 
             size="icon" 

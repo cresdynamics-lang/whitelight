@@ -11,7 +11,17 @@
         {
           "id": "1-1",
           "url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600",
-          "alt": "Nike Pegasus 40"
+          "alt": "Nike Pegasus 40 - Main View"
+        },
+        {
+          "id": "1-2",
+          "url": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600",
+          "alt": "Nike Pegasus 40 - Side View"
+        },
+        {
+          "id": "1-3",
+          "url": "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=600",
+          "alt": "Nike Pegasus 40 - Back View"
         }
       ],
       "variants": [
@@ -289,32 +299,6 @@
       "tags": ["puma", "basketball", "clyde"],
       "isBestSeller": true,
       "createdAt": "2024-01-22"
-    },
-    {
-      "id": "12",
-      "slug": "under-armour-project-rock-5",
-      "name": "Under Armour Project Rock 5",
-      "brand": "Under Armour",
-      "category": "gym",
-      "price": 5800,
-      "images": [
-        {
-          "id": "12-1",
-          "url": "https://images.unsplash.com/photo-1539185441755-769473a23570?w=600",
-          "alt": "Under Armour Project Rock 5"
-        }
-      ],
-      "variants": [
-        { "id": "12-40", "size": 40, "inStock": true },
-        { "id": "12-41", "size": 41, "inStock": true },
-        { "id": "12-42", "size": 42, "inStock": true },
-        { "id": "12-43", "size": 43, "inStock": true },
-        { "id": "12-44", "size": 44, "inStock": true }
-      ],
-      "description": "Training shoe designed for heavy lifting and high-intensity workouts with TriBase technology.",
-      "tags": ["under armour", "gym", "training", "project rock"],
-      "isNew": true,
-      "createdAt": "2024-02-15"
     }
   ]
 }

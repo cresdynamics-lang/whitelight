@@ -117,7 +117,7 @@ const ProductDetail = () => {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Images with multiple angles */}
             <div className="space-y-4">
-              <div className="aspect-square overflow-hidden rounded-lg bg-secondary">
+              <div className="aspect-[4/3] lg:aspect-[4/3] overflow-hidden rounded-lg bg-secondary">
                 <img
                   src={product.images[selectedImageIndex]?.url || product.images[0]?.url}
                   alt={product.images[selectedImageIndex]?.alt || product.name}
@@ -131,9 +131,9 @@ const ProductDetail = () => {
                 />
               </div>
               
-              {/* Image thumbnails */}
+              {/* Image thumbnails - show below on mobile, hidden on desktop */}
               {product.images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto">
+                <div className="flex gap-2 overflow-x-auto lg:hidden">
                   {product.images.map((image, index) => (
                     <button
                       key={index}
@@ -157,7 +157,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Details */}
-            <div className="lg:py-4">
+            <div className="lg:py-0">
               <div className="flex items-center gap-2 mb-2">
                 <p className="text-sm text-muted-foreground uppercase tracking-wider">
                   {product.brand}
@@ -169,28 +169,28 @@ const ProductDetail = () => {
                 )}
               </div>
 
-              <h1 className="font-heading text-3xl md:text-4xl font-bold mb-4">
+              <h1 className="font-heading text-2xl md:text-3xl font-bold mb-3">
                 {product.name}
               </h1>
 
-              <div className="flex items-center gap-3 mb-6">
-                <span className="text-2xl font-semibold">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-xl font-semibold">
                   {formatPrice(product.price, siteConfig.currency)}
                 </span>
                 {hasDiscount && (
-                  <span className="text-lg text-muted-foreground line-through">
+                  <span className="text-base text-muted-foreground line-through">
                     {formatPrice(product.originalPrice!, siteConfig.currency)}
                   </span>
                 )}
               </div>
 
-              <p className="text-muted-foreground mb-8">
+              <p className="text-muted-foreground mb-6">
                 {product.description}
               </p>
 
               {/* Size selectors */}
-              <div className="mb-6">
-                <p className="text-sm font-medium mb-3">Select Size(s) - Choose multiple for flexibility</p>
+              <div className="mb-4">
+                <p className="text-sm font-medium mb-2">Select Size(s) - Choose multiple for flexibility</p>
                 <div className="flex flex-wrap gap-2">
                   {product.variants.map((variant) => {
                     const isSelected = selectedSizes.includes(variant.size) || selectedSize === variant.size;
@@ -221,7 +221,7 @@ const ProductDetail = () => {
               </div>
 
               {/* Quantity */}
-              <div className="mb-8">
+              <div className="mb-6">
                 <p className="text-sm font-medium mb-3">Quantity</p>
                 <div className="flex items-center gap-3">
                   <button
@@ -239,6 +239,30 @@ const ProductDetail = () => {
                   </button>
                 </div>
               </div>
+
+              {/* Image thumbnails - show above add to cart on desktop */}
+              {product.images.length > 1 && (
+                <div className="hidden lg:flex gap-2 overflow-x-auto mb-6">
+                  {product.images.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImageIndex(index)}
+                      className={cn(
+                        "flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all",
+                        selectedImageIndex === index
+                          ? "border-primary ring-2 ring-primary/20"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <img
+                        src={image.url}
+                        alt={image.alt || `${product.name} angle ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {/* Add to cart */}
               <Button

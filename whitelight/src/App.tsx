@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
+import { SearchProvider } from "@/context/SearchContext";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -14,6 +15,8 @@ import CategoryPage from "./pages/CategoryPage";
 import ContactPage from "./pages/ContactPage";
 import AboutPage from "./pages/AboutPage";
 import NewArrivalsPage from "./pages/NewArrivalsPage";
+import AccessoriesPage from "./pages/AccessoriesPage";
+import BuyingGuidePage from "./pages/BuyingGuidePage";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -26,12 +29,13 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <AdminAuthProvider>
-      <CartProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <CartDrawer />
+      <SearchProvider>
+        <CartProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <CartDrawer />
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Index />} />
@@ -39,6 +43,8 @@ const App = () => (
               <Route path="/category/:category" element={<CategoryPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/about" element={<AboutPage />} />
+              <Route path="/accessories" element={<AccessoriesPage />} />
+              <Route path="/buying-guide" element={<BuyingGuidePage />} />
               <Route path="/new-arrivals" element={<NewArrivalsPage />} />
               
               {/* Legacy routes redirect */}
@@ -104,8 +110,9 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
-        </TooltipProvider>
-      </CartProvider>
+          </TooltipProvider>
+        </CartProvider>
+      </SearchProvider>
     </AdminAuthProvider>
   </QueryClientProvider>
 );

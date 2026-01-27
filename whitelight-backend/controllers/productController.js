@@ -75,8 +75,14 @@ class ProductController {
 
       // Insert variants with proper data handling
       if (parsedVariants && parsedVariants.length > 0) {
-        for (const variant of parsedVariants) {
-          const variantId = `${productId}-${variant.size}-${Date.now()}`;
+        // Remove duplicate sizes
+        const uniqueVariants = parsedVariants.filter((variant, index, self) => 
+          index === self.findIndex(v => v.size === variant.size)
+        );
+        
+        for (let i = 0; i < uniqueVariants.length; i++) {
+          const variant = uniqueVariants[i];
+          const variantId = `${productId}-${variant.size}-${i}`;
           await connection.execute(
             'INSERT INTO product_variants (id, product_id, size, in_stock, stock_quantity) VALUES (?, ?, ?, ?, ?)',
             [variantId, productId, variant.size, variant.inStock !== false, variant.stockQuantity || 10]
@@ -85,8 +91,9 @@ class ProductController {
       } else {
         // Create default variants if none provided
         const defaultSizes = [40, 41, 42, 43, 44];
-        for (const size of defaultSizes) {
-          const variantId = `${productId}-${size}-${Date.now()}`;
+        for (let i = 0; i < defaultSizes.length; i++) {
+          const size = defaultSizes[i];
+          const variantId = `${productId}-${size}-${i}`;
           await connection.execute(
             'INSERT INTO product_variants (id, product_id, size, in_stock, stock_quantity) VALUES (?, ?, ?, ?, ?)',
             [variantId, productId, size, true, 10]

@@ -1,6 +1,7 @@
-// Product data service - Backend API integration
+// Product data service - Fallback to local data when API fails
 import type { Product, ProductFilters, ProductsResponse, ProductCategory } from "@/types/product";
 import { apiService } from "@/services/apiService";
+import productsData from "@/data/products.json";
 
 // Transform backend response to frontend format
 const transformBackendResponse = (backendData: any): ProductsResponse => {
@@ -9,6 +10,41 @@ const transformBackendResponse = (backendData: any): ProductsResponse => {
     total: backendData.pagination?.total || backendData.products?.length || 0,
     page: backendData.pagination?.page || 1,
     limit: backendData.pagination?.limit || backendData.products?.length || 0,
+  };
+};
+
+// Fallback to local data
+const getLocalProducts = (filters?: ProductFilters): ProductsResponse => {
+  let products = productsData.products || [];
+  
+  if (filters) {
+    if (filters.category) {
+      products = products.filter(p => p.category === filters.category);
+    }
+    if (filters.brand) {
+      products = products.filter(p => p.brand.toLowerCase().includes(filters.brand!.toLowerCase()));
+    }
+    if (filters.isNew !== undefined) {
+      products = products.filter(p => p.isNew === filters.isNew);
+    }
+    if (filters.isBestSeller !== undefined) {
+      products = products.filter(p => p.isBestSeller === filters.isBestSeller);
+    }
+    if (filters.search) {
+      const search = filters.search.toLowerCase();
+      products = products.filter(p => 
+        p.name.toLowerCase().includes(search) ||
+        p.brand.toLowerCase().includes(search) ||
+        p.category.toLowerCase().includes(search)
+      );
+    }
+  }
+  
+  return {
+    products,
+    total: products.length,
+    page: 1,
+    limit: products.length,
   };
 };
 
@@ -35,14 +71,9 @@ export async function getProducts(filters?: ProductFilters): Promise<ProductsRes
     
     throw new Error(response.message || 'Failed to fetch products');
   } catch (error) {
-    console.error('Error fetching products:', error);
-    // Return empty response on error
-    return {
-      products: [],
-      total: 0,
-      page: 1,
-      limit: 0,
-    };
+    console.error('Error fetching products, using local data:', error);
+    // Fallback to local data
+    return getLocalProducts(filters);
   }
 }
 
@@ -57,16 +88,15 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     
     return null;
   } catch (error) {
-    console.error('Error fetching product:', error);
-    return null;
+    console.error('Error fetching product, using local data:', error);
+    // Fallback to local data
+    const product = productsData.products.find(p => p.slug === slug);
+    return product || null;
   }
 }
 
 // Get best sellers
 export async function getBestSellers(limit?: number): Promise<Product[]> {
-  const params: Record<string, string> = { isBestSeller: 'true' };
-  if (limit) params.limit = limit.toString();
-  
   const { products } = await getProducts({ isBestSeller: true });
   return limit ? products.slice(0, limit) : products;
 }
