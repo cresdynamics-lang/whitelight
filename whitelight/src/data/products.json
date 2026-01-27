@@ -1,0 +1,320 @@
+{
+  "products": [
+    {
+      "id": "1",
+      "slug": "nike-pegasus-40",
+      "name": "Nike Pegasus 40",
+      "brand": "Nike",
+      "category": "running",
+      "price": 5800,
+      "images": [
+        {
+          "id": "1-1",
+          "url": "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600",
+          "alt": "Nike Pegasus 40"
+        }
+      ],
+      "variants": [
+        { "id": "1-40", "size": 40, "inStock": true },
+        { "id": "1-41", "size": 41, "inStock": true },
+        { "id": "1-42", "size": 42, "inStock": true },
+        { "id": "1-43", "size": 43, "inStock": false },
+        { "id": "1-44", "size": 44, "inStock": true }
+      ],
+      "description": "The Nike Pegasus 40 is a versatile running shoe with responsive Zoom Air cushioning for everyday training.",
+      "tags": ["nike", "running", "pegasus"],
+      "isBestSeller": true,
+      "createdAt": "2024-01-15"
+    },
+    {
+      "id": "2",
+      "slug": "adidas-ultraboost-23",
+      "name": "Adidas Ultraboost 23",
+      "brand": "Adidas",
+      "category": "running",
+      "price": 7500,
+      "images": [
+        {
+          "id": "2-1",
+          "url": "https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600",
+          "alt": "Adidas Ultraboost 23"
+        }
+      ],
+      "variants": [
+        { "id": "2-40", "size": 40, "inStock": true },
+        { "id": "2-41", "size": 41, "inStock": true },
+        { "id": "2-42", "size": 42, "inStock": true },
+        { "id": "2-43", "size": 43, "inStock": true },
+        { "id": "2-44", "size": 44, "inStock": true }
+      ],
+      "description": "Premium running shoe with responsive Boost midsole technology for ultimate energy return.",
+      "tags": ["adidas", "running", "boost"],
+      "isBestSeller": true,
+      "isNew": true,
+      "createdAt": "2024-02-10"
+    },
+    {
+      "id": "3",
+      "slug": "salomon-speedcross-6",
+      "name": "Salomon Speedcross 6",
+      "brand": "Salomon",
+      "category": "trail",
+      "price": 6500,
+      "originalPrice": 7200,
+      "images": [
+        {
+          "id": "3-1",
+          "url": "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600",
+          "alt": "Salomon Speedcross 6"
+        }
+      ],
+      "variants": [
+        { "id": "3-38", "size": 38, "inStock": true },
+        { "id": "3-39", "size": 39, "inStock": true },
+        { "id": "3-40", "size": 40, "inStock": true },
+        { "id": "3-41", "size": 41, "inStock": true },
+        { "id": "3-42", "size": 42, "inStock": true }
+      ],
+      "description": "Aggressive trail running shoe with deep lugs for exceptional grip on soft terrain.",
+      "tags": ["salomon", "trail", "speedcross"],
+      "isBestSeller": true,
+      "isNew": true,
+      "createdAt": "2024-02-01"
+    },
+    {
+      "id": "4",
+      "slug": "hoka-speedgoat-5",
+      "name": "Hoka Speedgoat 5",
+      "brand": "Hoka",
+      "category": "trail",
+      "price": 6800,
+      "images": [
+        {
+          "id": "4-1",
+          "url": "https://images.unsplash.com/photo-1605348532760-6753d2c43329?w=600",
+          "alt": "Hoka Speedgoat 5"
+        }
+      ],
+      "variants": [
+        { "id": "4-40", "size": 40, "inStock": true },
+        { "id": "4-41", "size": 41, "inStock": true },
+        { "id": "4-42", "size": 42, "inStock": false },
+        { "id": "4-43", "size": 43, "inStock": true },
+        { "id": "4-44", "size": 44, "inStock": true }
+      ],
+      "description": "Maximum cushioned trail shoe with Vibram outsole for all-terrain performance.",
+      "tags": ["hoka", "trail", "cushioned"],
+      "isNew": true,
+      "createdAt": "2024-02-05"
+    },
+    {
+      "id": "5",
+      "slug": "nike-metcon-9",
+      "name": "Nike Metcon 9",
+      "brand": "Nike",
+      "category": "gym",
+      "price": 4800,
+      "images": [
+        {
+          "id": "5-1",
+          "url": "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=600",
+          "alt": "Nike Metcon 9"
+        }
+      ],
+      "variants": [
+        { "id": "5-39", "size": 39, "inStock": true },
+        { "id": "5-40", "size": 40, "inStock": true },
+        { "id": "5-41", "size": 41, "inStock": true },
+        { "id": "5-42", "size": 42, "inStock": true },
+        { "id": "5-43", "size": 43, "inStock": true }
+      ],
+      "description": "The ultimate training shoe with stable heel and flexible forefoot for versatile workouts.",
+      "tags": ["nike", "gym", "training", "crossfit"],
+      "isBestSeller": true,
+      "createdAt": "2024-01-20"
+    },
+    {
+      "id": "6",
+      "slug": "reebok-nano-x3",
+      "name": "Reebok Nano X3",
+      "brand": "Reebok",
+      "category": "gym",
+      "price": 5200,
+      "images": [
+        {
+          "id": "6-1",
+          "url": "https://images.unsplash.com/photo-1600269452121-4f2416e55c28?w=600",
+          "alt": "Reebok Nano X3"
+        }
+      ],
+      "variants": [
+        { "id": "6-40", "size": 40, "inStock": true },
+        { "id": "6-41", "size": 41, "inStock": true },
+        { "id": "6-42", "size": 42, "inStock": true },
+        { "id": "6-43", "size": 43, "inStock": false },
+        { "id": "6-44", "size": 44, "inStock": true },
+        { "id": "6-45", "size": 45, "inStock": true }
+      ],
+      "description": "CrossFit-ready training shoe with Floatride Energy Foam for comfort during high-intensity workouts.",
+      "tags": ["reebok", "gym", "crossfit", "nano"],
+      "isNew": true,
+      "createdAt": "2024-02-10"
+    },
+    {
+      "id": "7",
+      "slug": "jordan-36",
+      "name": "Air Jordan 36",
+      "brand": "Jordan",
+      "category": "basketball",
+      "price": 8500,
+      "images": [
+        {
+          "id": "7-1",
+          "url": "https://images.unsplash.com/photo-1597045566677-8cf032ed6634?w=600",
+          "alt": "Air Jordan 36"
+        }
+      ],
+      "variants": [
+        { "id": "7-40", "size": 40, "inStock": true },
+        { "id": "7-41", "size": 41, "inStock": true },
+        { "id": "7-42", "size": 42, "inStock": true },
+        { "id": "7-43", "size": 43, "inStock": true },
+        { "id": "7-44", "size": 44, "inStock": true }
+      ],
+      "description": "Lightweight performance basketball shoe with Zoom Air cushioning and leno-weave upper.",
+      "tags": ["jordan", "basketball", "performance"],
+      "isBestSeller": true,
+      "createdAt": "2024-01-25"
+    },
+    {
+      "id": "8",
+      "slug": "lebron-21",
+      "name": "Nike LeBron 21",
+      "brand": "Nike",
+      "category": "basketball",
+      "price": 9200,
+      "images": [
+        {
+          "id": "8-1",
+          "url": "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600",
+          "alt": "Nike LeBron 21"
+        }
+      ],
+      "variants": [
+        { "id": "8-40", "size": 40, "inStock": true },
+        { "id": "8-41", "size": 41, "inStock": true },
+        { "id": "8-42", "size": 42, "inStock": true },
+        { "id": "8-43", "size": 43, "inStock": true },
+        { "id": "8-44", "size": 44, "inStock": true },
+        { "id": "8-45", "size": 45, "inStock": true }
+      ],
+      "description": "Premium basketball shoe with Zoom Air Strobe cushioning for explosive performance on court.",
+      "tags": ["nike", "lebron", "basketball"],
+      "isNew": true,
+      "createdAt": "2024-02-08"
+    },
+    {
+      "id": "9",
+      "slug": "asics-gel-nimbus-25",
+      "name": "Asics Gel Nimbus 25",
+      "brand": "Asics",
+      "category": "running",
+      "price": 6900,
+      "images": [
+        {
+          "id": "9-1",
+          "url": "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?w=600",
+          "alt": "Asics Gel Nimbus 25"
+        }
+      ],
+      "variants": [
+        { "id": "9-40", "size": 40, "inStock": true },
+        { "id": "9-41", "size": 41, "inStock": true },
+        { "id": "9-42", "size": 42, "inStock": true },
+        { "id": "9-43", "size": 43, "inStock": true }
+      ],
+      "description": "Neutral running shoe with FlyteFoam Blast+ and GEL technology for superior cushioning.",
+      "tags": ["asics", "running", "neutral", "cushioned"],
+      "isBestSeller": true,
+      "createdAt": "2024-01-18"
+    },
+    {
+      "id": "10",
+      "slug": "brooks-cascadia-17",
+      "name": "Brooks Cascadia 17",
+      "brand": "Brooks",
+      "category": "trail",
+      "price": 5900,
+      "images": [
+        {
+          "id": "10-1",
+          "url": "https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600",
+          "alt": "Brooks Cascadia 17"
+        }
+      ],
+      "variants": [
+        { "id": "10-40", "size": 40, "inStock": true },
+        { "id": "10-41", "size": 41, "inStock": true },
+        { "id": "10-42", "size": 42, "inStock": true },
+        { "id": "10-43", "size": 43, "inStock": true },
+        { "id": "10-44", "size": 44, "inStock": false }
+      ],
+      "description": "Versatile trail shoe with DNA Loft cushioning and TrailTack rubber outsole.",
+      "tags": ["brooks", "trail", "versatile"],
+      "isNew": true,
+      "createdAt": "2024-02-12"
+    },
+    {
+      "id": "11",
+      "slug": "puma-clyde-all-pro",
+      "name": "Puma Clyde All-Pro",
+      "brand": "Puma",
+      "category": "basketball",
+      "price": 5500,
+      "originalPrice": 6200,
+      "images": [
+        {
+          "id": "11-1",
+          "url": "https://images.unsplash.com/photo-1584735175315-9d5df23860e6?w=600",
+          "alt": "Puma Clyde All-Pro"
+        }
+      ],
+      "variants": [
+        { "id": "11-40", "size": 40, "inStock": true },
+        { "id": "11-41", "size": 41, "inStock": true },
+        { "id": "11-42", "size": 42, "inStock": true },
+        { "id": "11-43", "size": 43, "inStock": true }
+      ],
+      "description": "Performance basketball shoe with ProFoam midsole for responsive energy return.",
+      "tags": ["puma", "basketball", "clyde"],
+      "isBestSeller": true,
+      "createdAt": "2024-01-22"
+    },
+    {
+      "id": "12",
+      "slug": "under-armour-project-rock-5",
+      "name": "Under Armour Project Rock 5",
+      "brand": "Under Armour",
+      "category": "gym",
+      "price": 5800,
+      "images": [
+        {
+          "id": "12-1",
+          "url": "https://images.unsplash.com/photo-1539185441755-769473a23570?w=600",
+          "alt": "Under Armour Project Rock 5"
+        }
+      ],
+      "variants": [
+        { "id": "12-40", "size": 40, "inStock": true },
+        { "id": "12-41", "size": 41, "inStock": true },
+        { "id": "12-42", "size": 42, "inStock": true },
+        { "id": "12-43", "size": 43, "inStock": true },
+        { "id": "12-44", "size": 44, "inStock": true }
+      ],
+      "description": "Training shoe designed for heavy lifting and high-intensity workouts with TriBase technology.",
+      "tags": ["under armour", "gym", "training", "project rock"],
+      "isNew": true,
+      "createdAt": "2024-02-15"
+    }
+  ]
+}
