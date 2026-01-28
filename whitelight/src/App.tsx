@@ -17,6 +17,7 @@ import AboutPage from "./pages/AboutPage";
 import NewArrivalsPage from "./pages/NewArrivalsPage";
 import AccessoriesPage from "./pages/AccessoriesPage";
 import BuyingGuidePage from "./pages/BuyingGuidePage";
+import TermsOfServicePage from "./pages/TermsOfServicePage";
 import NotFound from "./pages/NotFound";
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -45,6 +46,7 @@ const App = () => (
               <Route path="/about" element={<AboutPage />} />
               <Route path="/accessories" element={<AccessoriesPage />} />
               <Route path="/buying-guide" element={<BuyingGuidePage />} />
+              <Route path="/terms" element={<TermsOfServicePage />} />
               <Route path="/new-arrivals" element={<NewArrivalsPage />} />
               
               {/* Legacy routes redirect */}

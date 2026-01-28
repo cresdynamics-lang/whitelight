@@ -260,9 +260,6 @@ export function Footer() {
               <p>© {new Date().getFullYear()} {siteConfig.name}. All rights reserved.</p>
             </div>
             <div className="flex gap-6 text-sm">
-              <Link to="/privacy" className="text-gray-400 hover:text-white transition-colors">
-                Privacy Policy
-              </Link>
               <Link to="/terms" className="text-gray-400 hover:text-white transition-colors">
                 Terms of Service
               </Link>

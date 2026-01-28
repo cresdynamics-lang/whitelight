@@ -134,7 +134,7 @@ export default function AboutPage() {
                   From lightweight running shoes engineered for speed and comfort, to gym shoes that deliver stability and support, to trail shoes designed to grip, protect, and perform off-road, we've got the perfect fit for every journey.
                 </p>
                 <p>
-                  Premium brands, cutting-edge technology, and styles that move as boldly as you do—because your feet deserve gear that works as hard as you do. Lace up, level up, and run your world. 🏃♂️👟💪
+                  Premium brands, cutting-edge technology, and styles that move as boldly as you do—because your feet deserve gear that works as hard as you do. Lace up, level up, and run your world. 
                 </p>
               </div>
             </div>
