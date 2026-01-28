@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Whitelight Store Kenya Locations</name>
+    <description>Premium footwear store locations in Kenya</description>
+    <Placemark>
+      <name>Whitelight Store - Nairobi CBD</name>
+      <description>
+        Premium footwear store in Nairobi CBD. Running shoes, trail shoes, gym shoes, basketball shoes and accessories. 
+        Located at Rware Building, Luthuli Avenue, Shop 410, Fourth Floor.
+        Phone: +254 708 749473
+        Services: Same day delivery in Nairobi, nationwide delivery, payment on delivery
+      </description>
+      <Point>
+        <coordinates>36.8219473,-1.2840719,0</coordinates>
+      </Point>
+      <address>Rware Building, Luthuli Avenue, Shop 410, Fourth Floor, Nairobi CBD, Kenya</address>
+      <phoneNumber>+254708749473</phoneNumber>
+    </Placemark>
+  </Document>
+</kml>

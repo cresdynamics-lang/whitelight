@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:geo="http://www.google.com/geo/schemas/sitemap/1.0"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://whitelightstore.co.ke/</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <geo:geo>
+      <geo:format>kml</geo:format>
+    </geo:geo>
+  </url>
+  <url>
+    <loc>https://whitelightstore.co.ke/category/running</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://whitelightstore.co.ke/couresel_images/running/running2.png</image:loc>
+      <image:title>Running Shoes Kenya - Premium Athletic Footwear</image:title>
+      <image:caption>Best running shoes in Nairobi Kenya for marathons, jogging and daily training</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://whitelightstore.co.ke/category/trail</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://whitelightstore.co.ke/couresel_images/trail/trail1.png</image:loc>
+      <image:title>Trail Running Shoes Kenya - Outdoor Adventure Footwear</image:title>
+      <image:caption>Durable trail shoes for hiking and off-road running in Kenya</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://whitelightstore.co.ke/category/gym</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://whitelightstore.co.ke/couresel_images/gym/gym.png</image:loc>
+      <image:title>Gym Training Shoes Kenya - CrossFit & Workout Footwear</image:title>
+      <image:caption>Professional gym shoes for weightlifting and HIIT workouts in Nairobi</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://whitelightstore.co.ke/category/basketball</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <image:image>
+      <image:loc>https://whitelightstore.co.ke/couresel_images/basketball/bk1.png</image:loc>
+      <image:title>Basketball Shoes Kenya - Court Performance Footwear</image:title>
+      <image:caption>High-performance basketball shoes for courts in Kenya</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://whitelightstore.co.ke/category/accessories</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://whitelightstore.co.ke/buying-guide</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://whitelightstore.co.ke/about</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://whitelightstore.co.ke/contact</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://whitelightstore.co.ke/new-arrivals</loc>
+    <lastmod>2024-12-19</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
