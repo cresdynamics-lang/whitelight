@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MessageCircle, Phone, Mail, MapPin, Send, Clock, Users, Star, Check, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { Header } from "@/components/layout/Header";
@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { siteConfig } from "@/config/site";
 import { toast } from "sonner";
 import { contactService } from "@/services/contactService";
+import { useProducts } from "@/hooks/useProducts";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -21,6 +22,35 @@ export default function ContactPage() {
   });
   const [isSending, setIsSending] = useState(false);
   const [formStatus, setFormStatus] = useState<"idle" | "success" | "error">("idle");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  const { data: productsData = {} } = useProducts();
+  const products = productsData.products || [];
+  
+  // Get 3 random products from different categories for carousel
+  const productImages = Array.isArray(products) && products.length > 0 
+    ? products
+        .filter(product => product.images && product.images.length > 0)
+        .reduce((acc, product) => {
+          // Only add if we don't already have a product from this category
+          if (!acc.find(p => p.category === product.category)) {
+            acc.push({ ...product.images[0], category: product.category });
+          }
+          return acc;
+        }, [])
+        .sort(() => Math.random() - 0.5) // Shuffle randomly
+        .slice(0, 3) // Take only 3
+    : [];
+  
+  // Auto-rotate images every 3 seconds
+  useEffect(() => {
+    if (productImages.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentImageIndex((prev) => (prev + 1) % productImages.length);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [productImages.length]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,16 +142,38 @@ export default function ContactPage() {
                 className="rounded-[32px] border border-white/10 bg-white/5 backdrop-blur p-6"
               >
                 <div className="relative aspect-[4/3] rounded-3xl overflow-hidden">
-                  <img
-                    src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80"
-                    alt="Premium Footwear"
-                    className="w-full h-full object-cover"
-                  />
+                  {productImages.length > 0 ? (
+                    <img
+                      src={productImages[currentImageIndex]?.url || "/couresel_images/running/running2.png"}
+                      alt={productImages[currentImageIndex]?.alt || "Premium Footwear"}
+                      className="w-full h-full object-cover transition-opacity duration-500"
+                    />
+                  ) : (
+                    <img
+                      src="/couresel_images/running/running2.png"
+                      alt="Premium Footwear"
+                      className="w-full h-full object-cover"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-6 left-6 text-white">
                     <p className="text-lg font-semibold">{siteConfig.contact.address}</p>
                     <p className="text-white/80">Monday - Saturday: 8am - 7pm</p>
                   </div>
+                  
+                  {/* Image indicators */}
+                  {productImages.length > 1 && (
+                    <div className="absolute bottom-6 right-6 flex gap-2">
+                      {productImages.map((_, index) => (
+                        <div
+                          key={index}
+                          className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                            index === currentImageIndex ? 'bg-white' : 'bg-white/40'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </motion.div>
             </div>

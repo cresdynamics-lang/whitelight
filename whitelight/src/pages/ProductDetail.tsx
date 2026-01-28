@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { ChevronLeft, Minus, Plus, ShoppingBag } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
@@ -117,7 +117,7 @@ const ProductDetail = () => {
           <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
             {/* Images with multiple angles */}
             <div className="space-y-4">
-              <div className="aspect-[4/3] lg:aspect-[4/3] overflow-hidden rounded-lg bg-secondary">
+              <div className="relative aspect-[4/3] lg:aspect-[4/3] overflow-hidden rounded-lg bg-secondary group">
                 <img
                   src={product.images[selectedImageIndex]?.url || product.images[0]?.url}
                   alt={product.images[selectedImageIndex]?.alt || product.name}
@@ -129,6 +129,28 @@ const ProductDetail = () => {
                     );
                   }}
                 />
+                
+                {/* Navigation arrows - only show if multiple images */}
+                {product.images.length > 1 && (
+                  <>
+                    <button
+                      onClick={() => setSelectedImageIndex((prev) => 
+                        prev === 0 ? product.images.length - 1 : prev - 1
+                      )}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    <button
+                      onClick={() => setSelectedImageIndex((prev) => 
+                        prev === product.images.length - 1 ? 0 : prev + 1
+                      )}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </>
+                )}
               </div>
               
               {/* Image thumbnails - show below on mobile, hidden on desktop */}
