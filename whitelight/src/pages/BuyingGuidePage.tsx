@@ -48,7 +48,7 @@ const BuyingGuidePage = () => {
       description: "Engineered for road running, jogging, and daily training sessions",
       features: ["Lightweight construction", "Responsive cushioning", "Breathable mesh upper"],
       bestFor: "Daily runs, marathons, speed training",
-      image: getCategoryImage("running") || "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=300&h=200&fit=crop"
+      image: "/couresel_images/running/running2.png"
     },
     {
       name: "Trail Shoes",
@@ -56,7 +56,7 @@ const BuyingGuidePage = () => {
       description: "Built for off-road adventures and challenging terrain",
       features: ["Aggressive traction outsole", "Rock plate protection", "Water-resistant materials"],
       bestFor: "Hiking, trail running, outdoor adventures",
-      image: getCategoryImage("trail") || "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=300&h=200&fit=crop"
+      image: "/couresel_images/trail/trail1.png"
     },
     {
       name: "Training Shoes",
@@ -64,7 +64,7 @@ const BuyingGuidePage = () => {
       description: "Versatile footwear for cross-training and gym workouts",
       features: ["Stable platform design", "Multi-directional support", "Durable construction"],
       bestFor: "CrossFit, weightlifting, HIIT workouts",
-      image: getCategoryImage("gym") || "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=300&h=200&fit=crop"
+      image: "/couresel_images/gym/gym3.png"
     },
     {
       name: "Basketball Shoes",
@@ -72,7 +72,7 @@ const BuyingGuidePage = () => {
       description: "Performance footwear designed for court dominance",
       features: ["High-top ankle support", "Court-specific traction", "Impact cushioning"],
       bestFor: "Basketball, streetball, casual wear",
-      image: getCategoryImage("basketball") || "https://images.unsplash.com/photo-1597045566677-8cf032ed6634?w=300&h=200&fit=crop"
+      image: "/couresel_images/basketball/bk1.png"
     }
   ];
 
@@ -109,7 +109,7 @@ const BuyingGuidePage = () => {
           <div className="px-8">
             <div className="mb-12">
               <div className="flex items-center gap-3 mb-4">
-                <Ruler className="h-6 w-6 text-blue-600" />
+                <Ruler className="h-6 w-6 text-gray-600" />
                 <h2 className="text-3xl font-bold text-gray-900">Size Guide</h2>
               </div>
               <p className="text-gray-600 text-lg">Accurate sizing ensures comfort and performance</p>
@@ -184,7 +184,7 @@ const BuyingGuidePage = () => {
               <p className="text-lg text-gray-600">Different activities require different features</p>
             </div>
             
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-2 gap-4 md:gap-8">
               {categories.map((category) => (
                 <Card key={category.name} className="border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-300">
                   <div className="aspect-video overflow-hidden rounded-t-lg">
@@ -194,20 +194,20 @@ const BuyingGuidePage = () => {
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <CardContent className="p-6">
-                    <div className="flex items-center gap-3 mb-3">
-                      <category.icon className="h-6 w-6 text-blue-600" />
-                      <h3 className="text-xl font-semibold text-gray-900">{category.name}</h3>
+                  <CardContent className="p-3 md:p-6">
+                    <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                      <category.icon className="h-5 w-5 md:h-6 md:w-6 text-gray-600" />
+                      <h3 className="text-sm md:text-xl font-semibold text-gray-900">{category.name}</h3>
                     </div>
                     
-                    <p className="text-gray-600 mb-4 leading-relaxed">{category.description}</p>
+                    <p className="text-xs md:text-base text-gray-600 mb-2 md:mb-4 leading-relaxed">{category.description}</p>
                     
-                    <div className="mb-4">
-                      <h4 className="font-medium text-gray-900 mb-2">Key Features:</h4>
+                    <div className="mb-2 md:mb-4">
+                      <h4 className="font-medium text-gray-900 mb-1 md:mb-2 text-xs md:text-base">Key Features:</h4>
                       <ul className="space-y-1">
                         {category.features.map((feature) => (
-                          <li key={feature} className="flex items-center gap-2 text-sm text-gray-700">
-                            <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+                          <li key={feature} className="flex items-center gap-2 text-xs md:text-sm text-gray-700">
+                            <div className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
                             {feature}
                           </li>
                         ))}
@@ -225,13 +225,13 @@ const BuyingGuidePage = () => {
         </section>
 
         {/* Fit & Care Section */}
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-black">
           <div className="px-8">
             <div className="grid lg:grid-cols-2 gap-12">
               {/* Perfect Fit */}
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">Perfect Fit Checklist</h2>
-                <Card className="border border-gray-200">
+                <h2 className="text-3xl font-bold text-white mb-6">Perfect Fit Checklist</h2>
+                <Card className="border border-white/20 bg-white/10 backdrop-blur">
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       {[
@@ -240,9 +240,9 @@ const BuyingGuidePage = () => {
                         "Comfortable width - no pinching or bulging",
                         "Arch support that matches your foot type"
                       ].map((tip, index) => (
-                        <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-                          <CheckCircle className="h-5 w-5 text-green-600 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-700">{tip}</span>
+                        <div key={index} className="flex items-start gap-3 p-3">
+                          <CheckCircle className="h-5 w-5 text-green-400 mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-200">{tip}</span>
                         </div>
                       ))}
                     </div>
@@ -252,8 +252,8 @@ const BuyingGuidePage = () => {
               
               {/* Replacement Guide */}
               <div>
-                <h2 className="text-3xl font-bold text-gray-900 mb-6">When to Replace</h2>
-                <Card className="border border-gray-200">
+                <h2 className="text-3xl font-bold text-white mb-6">When to Replace</h2>
+                <Card className="border border-white/20 bg-white/10 backdrop-blur">
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       {[
@@ -262,9 +262,9 @@ const BuyingGuidePage = () => {
                         { type: "Basketball shoes", time: "When traction wears" },
                         { type: "Trail shoes", time: "When lugs wear smooth" }
                       ].map((item, index) => (
-                        <div key={index} className="flex justify-between items-center p-3 rounded-lg bg-gray-50">
-                          <span className="font-medium text-gray-900">{item.type}</span>
-                          <Badge variant="secondary">{item.time}</Badge>
+                        <div key={index} className="flex justify-between items-center p-3">
+                          <span className="font-medium text-white">{item.type}</span>
+                          <Badge variant="outline" className="border-gray-600 text-gray-200">{item.time}</Badge>
                         </div>
                       ))}
                     </div>
@@ -306,7 +306,7 @@ const BuyingGuidePage = () => {
                     <ul className="space-y-2">
                       {section.tips.map((tip, index) => (
                         <li key={index} className="flex items-center gap-2 text-sm text-gray-700">
-                          <div className="w-1.5 h-1.5 bg-blue-600 rounded-full" />
+                          <div className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
                           {tip}
                         </li>
                       ))}

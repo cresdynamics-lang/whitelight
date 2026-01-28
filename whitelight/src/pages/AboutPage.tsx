@@ -78,7 +78,7 @@ export default function AboutPage() {
       {/* Stats Section */}
       <section className="py-20 bg-white">
         <div className="container">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8">
             <div className="text-center">
               <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-full mb-4">
                 <Users className="h-8 w-8 text-white" />
@@ -224,7 +224,7 @@ export default function AboutPage() {
           <h2 className="font-heading text-5xl font-bold text-black text-center mb-16">
             OUR VALUES
           </h2>
-          <div className="grid md:grid-cols-3 gap-12">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
             <div className="text-center group">
               <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg group-hover:shadow-xl">
                 <Shield className="h-10 w-10 text-white group-hover:animate-pulse" />
