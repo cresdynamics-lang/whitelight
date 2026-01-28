@@ -187,11 +187,12 @@ const BuyingGuidePage = () => {
             <div className="grid grid-cols-2 gap-4 md:gap-8">
               {categories.map((category) => (
                 <Card key={category.name} className="border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-300">
-                  <div className="aspect-video overflow-hidden rounded-t-lg">
+                  <div className="aspect-[4/3] sm:aspect-video overflow-hidden rounded-t-lg">
                     <img 
                       src={category.image} 
                       alt={category.name}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
                     />
                   </div>
                   <CardContent className="p-3 md:p-6">
