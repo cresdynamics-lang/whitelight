@@ -14,6 +14,20 @@ import { ShoppingBag, User, Phone, Mail, MapPin, Clock, Package } from "lucide-r
 import { toast } from "sonner";
 import { format } from "date-fns";
 
+// Helper function to convert backend sizes back to display sizes
+const getDisplaySize = (size: number, productName: string): string => {
+  console.log('getDisplaySize called with:', { size, productName }); // Debug log
+  
+  // Simple detection: if product name contains "Wilma" or "Hall", it's an accessory
+  if (productName.toLowerCase().includes('wilma') || productName.toLowerCase().includes('hall')) {
+    const sizeMap: { [key: number]: string } = { 35: 'XS', 36: '2XL', 37: '3XL', 38: '4XL', 39: '5XL', 40: 'L', 41: 'XL', 42: 'M', 43: 'S' };
+    const result = sizeMap[size] || size.toString();
+    console.log('Mapped size:', result); // Debug log
+    return result;
+  }
+  return size.toString();
+};
+
 interface Order {
   id: number;
   order_number: string;
@@ -238,7 +252,7 @@ const AdminOrders = () => {
                           <div>
                             <p className="text-sm font-medium">{item.product_name}</p>
                             <p className="text-xs text-muted-foreground">
-                              Size {item.size} × {item.quantity}
+                              Size {getDisplaySize(item.size, item.product_name)} × {item.quantity}
                             </p>
                           </div>
                           <p className="text-sm font-medium">

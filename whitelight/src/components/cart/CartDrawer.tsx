@@ -2,6 +2,16 @@ import { X, Minus, Plus, Trash2, MessageCircle } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/products";
 import { siteConfig } from "@/config/site";
+
+// Helper function to display correct size labels
+const getDisplaySize = (size: number | string, category?: string): string => {
+  if (typeof size === 'string') return size;
+  if (category === 'accessories') {
+    const sizeMap: { [key: number]: string } = { 1: 'XS', 2: '2XL', 3: '3XL', 4: '4XL', 5: '5XL', 6: 'L', 7: 'XL', 8: 'M', 9: 'S' };
+    return sizeMap[size] || size.toString();
+  }
+  return size.toString();
+};
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -22,7 +32,7 @@ export function CartDrawer() {
     const orderDetails = items
       .map(
         (item) =>
-          `• ${item.product.name} (Size: ${item.size}${item.size2 ? ` & ${item.size2}` : ''}) x${item.quantity} - ${formatPrice(item.product.price * item.quantity, siteConfig.currency)}${item.referenceLink ? `\nRef: ${item.referenceLink}` : ''}`
+          `• ${item.product.name} (Size: ${getDisplaySize(item.size, item.product.category)}${item.size2 ? ` & ${getDisplaySize(item.size2, item.product.category)}` : ''}) x${item.quantity} - ${formatPrice(item.product.price * item.quantity, siteConfig.currency)}${item.referenceLink ? `\nRef: ${item.referenceLink}` : ''}`
       )
       .join("\n\n");
 
@@ -66,7 +76,7 @@ export function CartDrawer() {
                         {item.product.name}
                       </h4>
                       <p className="text-xs text-muted-foreground">
-                        Size: {item.size}{item.size2 ? ` & ${item.size2}` : ''}
+                        Size: {getDisplaySize(item.size, item.product.category)}{item.size2 ? ` & ${getDisplaySize(item.size2, item.product.category)}` : ''}
                       </p>
                       {item.referenceLink && (
                         <p className="text-xs text-blue-600 truncate">

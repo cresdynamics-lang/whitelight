@@ -18,11 +18,24 @@ const ProductDetail = () => {
   const { data: product, isLoading } = useProduct(slug || "");
   const { data: relatedProducts = [] } = useBestSellers(4);
   
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
-  const [selectedSizes, setSelectedSizes] = useState<number[]>([]);
+  const [selectedSize, setSelectedSize] = useState<number | string | null>(null);
+  const [selectedSizes, setSelectedSizes] = useState<(number | string)[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const { addItem } = useCart();
+
+  // Helper function to display size correctly for accessories
+  const getDisplaySize = (size: number | string, category: string) => {
+    if (category === 'accessories' && typeof size === 'number') {
+      // Map numeric sizes to clothing sizes for accessories based on actual data
+      const sizeMap: Record<number, string> = {
+        1: 'XS', 2: '2XL', 3: '3XL', 4: '4XL', 5: '5XL', 
+        6: 'L', 7: 'XL', 8: 'M', 9: 'S'
+      };
+      return sizeMap[size] || size.toString();
+    }
+    return size;
+  };
 
   if (isLoading) {
     return (
@@ -53,7 +66,7 @@ const ProductDetail = () => {
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
 
-  const handleSizeToggle = (size: number) => {
+  const handleSizeToggle = (size: number | string) => {
     setSelectedSizes(prev => {
       if (prev.includes(size)) {
         return prev.filter(s => s !== size);
@@ -90,10 +103,13 @@ const ProductDetail = () => {
       size: selectedSize || selectedSizes[0],
       selectedSizes: allSizes,
       referenceLink,
-      quantity
+      quantity,
+      category: product.category
     });
     
-    const sizeText = allSizes.length > 1 ? `Sizes ${allSizes.join(', ')}` : `Size ${allSizes[0]}`;
+    const sizeText = allSizes.length > 1 ? 
+      `Sizes ${allSizes.map(s => getDisplaySize(s, product.category)).join(', ')}` : 
+      `Size ${getDisplaySize(allSizes[0], product.category)}`;
     toast.success("Added to cart!", {
       description: `${product.name} - ${sizeText}`,
     });
@@ -212,9 +228,12 @@ const ProductDetail = () => {
 
               {/* Size selectors */}
               <div className="mb-4">
-                <p className="text-sm font-medium mb-2">Select Size(s) - Choose multiple for flexibility</p>
+                <p className="text-sm font-medium mb-2">
+                  {product.category === 'accessories' ? 'Select Size(s) - Available clothing sizes' : 'Select Size(s) - Available shoe sizes'}
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {product.variants.map((variant) => {
+                    const displaySize = getDisplaySize(variant.size, product.category);
                     const isSelected = selectedSizes.includes(variant.size) || selectedSize === variant.size;
                     return (
                       <button
@@ -230,14 +249,16 @@ const ProductDetail = () => {
                             : "border-border text-muted-foreground opacity-50 cursor-not-allowed"
                         )}
                       >
-                        {variant.size}
+                        {displaySize}
                       </button>
                     );
                   })}
                 </div>
                 {(selectedSizes.length > 0 || selectedSize) && (
                   <p className="text-xs text-muted-foreground mt-2">
-                    Selected: {selectedSize ? [selectedSize, ...selectedSizes.filter(s => s !== selectedSize)].join(', ') : selectedSizes.join(', ')}
+                    Selected: {selectedSize ? 
+                      [getDisplaySize(selectedSize, product.category), ...selectedSizes.filter(s => s !== selectedSize).map(s => getDisplaySize(s, product.category))].join(', ') : 
+                      selectedSizes.map(s => getDisplaySize(s, product.category)).join(', ')}
                   </p>
                 )}
               </div>

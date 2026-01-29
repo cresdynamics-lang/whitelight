@@ -12,6 +12,7 @@ interface CartContextType {
     selectedSizes?: number[];
     referenceLink: string;
     quantity: number;
+    category?: string;
   }) => void;
   addToCart: (product: Product, size: number, quantity?: number) => void;
   removeFromCart: (productId: string, size: number) => void;
@@ -51,6 +52,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     selectedSizes?: number[];
     referenceLink: string;
     quantity: number;
+    category?: string;
   }) => {
     setItems((currentItems) => {
       const existingIndex = currentItems.findIndex(
@@ -68,6 +70,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           id: item.id,
           name: item.name,
           price: item.price,
+          category: item.category || 'shoes',
           images: [{ url: item.image, alt: item.name }]
         } as Product,
         size: item.size,

@@ -141,6 +141,10 @@ export default function TermsOfServicePage() {
                       <ul className="space-y-2 sm:space-y-3 text-gray-700 text-sm sm:text-base md:text-lg">
                         <li className="flex items-start gap-2 sm:gap-3">
                           <div className="w-2 h-2 bg-red-600 rounded-full mt-1.5 sm:mt-2 md:mt-3 flex-shrink-0"></div>
+                          <span><strong>Time Limit:</strong> Exchanges are accepted only within 3 days after pickup/delivery.</span>
+                        </li>
+                        <li className="flex items-start gap-2 sm:gap-3">
+                          <div className="w-2 h-2 bg-red-600 rounded-full mt-1.5 sm:mt-2 md:mt-3 flex-shrink-0"></div>
                           <span>Exchanges are allowed only for the same shoe type/model.</span>
                         </li>
                         <li className="flex items-start gap-2 sm:gap-3">

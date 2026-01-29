@@ -3,6 +3,27 @@ import { ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/products";
 import { siteConfig } from "@/config/site";
+
+// Helper function to convert accessory sizes to valid backend sizes
+const getBackendSize = (size: number | string, category?: string): number => {
+  if (typeof size === 'string') return 40; // Default for string sizes
+  if (category === 'accessories') {
+    // Map accessory sizes to valid shoe sizes (≥35)
+    const sizeMap: { [key: number]: number } = { 1: 35, 2: 36, 3: 37, 4: 38, 5: 39, 6: 40, 7: 41, 8: 42, 9: 43 };
+    return sizeMap[size] || 40;
+  }
+  return size as number;
+};
+
+// Helper function to display correct size labels
+const getDisplaySize = (size: number | string, category?: string): string => {
+  if (typeof size === 'string') return size;
+  if (category === 'accessories') {
+    const sizeMap: { [key: number]: string } = { 1: 'XS', 2: '2XL', 3: '3XL', 4: '4XL', 5: '5XL', 6: 'L', 7: 'XL', 8: 'M', 9: 'S' };
+    return sizeMap[size] || size.toString();
+  }
+  return size.toString();
+};
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -70,11 +91,8 @@ export function CheckoutForm({ onBack }: CheckoutFormProps) {
           productId: item.product.id,
           productName: item.product.name,
           productPrice: item.product.price,
-          size: item.size,
-          selectedSizes: item.selectedSizes,
-          quantity: item.quantity,
-          productImage: item.product.images?.[0]?.url,
-          referenceLink: item.referenceLink
+          size: getBackendSize(item.size, item.product.category),
+          quantity: item.quantity
         }))
       };
 
@@ -100,7 +118,7 @@ export function CheckoutForm({ onBack }: CheckoutFormProps) {
         message += `\nORDER ITEMS:\n`;
         items.forEach((item, index) => {
           message += `${index + 1}. ${item.product.name}\n`;
-          message += `   Size: ${item.size} | Qty: ${item.quantity} | ${formatPrice(item.product.price * item.quantity, siteConfig.currency)}\n`;
+          message += `   Size: ${getDisplaySize(item.size, item.product.category)} | Qty: ${item.quantity} | ${formatPrice(item.product.price * item.quantity, siteConfig.currency)}\n`;
         });
         
         message += `\nTOTAL: ${formatPrice(total, siteConfig.currency)}\n`;

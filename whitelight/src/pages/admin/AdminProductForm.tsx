@@ -52,7 +52,22 @@ const AdminProductForm = () => {
     isOnOffer: false,
   });
 
-  const [variants, setVariants] = useState<Array<{size: number, inStock: boolean, stockQuantity: number}>>([]);
+  const [variants, setVariants] = useState<Array<{size: number | string, inStock: boolean, stockQuantity: number}>>([]);
+
+  // Clothing sizes for accessories with correct mapping
+  const CLOTHING_SIZES = [
+    { label: 'XS', value: 1 },
+    { label: '2XL', value: 2 },
+    { label: '3XL', value: 3 },
+    { label: '4XL', value: 4 },
+    { label: '5XL', value: 5 },
+    { label: 'L', value: 6 },
+    { label: 'XL', value: 7 },
+    { label: 'M', value: 8 },
+    { label: 'S', value: 9 }
+  ];
+  
+  const isAccessoryCategory = formData.category === 'accessories';
 
   useEffect(() => {
     if (isEditing) {
@@ -99,7 +114,8 @@ const AdminProductForm = () => {
   }, [id, isEditing]);
 
   const addVariant = () => {
-    setVariants([...variants, { size: 40, inStock: true, stockQuantity: 10 }]);
+    const defaultSize = isAccessoryCategory ? 6 : 40; // 6 maps to 'L' for accessories
+    setVariants([...variants, { size: defaultSize, inStock: true, stockQuantity: 10 }]);
   };
 
   const removeVariant = (index: number) => {
@@ -456,18 +472,40 @@ const AdminProductForm = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1">
                           <Label className="text-xs w-8">Size:</Label>
-                          <Input
-                            type="number"
-                            min="35"
-                            max="50"
-                            value={variant.size}
-                            onChange={(e) => {
-                              const newVariants = [...variants];
-                              newVariants[index].size = parseInt(e.target.value) || 40;
-                              setVariants(newVariants);
-                            }}
-                            className="w-16 h-6 text-xs px-2"
-                          />
+                          {isAccessoryCategory ? (
+                            <Select
+                              value={String(variant.size)}
+                              onValueChange={(value) => {
+                                const newVariants = [...variants];
+                                newVariants[index].size = parseInt(value);
+                                setVariants(newVariants);
+                              }}
+                            >
+                              <SelectTrigger className="w-16 h-6 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {CLOTHING_SIZES.map((size) => (
+                                  <SelectItem key={size.value} value={String(size.value)}>
+                                    {size.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Input
+                              type="number"
+                              min="35"
+                              max="50"
+                              value={variant.size}
+                              onChange={(e) => {
+                                const newVariants = [...variants];
+                                newVariants[index].size = parseInt(e.target.value) || 40;
+                                setVariants(newVariants);
+                              }}
+                              className="w-16 h-6 text-xs px-2"
+                            />
+                          )}
                         </div>
                         <Button
                           type="button"

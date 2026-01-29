@@ -15,6 +15,15 @@ import { ShoppingBag, Package, Clock, User, Phone, MapPin, ZoomIn } from "lucide
 import { toast } from "sonner";
 import { format } from "date-fns";
 
+// Helper function to convert backend sizes back to display sizes
+const getDisplaySize = (size: number, productName: string): string => {
+  if (productName.toLowerCase().includes('wilma') || productName.toLowerCase().includes('hall')) {
+    const sizeMap: { [key: number]: string } = { 35: 'XS', 36: '2XL', 37: '3XL', 38: '4XL', 39: '5XL', 40: 'L', 41: 'XL', 42: 'M', 43: 'S' };
+    return sizeMap[size] || size.toString();
+  }
+  return size.toString();
+};
+
 interface Order {
   id: number;
   order_number: string;
@@ -309,7 +318,7 @@ const AdminOrders = () => {
                                       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 z-30">
                                         <h3 className="font-heading text-xl font-bold text-white mb-2">{item.product_name}</h3>
                                         <p className="text-white/90 mb-1">
-                                          Sizes: {item.selected_sizes?.join(', ') || item.size} × {item.quantity}
+                                          Sizes: {item.selected_sizes?.map(s => getDisplaySize(s, item.product_name)).join(', ') || getDisplaySize(item.size, item.product_name)} × {item.quantity}
                                         </p>
                                         {item.reference_link && (
                                           <p className="text-xs text-white/70 break-all">
@@ -331,7 +340,7 @@ const AdminOrders = () => {
                             <div className="flex-1 min-w-0">
                               <p className="font-medium text-sm">{item.product_name}</p>
                               <p className="text-xs text-muted-foreground">
-                                Sizes: {item.selected_sizes?.join(', ') || item.size} × {item.quantity}
+                                Sizes: {item.selected_sizes?.map(s => getDisplaySize(s, item.product_name)).join(', ') || getDisplaySize(item.size, item.product_name)} × {item.quantity}
                               </p>
                               {item.reference_link && (
                                 <p className="text-xs text-blue-600 truncate" title={item.reference_link}>

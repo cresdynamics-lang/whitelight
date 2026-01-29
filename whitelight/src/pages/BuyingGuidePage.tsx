@@ -176,6 +176,42 @@ const BuyingGuidePage = () => {
           </div>
         </section>
 
+        {/* Guide Images Section */}
+        <section className="py-16 bg-white">
+          <div className="px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Visual Guide</h2>
+              <p className="text-lg text-gray-600">Step-by-step visual guide to help you choose the right footwear</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[
+                { src: "/guide_images/guide1.jpeg", title: "Proper Fit Check", desc: "How to check if your shoe fits correctly" },
+                { src: "/guide_images/guide2.jpeg", title: "Size Measurement", desc: "Accurate foot measurement techniques" },
+                { src: "/guide_images/guide3.jpeg", title: "Shoe Types", desc: "Different shoe types for different activities" },
+                { src: "/guide_images/guide4.jpeg", title: "Quality Check", desc: "What to look for in quality footwear" },
+                { src: "/guide_images/guide5.jpeg", title: "Care Tips", desc: "Proper shoe care and maintenance" },
+                { src: "/guide_images/guide6.jpeg", title: "Storage Guide", desc: "How to store your shoes properly" }
+              ].map((guide, index) => (
+                <Card key={index} className="border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-300">
+                  <div className="aspect-[4/3] overflow-hidden rounded-t-lg">
+                    <img 
+                      src={guide.src} 
+                      alt={guide.title}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </div>
+                  <CardContent className="p-4">
+                    <h3 className="font-semibold text-gray-900 mb-2">{guide.title}</h3>
+                    <p className="text-sm text-gray-600">{guide.desc}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Categories Section */}
         <section className="py-16 bg-gray-50">
           <div className="px-8">

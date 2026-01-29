@@ -19,7 +19,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product, className }: ProductCardProps) {
   const { addToCart } = useCart();
-  const [selectedSize, setSelectedSize] = useState<number | null>(null);
+  const [selectedSize, setSelectedSize] = useState<number | string | null>(null);
   const { ref, isVisible } = useLazyLoading();
   
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
@@ -28,6 +28,18 @@ export function ProductCard({ product, className }: ProductCardProps) {
     : 0;
 
   const availableSizes = product.variants.filter((v) => v.inStock);
+
+  // Helper function to display size correctly for accessories
+  const getDisplaySize = (size: number | string, category: string) => {
+    if (category === 'accessories' && typeof size === 'number') {
+      const sizeMap: Record<number, string> = {
+        1: 'XS', 2: '2XL', 3: '3XL', 4: '4XL', 5: '5XL', 
+        6: 'L', 7: 'XL', 8: 'M', 9: 'S'
+      };
+      return sizeMap[size] || size.toString();
+    }
+    return size;
+  };
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -109,23 +121,26 @@ export function ProductCard({ product, className }: ProductCardProps) {
 
         {/* Sizes */}
         <div className="flex flex-wrap gap-1">
-          {availableSizes.slice(0, 5).map((variant) => (
-            <button
-              key={variant.id}
-              onClick={(e) => {
-                e.preventDefault();
-                setSelectedSize(variant.size);
-              }}
-              className={cn(
-                "text-xs px-2 py-1 border rounded transition-colors",
-                selectedSize === variant.size
-                  ? "border-primary bg-primary text-primary-foreground"
-                  : "border-border hover:border-primary"
-              )}
-            >
-              {variant.size}
-            </button>
-          ))}
+          {availableSizes.slice(0, 5).map((variant) => {
+            const displaySize = getDisplaySize(variant.size, product.category);
+            return (
+              <button
+                key={variant.id}
+                onClick={(e) => {
+                  e.preventDefault();
+                  setSelectedSize(variant.size);
+                }}
+                className={cn(
+                  "text-xs px-2 py-1 border rounded transition-colors",
+                  selectedSize === variant.size
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border hover:border-primary"
+                )}
+              >
+                {displaySize}
+              </button>
+            );
+          })}
           {availableSizes.length > 5 && (
             <span className="text-xs px-2 py-1 text-muted-foreground">
               +{availableSizes.length - 5}

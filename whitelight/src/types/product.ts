@@ -9,7 +9,7 @@ export interface ProductImage {
 
 export interface ProductVariant {
   id: string;
-  size: number;
+  size: number | string; // Support both shoe sizes (number) and clothing sizes (string)
   inStock: boolean;
   stockQuantity?: number;
 }
@@ -56,8 +56,8 @@ export interface ProductFilters {
 // Cart types
 export interface CartItem {
   product: Product;
-  size: number;
-  selectedSizes?: number[];
+  size: number | string; // Support both shoe and clothing sizes
+  selectedSizes?: (number | string)[];
   referenceLink?: string;
   quantity: number;
 }
