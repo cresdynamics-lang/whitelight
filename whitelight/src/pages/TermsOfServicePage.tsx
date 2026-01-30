@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 
 export default function TermsOfServicePage() {
   useEffect(() => {
@@ -8,7 +9,20 @@ export default function TermsOfServicePage() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <>
+      <Helmet>
+        <title>Terms of Service - WhiteLight Store Kenya | Shoe Exchange & Return Policy Nairobi</title>
+        <meta name="description" content="WhiteLight Store Kenya Terms of Service: Exchange policy, delivery within Nairobi same-day, payment terms, return conditions. Located at Rware Building, Luthuli Avenue, Nairobi CBD." />
+        <meta name="keywords" content="WhiteLight Store Kenya, shoe store Nairobi, terms of service, exchange policy, return policy, same day delivery Nairobi, Luthuli Avenue, Rware Building" />
+        <meta name="geo.region" content="KE-30" />
+        <meta name="geo.placename" content="Nairobi, Kenya" />
+        <meta property="og:title" content="Terms of Service - WhiteLight Store Kenya" />
+        <meta property="og:description" content="Complete Terms of Service for WhiteLight Store Kenya. Exchange policy, same-day delivery in Nairobi." />
+        <meta property="og:url" content="https://whitelightstore.co.ke/terms-of-service" />
+        <link rel="canonical" href="https://whitelightstore.co.ke/terms-of-service" />
+      </Helmet>
+      
+      <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
       
       <main className="flex-1 py-8 md:py-16">
@@ -284,6 +298,7 @@ export default function TermsOfServicePage() {
       </main>
       
       <Footer />
-    </div>
+      </div>
+    </>
   );
 }
