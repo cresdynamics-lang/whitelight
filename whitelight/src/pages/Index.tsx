@@ -12,8 +12,8 @@ import { useBestSellers, useNewArrivals } from "@/hooks/useProducts";
 import { siteConfig } from "@/config/site";
 
 const Index = () => {
-  const { data: bestSellers = [], isLoading: loadingBestSellers } = useBestSellers(4);
-  const { data: newArrivals = [], isLoading: loadingNewArrivals } = useNewArrivals(4);
+  const { data: bestSellers = [], isLoading: loadingBestSellers } = useBestSellers(12);
+  const { data: newArrivals = [], isLoading: loadingNewArrivals } = useNewArrivals(12);
 
   return (
     <div className="min-h-screen flex flex-col">
