@@ -8,12 +8,15 @@ import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
 import { Newsletter } from "@/components/sections/Newsletter";
 import { CtaBanner } from "@/components/sections/CtaBanner";
 import { ServicesSection } from "@/components/sections/ServicesSection";
-import { useBestSellers, useNewArrivals } from "@/hooks/useProducts";
+import { useBestSellers, useNewArrivals, useProductsByCategory } from "@/hooks/useProducts";
 import { siteConfig } from "@/config/site";
 
 const Index = () => {
   const { data: bestSellers = [], isLoading: loadingBestSellers } = useBestSellers(12);
   const { data: newArrivals = [], isLoading: loadingNewArrivals } = useNewArrivals(12);
+  const { data: runningShoes = [] } = useProductsByCategory("running");
+  const { data: basketballShoes = [] } = useProductsByCategory("basketball");
+  const { data: gymShoes = [] } = useProductsByCategory("gym");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -29,7 +32,7 @@ const Index = () => {
           title="Best Selling"
           products={bestSellers}
           columns={4}
-          itemsPerPage={8}
+          itemsPerPage={12}
         />
 
         {/* CTA Banner - Time to Move */}
@@ -38,10 +41,35 @@ const Index = () => {
         {/* Category Banners */}
         <CategoryBanner />
 
+        {/* Running Shoes Section */}
+        <VirtualProductGrid
+          title="Running Shoes"
+          products={runningShoes.slice(0, 8)}
+          columns={4}
+          itemsPerPage={8}
+        />
+
         {/* New Arrivals */}
         <VirtualProductGrid
           title="New In"
           products={newArrivals}
+          columns={4}
+          className="bg-secondary/30"
+          itemsPerPage={12}
+        />
+
+        {/* Basketball Shoes Section */}
+        <VirtualProductGrid
+          title="Basketball Shoes"
+          products={basketballShoes.slice(0, 8)}
+          columns={4}
+          itemsPerPage={8}
+        />
+
+        {/* Gym Shoes Section */}
+        <VirtualProductGrid
+          title="Gym & Training"
+          products={gymShoes.slice(0, 8)}
           columns={4}
           className="bg-secondary/30"
           itemsPerPage={8}
