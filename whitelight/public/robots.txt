@@ -27,6 +27,7 @@ Crawl-delay: 1
 
 # Sitemaps
 Sitemap: https://whitelightstore.co.ke/sitemap.xml
+Sitemap: https://whitelightstore.co.ke/api/sitemap.xml
 Sitemap: https://whitelightstore.co.ke/geo-sitemap.kml
 
 # Specific bot instructions

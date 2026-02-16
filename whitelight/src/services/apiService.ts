@@ -104,7 +104,8 @@ class ApiService {
 
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || 'Failed to create product');
+      const message = data.error || data.message || 'Failed to create product';
+      throw new Error(message);
     }
 
     return data;

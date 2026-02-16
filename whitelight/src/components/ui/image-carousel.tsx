@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { cn } from "@/lib/utils";
 
 interface CarouselImage {
@@ -68,15 +69,13 @@ export function ImageCarousel({
       >
         {images.map((image, index) => (
           <div key={index} className="w-full h-full flex-shrink-0">
-            <img
+            <OptimizedImage
               src={image.url}
               alt={image.alt_text}
-              className={cn(
-                "w-full h-full",
-                objectFit === "cover" ? "object-cover" : "object-contain"
-              )}
+              className="w-full h-full"
               loading={index === 0 ? "eager" : "lazy"}
-              style={{ imageRendering: 'crisp-edges' }}
+              fetchPriority={index === 0 ? "high" : undefined}
+              objectFit={objectFit}
             />
           </div>
         ))}

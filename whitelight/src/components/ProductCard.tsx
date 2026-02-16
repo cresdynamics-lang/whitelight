@@ -66,6 +66,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               alt={product.images[0]?.alt || product.name}
               className="h-full w-full transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
+              fetchPriority="low"
             />
           ) : (
             <div className="h-full w-full bg-gray-200 animate-pulse" />

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { bannerService, CategoryImage } from "@/services/bannerService";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { cn } from "@/lib/utils";
 
 interface CategoryBannerProps {
@@ -66,10 +67,10 @@ export function CategoryBanner({ className }: CategoryBannerProps) {
                 to={`/category/${category.category}`}
                 className="group relative flex-shrink-0 w-80 aspect-[4/5] overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
               >
-                <img
+                <OptimizedImage
                   src={category.url}
                   alt={category.alt_text}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 group-hover:[&_img]:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute inset-0 flex items-end p-6">
@@ -92,10 +93,10 @@ export function CategoryBanner({ className }: CategoryBannerProps) {
                 to={`/category/${category.category}`}
                 className="group relative flex-shrink-0 w-80 aspect-[4/5] overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
               >
-                <img
+                <OptimizedImage
                   src={category.url}
                   alt={category.alt_text}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                  className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 group-hover:[&_img]:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute inset-0 flex items-end p-6">

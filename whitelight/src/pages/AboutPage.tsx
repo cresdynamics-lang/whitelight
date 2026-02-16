@@ -1,6 +1,9 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { seoConfig } from "@/config/seo";
 import { Star, Users, Award, Zap, Shield, Flame, Heart } from "lucide-react";
 
 const testimonials = [
@@ -45,6 +48,12 @@ const testimonials = [
 export default function AboutPage() {
   return (
     <div className="min-h-screen bg-background">
+      <SEOHead
+        title={seoConfig.pages.about.title}
+        description={seoConfig.pages.about.description}
+        keywords={seoConfig.pages.about.keywords}
+        canonical="https://whitelightstore.co.ke/about"
+      />
       <Header />
       
       {/* Hero Section */}
@@ -52,11 +61,11 @@ export default function AboutPage() {
         {/* Background carousel */}
         <div className="absolute inset-0">
           <div className="flex animate-scroll h-full">
-            <img src="/couresel_images/running/running2.png" alt="Running" className="h-full w-screen object-cover flex-shrink-0" />
-            <img src="/couresel_images/trail/trail1.png" alt="Trail" className="h-full w-screen object-cover flex-shrink-0" />
-            <img src="/couresel_images/gym/gym.png" alt="Gym" className="h-full w-screen object-cover flex-shrink-0" />
-            <img src="/couresel_images/basketball/bk1.png" alt="Basketball" className="h-full w-screen object-cover flex-shrink-0" />
-            <img src="/couresel_images/orthopedic/orth1.jpg" alt="Orthopedic" className="h-full w-screen object-cover flex-shrink-0" />
+            <OptimizedImage src="/couresel_images/running/running2.png" alt="Running" className="h-full w-screen flex-shrink-0" loading="eager" fetchPriority="high" />
+            <OptimizedImage src="/couresel_images/trail/trail1.png" alt="Trail" className="h-full w-screen flex-shrink-0" loading="lazy" />
+            <OptimizedImage src="/couresel_images/gym/gym.png" alt="Gym" className="h-full w-screen flex-shrink-0" loading="lazy" />
+            <OptimizedImage src="/couresel_images/basketball/bk1.png" alt="Basketball" className="h-full w-screen flex-shrink-0" loading="lazy" />
+            <OptimizedImage src="/couresel_images/orthopedic/orth1.jpg" alt="Orthopedic" className="h-full w-screen flex-shrink-0" loading="lazy" />
           </div>
         </div>
         
@@ -119,10 +128,10 @@ export default function AboutPage() {
           </h2>
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="max-h-[500px]">
-              <img 
-                src="/ourstoryimage.jpeg" 
-                alt="Our Story" 
-                className="w-full h-full max-h-[500px] object-cover object-top rounded-lg shadow-lg"
+              <OptimizedImage
+                src="/ourstoryimage.jpeg"
+                alt="Our Story"
+                className="w-full h-full max-h-[500px] rounded-lg shadow-lg [&_img]:object-top"
               />
             </div>
             <div className="flex flex-col justify-center">

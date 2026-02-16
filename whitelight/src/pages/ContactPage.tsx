@@ -8,6 +8,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { siteConfig } from "@/config/site";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { seoConfig } from "@/config/seo";
 import { toast } from "sonner";
 import { contactService } from "@/services/contactService";
 import { useProducts } from "@/hooks/useProducts";
@@ -82,6 +84,12 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={seoConfig.pages.contact.title}
+        description={seoConfig.pages.contact.description}
+        keywords={seoConfig.pages.contact.keywords}
+        canonical="https://whitelightstore.co.ke/contact"
+      />
       <Header />
 
       <main className="flex-1">

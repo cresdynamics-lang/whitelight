@@ -8,9 +8,9 @@ const upload = multer({ storage: multer.memoryStorage() });
 class ProductController {
   // Create new product
   async createProduct(req, res) {
-    const connection = await pool.getConnection();
-    
+    let connection;
     try {
+      connection = await pool.getConnection();
       await connection.beginTransaction();
 
       const {
@@ -110,7 +110,9 @@ class ProductController {
       });
 
     } catch (error) {
-      await connection.rollback();
+      if (connection) {
+        try { await connection.rollback(); } catch (e) { /* ignore */ }
+      }
       console.error('Create product error:', error);
       res.status(500).json({
         success: false,
@@ -118,7 +120,7 @@ class ProductController {
         error: error.message
       });
     } finally {
-      connection.release();
+      if (connection) connection.release();
     }
   }
 

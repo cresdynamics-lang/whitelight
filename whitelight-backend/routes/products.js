@@ -21,10 +21,10 @@ router.get('/:id', productController.getProduct);
 
 // Admin protected routes
 // POST /api/products - Create new product (admin only)
-router.post('/', authenticateToken, upload.array('images', 5), productController.createProduct);
+router.post('/', authenticateToken, upload.array('images', 10), productController.createProduct);
 
 // PUT /api/products/:id - Update product (admin only)
-router.put('/:id', authenticateToken, upload.array('images', 5), productController.updateProduct);
+router.put('/:id', authenticateToken, upload.array('images', 10), productController.updateProduct);
 
 // DELETE /api/products/:id - Delete product (admin only)
 router.delete('/:id', authenticateToken, productController.deleteProduct);

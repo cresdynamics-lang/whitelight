@@ -7,6 +7,8 @@ import { useProductsByCategory } from "@/hooks/useProducts";
 import { useSearch } from "@/context/SearchContext";
 import type { ProductCategory } from "@/types/product";
 import { siteConfig } from "@/config/site";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { seoConfig } from "@/config/seo";
 
 const categoryTitles: Record<ProductCategory, string> = {
   running: "Running Shoes",
@@ -81,8 +83,18 @@ export default function CategoryPage() {
     alt_text: `${title} ${index + 1}`
   }));
 
+  const categorySEO = seoConfig.pages[validCategory as keyof typeof seoConfig.pages] || seoConfig.pages.running;
+  
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEOHead
+        title={categorySEO.title}
+        description={categorySEO.description}
+        keywords={categorySEO.keywords}
+        canonical={`https://whitelightstore.co.ke/category/${validCategory}`}
+        ogImage={backgroundImages[0] || "/whitelight_logo.jpeg"}
+        category={validCategory}
+      />
       <Header />
       
       <main className="flex-1">

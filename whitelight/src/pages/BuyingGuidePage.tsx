@@ -2,6 +2,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { CheckCircle, Ruler, Activity, MapPin, Dumbbell, Zap } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 
@@ -84,10 +85,12 @@ const BuyingGuidePage = () => {
         {/* Hero Section */}
         <section className="relative py-24 border-b overflow-hidden">
           <div className="absolute inset-0">
-            <img 
-              src="/buyingguide.png" 
-              alt="Buying Guide" 
-              className="w-full h-full object-cover"
+            <OptimizedImage
+              src="/buyingguide.png"
+              alt="Buying Guide"
+              className="w-full h-full"
+              loading="eager"
+              fetchPriority="high"
             />
             <div className="absolute inset-0 bg-black/40" />
           </div>
@@ -195,11 +198,10 @@ const BuyingGuidePage = () => {
               ].map((guide, index) => (
                 <Card key={index} className="border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-300">
                   <div className="aspect-[4/3] overflow-hidden rounded-t-lg">
-                    <img 
-                      src={guide.src} 
+                    <OptimizedImage
+                      src={guide.src}
                       alt={guide.title}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
+                      className="w-full h-full [&_img]:hover:scale-105 [&_img]:transition-transform [&_img]:duration-300"
                     />
                   </div>
                   <CardContent className="p-4">
@@ -224,11 +226,10 @@ const BuyingGuidePage = () => {
               {categories.map((category) => (
                 <Card key={category.name} className="border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-300">
                   <div className="aspect-[4/3] sm:aspect-video overflow-hidden rounded-t-lg">
-                    <img 
-                      src={category.image} 
+                    <OptimizedImage
+                      src={category.image}
                       alt={category.name}
-                      className="w-full h-full object-cover object-center hover:scale-105 transition-transform duration-300"
-                      loading="lazy"
+                      className="w-full h-full [&_img]:object-center [&_img]:hover:scale-105 [&_img]:transition-transform [&_img]:duration-300"
                     />
                   </div>
                   <CardContent className="p-3 md:p-6">

@@ -10,6 +10,8 @@ import { CtaBanner } from "@/components/sections/CtaBanner";
 import { ServicesSection } from "@/components/sections/ServicesSection";
 import { useBestSellers, useNewArrivals, useProductsByCategory } from "@/hooks/useProducts";
 import { siteConfig } from "@/config/site";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { seoConfig } from "@/config/seo";
 
 const Index = () => {
   const { data: bestSellers = [], isLoading: loadingBestSellers } = useBestSellers(12);
@@ -20,6 +22,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={seoConfig.pages.home.title}
+        description={seoConfig.pages.home.description}
+        keywords={seoConfig.pages.home.keywords}
+        canonical="https://whitelightstore.co.ke"
+        ogImage="/couresel_images/running/running2.webp"
+      />
       <Header />
       <PromotionBanner />
       

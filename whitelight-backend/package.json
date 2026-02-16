@@ -6,7 +6,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "seed": "node scripts/seedData.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:image-upload": "node scripts/test-image-upload.js"
   },
   "keywords": [],
   "author": "",

@@ -12,6 +12,7 @@ import { ProductGrid } from "@/components/sections/ProductGrid";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { SEOHead } from "@/components/seo/SEOHead";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -52,6 +53,7 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col">
+        <SEOHead title="Product Not Found - Whitelight Store Kenya" noindex />
         <Header />
         <main className="flex-1 flex flex-col items-center justify-center">
           <h1 className="text-2xl font-heading font-semibold mb-4">Product not found</h1>
@@ -63,6 +65,24 @@ const ProductDetail = () => {
       </div>
     );
   }
+
+  // Helper function for category display name
+  const getCategoryDisplayName = (category: string) => {
+    const categoryMap: Record<string, string> = {
+      running: "Running Shoes",
+      trail: "Trail Shoes",
+      gym: "Gym Shoes",
+      basketball: "Basketball Shoes",
+      accessories: "Accessories",
+    };
+    return categoryMap[category] || category;
+  };
+
+  // Generate SEO-friendly title and description
+  const seoTitle = `${product.name} - ${product.brand} ${getCategoryDisplayName(product.category)} | Buy in Nairobi Kenya`;
+  const seoDescription = `Buy ${product.name} by ${product.brand} in Nairobi. ${product.description.substring(0, 120)}... Available sizes: ${product.variants.filter(v => v.inStock).map(v => v.size).join(', ')}. Same day delivery in Nairobi CBD.`;
+  const seoKeywords = `${product.name}, ${product.brand} ${product.category} shoes, ${product.category} shoes Kenya, ${product.category} shoes Nairobi, buy ${product.name} Kenya, ${product.brand} shoes Nairobi`;
+  const productImage = product.images[0]?.url || "/whitelight_logo.jpeg";
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
 
@@ -117,6 +137,16 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={seoTitle}
+        description={seoDescription}
+        keywords={seoKeywords}
+        canonical={`https://whitelightstore.co.ke/product/${product.slug}`}
+        ogImage={productImage}
+        ogType="product"
+        product={product}
+        category={product.category}
+      />
       <Header />
       
       <main className="flex-1">

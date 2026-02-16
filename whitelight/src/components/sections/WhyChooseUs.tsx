@@ -1,4 +1,5 @@
 import { Check } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 interface WhyChooseUsProps {
   imagePath?: string;
@@ -71,10 +72,10 @@ export function WhyChooseUs({ imagePath = "/placeholder-image.jpg" }: WhyChooseU
           {/* Image - Right Side */}
           <div className="relative">
             <div className="w-full aspect-[4/3] overflow-hidden rounded-xl">
-              <img
+              <OptimizedImage
                 src={imagePath}
                 alt="Why Choose WhiteLight Store"
-                className="w-full h-full object-cover"
+                className="w-full h-full"
               />
             </div>
             {/* Decorative elements */}

@@ -18,6 +18,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Loader2, Save, Upload, X, Plus, Minus } from "lucide-react";
 import { toast } from "sonner";
 
+const MAX_PRODUCT_IMAGES = 10;
+
 const CATEGORIES: { value: ProductCategory; label: string }[] = [
   { value: "running", label: "Running" },
   { value: "trail", label: "Trail" },
@@ -124,16 +126,26 @@ const AdminProductForm = () => {
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (files.length > 5) {
-      toast.error("Maximum 5 images allowed");
+    const currentTotal = existingImages.length - imagesToDelete.length + selectedFiles.length;
+    const spaceLeft = MAX_PRODUCT_IMAGES - currentTotal;
+    if (spaceLeft <= 0) {
+      toast.error(`Maximum ${MAX_PRODUCT_IMAGES} images total. Remove some to add more.`);
+      e.target.value = "";
       return;
     }
+    const toAdd = files.slice(0, spaceLeft);
+    if (files.length > spaceLeft) {
+      toast.info(`Added ${toAdd.length} of ${files.length} images (max ${MAX_PRODUCT_IMAGES} total).`);
+    }
 
-    setSelectedFiles(files);
-    
-    // Create preview URLs
-    const urls = files.map(file => URL.createObjectURL(file));
-    setPreviewUrls(urls);
+    const newFiles = [...selectedFiles, ...toAdd];
+    setSelectedFiles(newFiles);
+    const urls = newFiles.map(file => URL.createObjectURL(file));
+    setPreviewUrls(prev => {
+      prev.forEach(u => URL.revokeObjectURL(u));
+      return urls;
+    });
+    e.target.value = "";
   };
 
   const removeExistingImage = (imageId: string) => {
@@ -155,6 +167,9 @@ const AdminProductForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
+    if (selectedFiles.length > 0) {
+      toast.loading(`Uploading product and ${selectedFiles.length} image${selectedFiles.length === 1 ? "" : "s"}...`, { id: "product-save" });
+    }
 
     const productData: Omit<Product, "id" | "createdAt"> = {
       name: formData.name,
@@ -186,15 +201,16 @@ const AdminProductForm = () => {
     try {
       if (isEditing) {
         await productService.update(id, productData, selectedFiles, imagesToDelete);
-        toast.success("Product updated successfully");
+        toast.success("Product updated successfully", { id: "product-save" });
       } else {
         await productService.create(productData, selectedFiles);
-        toast.success("Product created successfully");
+        toast.success("Product created successfully", { id: "product-save" });
       }
       navigate("/admin/products");
     } catch (error) {
       console.error('Save error:', error);
-      toast.error("Failed to save product");
+      const message = error instanceof Error ? error.message : 'Failed to save product';
+      toast.error(message, { id: "product-save" });
     }
 
     setIsSaving(false);
@@ -335,7 +351,12 @@ const AdminProductForm = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle>Media</CardTitle>
+              <CardTitle className="flex items-center justify-between">
+                Media
+                <span className="text-sm font-normal text-muted-foreground">
+                  {(existingImages.length - imagesToDelete.length) + selectedFiles.length} / {MAX_PRODUCT_IMAGES} images
+                </span>
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
@@ -349,8 +370,8 @@ const AdminProductForm = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="imageFiles">Upload Images (Max 5)</Label>
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                <Label htmlFor="imageFiles">Upload Images</Label>
+                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary/50 hover:bg-muted/30 transition-colors">
                   <input
                     id="imageFiles"
                     type="file"
@@ -365,10 +386,10 @@ const AdminProductForm = () => {
                   >
                     <Upload className="h-8 w-8 text-gray-400" />
                     <span className="text-sm text-gray-600">
-                      Click to upload images or drag and drop
+                      Click to upload or drag and drop (max {MAX_PRODUCT_IMAGES} images)
                     </span>
                     <span className="text-xs text-gray-400">
-                      PNG, JPG, JPEG up to 10MB each
+                      PNG, JPG, JPEG up to 10MB each · Upload is seamless on save
                     </span>
                   </label>
                 </div>
