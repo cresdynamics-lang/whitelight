@@ -55,7 +55,7 @@ cd ../whitelight
 if [ -f "package.json" ]; then
   echo "📦 Updating frontend..."
   npm install
-  export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1024}"
+  export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}"
   npm run build
 fi
 
@@ -81,7 +81,7 @@ else
   if [ -f "package.json" ]; then
     echo "📦 Updating frontend..."
     npm install
-    export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=1024}"
+    export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=2048}"
     npm run build
   fi
   

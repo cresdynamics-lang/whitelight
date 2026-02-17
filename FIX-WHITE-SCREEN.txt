@@ -1,0 +1,14 @@
+RUN THESE COMMANDS ON YOUR SERVER TO FIX WHITE SCREEN:
+
+cd /home/cresdynamics/whitelight
+git pull
+
+cd whitelight
+rm -rf dist node_modules/.vite
+export NODE_OPTIONS="--max-old-space-size=2048"
+npm run build
+
+sudo systemctl reload nginx
+pm2 restart all
+
+echo "✅ Fixed - check https://whitelightstore.co.ke"

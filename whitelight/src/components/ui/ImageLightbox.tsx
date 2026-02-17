@@ -55,15 +55,15 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
       if (e.key === 'Escape') {
         onClose();
       } else if (e.key === 'ArrowLeft') {
-        goToPrevious();
+        setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
       } else if (e.key === 'ArrowRight') {
-        goToNext();
+        setCurrentIndex((prev) => (prev + 1) % images.length);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentIndex, images.length, onClose]);
+  }, [isOpen, images.length, onClose]);
 
   // Prevent body scroll when lightbox is open
   useEffect(() => {

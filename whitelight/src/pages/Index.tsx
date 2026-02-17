@@ -14,11 +14,11 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { seoConfig } from "@/config/seo";
 
 const Index = () => {
-  const { data: bestSellers = [], isLoading: loadingBestSellers } = useBestSellers(12);
-  const { data: newArrivals = [], isLoading: loadingNewArrivals } = useNewArrivals(12);
-  const { data: runningShoes = [] } = useProductsByCategory("running");
-  const { data: basketballShoes = [] } = useProductsByCategory("basketball");
-  const { data: gymShoes = [] } = useProductsByCategory("gym");
+  const { data: bestSellers = [], isLoading: loadingBestSellers, error: bestSellersError } = useBestSellers(12);
+  const { data: newArrivals = [], isLoading: loadingNewArrivals, error: newArrivalsError } = useNewArrivals(12);
+  const { data: runningShoes = [], error: runningError } = useProductsByCategory("running");
+  const { data: basketballShoes = [], error: basketballError } = useProductsByCategory("basketball");
+  const { data: gymShoes = [], error: gymError } = useProductsByCategory("gym");
 
   return (
     <div className="min-h-screen flex flex-col">

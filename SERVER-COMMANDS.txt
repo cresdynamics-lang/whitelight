@@ -1,0 +1,20 @@
+COPY AND PASTE THESE COMMANDS INTO YOUR SERVER SSH TERMINAL:
+
+# Navigate to project
+cd /home/cresdynamics/whitelight
+
+# Pull latest code
+git pull origin main
+
+# Rebuild frontend
+cd whitelight
+rm -rf dist node_modules/.vite
+export NODE_OPTIONS="--max-old-space-size=2048"
+npm run build
+
+# Restart services
+sudo systemctl reload nginx
+pm2 restart all
+
+# Verify
+curl -I https://whitelightstore.co.ke
