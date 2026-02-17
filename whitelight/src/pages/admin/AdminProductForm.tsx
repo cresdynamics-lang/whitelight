@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Loader2, Save, Upload, X, Plus, Minus } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 
 const MAX_PRODUCT_IMAGES = 10;
@@ -56,7 +56,11 @@ const AdminProductForm = () => {
     isOnOffer: false,
   });
 
-  const [variants, setVariants] = useState<Array<{size: number | string, inStock: boolean, stockQuantity: number}>>([]);
+  // Available shoe sizes (36-45)
+  const AVAILABLE_SIZES = [36, 37, 38, 39, 40, 41, 42, 43, 44, 45];
+  
+  // Track which sizes are selected (checked = available/in stock)
+  const [selectedSizes, setSelectedSizes] = useState<Set<number>>(new Set());
 
   // Clothing sizes for accessories with correct mapping
   const CLOTHING_SIZES = [
@@ -99,18 +103,17 @@ const AdminProductForm = () => {
           // Load existing images
           setExistingImages(product.images.map(img => ({ id: img.id, url: img.url })));
           
-          // Load existing variants from database
+          // Load existing variants from database and populate selected sizes
           if (product.variants && product.variants.length > 0) {
-            const mappedVariants = product.variants.map(v => {
-              console.log('🔄 Mapping variant:', v);
-              return {
-                size: v.size,
-                inStock: v.inStock,
-                stockQuantity: v.stockQuantity || 0
-              };
-            });
-            console.log('✅ Mapped variants:', mappedVariants);
-            setVariants(mappedVariants);
+            // For non-accessory products, check sizes that are in stock
+            const productCategory = product.category || product.categories?.[0];
+            if (productCategory !== 'accessories') {
+              const inStockSizes = product.variants
+                .filter(v => v.inStock && typeof v.size === 'number' && AVAILABLE_SIZES.includes(v.size))
+                .map(v => v.size as number);
+              setSelectedSizes(new Set(inStockSizes));
+            }
+            // For accessories, we'll handle separately if needed in the future
           }
         }
         setIsLoading(false);
@@ -118,13 +121,14 @@ const AdminProductForm = () => {
     }
   }, [id, isEditing]);
 
-  const addVariant = () => {
-    const defaultSize = isAccessoryCategory ? 6 : 40; // 6 maps to 'L' for accessories
-    setVariants([...variants, { size: defaultSize, inStock: true, stockQuantity: 10 }]);
-  };
-
-  const removeVariant = (index: number) => {
-    setVariants(variants.filter((_, i) => i !== index));
+  const toggleSize = (size: number) => {
+    const newSelectedSizes = new Set(selectedSizes);
+    if (newSelectedSizes.has(size)) {
+      newSelectedSizes.delete(size);
+    } else {
+      newSelectedSizes.add(size);
+    }
+    setSelectedSizes(newSelectedSizes);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,6 +185,13 @@ const AdminProductForm = () => {
       return;
     }
 
+    // Validate at least one size is selected (for non-accessory products)
+    if (!isAccessoryCategory && selectedSizes.size === 0) {
+      toast.error("Please select at least one size");
+      setIsSaving(false);
+      return;
+    }
+
     const productData: Omit<Product, "id" | "createdAt"> = {
       name: formData.name,
       slug: formData.name.toLowerCase().replace(/\s+/g, "-"),
@@ -197,12 +208,14 @@ const AdminProductForm = () => {
           alt: formData.name,
         },
       ] : [],
-      variants: variants.map((v, index) => ({
-        id: `v-${v.size}`,
-        size: v.size,
-        inStock: v.inStock,
-        stockQuantity: v.stockQuantity
-      })),
+      variants: isAccessoryCategory 
+        ? [] // Accessories will use old system if needed
+        : Array.from(selectedSizes).map(size => ({
+            id: `v-${size}`,
+            size: size,
+            inStock: true,
+            stockQuantity: 10 // Default stock quantity for checked sizes
+          })),
       tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
       isNew: formData.isNew,
       isBestSeller: formData.isBestSeller,
@@ -502,114 +515,47 @@ const AdminProductForm = () => {
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center justify-between text-sm">
-                Size & Stock Management
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={addVariant}
-                  className="h-7 px-2 text-xs"
-                >
-                  <Plus className="h-3 w-3 mr-1" />
-                  Add
-                </Button>
+              <CardTitle className="text-sm">
+                Available Sizes
               </CardTitle>
+              <p className="text-xs text-muted-foreground mt-1">
+                Check sizes that are in stock
+              </p>
             </CardHeader>
             <CardContent className="space-y-3 p-3">
-              {variants.length === 0 ? (
+              {isAccessoryCategory ? (
                 <div className="text-center py-4 text-muted-foreground text-xs">
-                  <p>No sizes added yet. Click "Add" to start.</p>
+                  <p>Accessories use different sizing. Coming soon.</p>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  {variants.map((variant, index) => (
-                    <div key={index} className="flex flex-col gap-2 p-2 border rounded text-xs">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-1">
-                          <Label className="text-xs w-8">Size:</Label>
-                          {isAccessoryCategory ? (
-                            <Select
-                              value={String(variant.size)}
-                              onValueChange={(value) => {
-                                const newVariants = [...variants];
-                                newVariants[index].size = parseInt(value);
-                                setVariants(newVariants);
-                              }}
-                            >
-                              <SelectTrigger className="w-16 h-6 text-xs">
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {CLOTHING_SIZES.map((size) => (
-                                  <SelectItem key={size.value} value={String(size.value)}>
-                                    {size.label}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <Input
-                              type="number"
-                              min="35"
-                              max="50"
-                              value={variant.size}
-                              onChange={(e) => {
-                                const newVariants = [...variants];
-                                newVariants[index].size = parseInt(e.target.value) || 40;
-                                setVariants(newVariants);
-                              }}
-                              className="w-16 h-6 text-xs px-2"
-                            />
-                          )}
-                        </div>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          size="sm"
-                          onClick={() => removeVariant(index)}
-                          className="h-6 w-6 p-0"
+                <div className="grid grid-cols-5 gap-2">
+                  {AVAILABLE_SIZES.map((size) => {
+                    const isChecked = selectedSizes.has(size);
+                    return (
+                      <div
+                        key={size}
+                        className="flex items-center space-x-2 p-2 border rounded hover:bg-muted/50 transition-colors"
+                      >
+                        <Checkbox
+                          id={`size-${size}`}
+                          checked={isChecked}
+                          onCheckedChange={() => toggleSize(size)}
+                        />
+                        <label
+                          htmlFor={`size-${size}`}
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex-1 text-center"
                         >
-                          <Minus className="h-3 w-3" />
-                        </Button>
+                          {size}
+                        </label>
                       </div>
-                      <div className="flex items-center gap-1">
-                        <Label className="text-xs w-8">Stock:</Label>
-                        <Input
-                          type="number"
-                          min="0"
-                          value={variant.stockQuantity}
-                          onChange={(e) => {
-                            const newVariants = [...variants];
-                            newVariants[index].stockQuantity = parseInt(e.target.value) || 0;
-                            newVariants[index].inStock = newVariants[index].stockQuantity > 0;
-                            setVariants(newVariants);
-                          }}
-                          className="w-16 h-6 text-xs px-2"
-                        />
-                      </div>
-                      <div className="flex items-center gap-1">
-                        <Switch
-                          checked={variant.inStock}
-                          onCheckedChange={(checked) => {
-                            const newVariants = [...variants];
-                            newVariants[index].inStock = checked;
-                            if (!checked) {
-                              newVariants[index].stockQuantity = 0;
-                            } else if (newVariants[index].stockQuantity === 0) {
-                              newVariants[index].stockQuantity = 10;
-                            }
-                            setVariants(newVariants);
-                          }}
-                          className="scale-75"
-                        />
-                        <Label className="text-xs">
-                          {variant.inStock ? 'Available' : 'Out of Stock'}
-                        </Label>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
+              )}
+              {!isAccessoryCategory && selectedSizes.size === 0 && (
+                <p className="text-xs text-destructive text-center mt-2">
+                  Please select at least one size
+                </p>
               )}
             </CardContent>
           </Card>
