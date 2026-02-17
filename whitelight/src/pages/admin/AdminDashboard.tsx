@@ -20,13 +20,19 @@ const AdminDashboard = () => {
     const fetchStats = async () => {
       // Check API health status
       try {
-        const healthResponse = await fetch(`${apiService.baseURL.replace('/api', '')}/api/health`);
+        const healthResponse = await fetch(`${apiService.baseURL}/health`);
         if (healthResponse.ok) {
-          setApiStatus("connected");
+          const data = await healthResponse.json();
+          if (data.status === 'ok') {
+            setApiStatus("connected");
+          } else {
+            setApiStatus("disconnected");
+          }
         } else {
           setApiStatus("disconnected");
         }
       } catch (error) {
+        console.error('API health check failed:', error);
         setApiStatus("disconnected");
       }
 
