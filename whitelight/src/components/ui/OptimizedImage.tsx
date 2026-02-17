@@ -41,6 +41,9 @@ export function OptimizedImage({
 
   const webpSrc = getWebpPath(src);
   const isCdn = src.includes('digitaloceanspaces.com');
+  
+  // Ultra-lightweight placeholder (1x1 transparent pixel) - defined early to avoid hoisting issues
+  const placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"%3E%3C/svg%3E';
 
   // Ultra-optimized CDN URL with aggressive compression for fastest loading
   const getOptimizedUrl = (width: number, quality: number = 60) => {
@@ -58,7 +61,7 @@ export function OptimizedImage({
       // Ultra-low quality (20) tiny image for instant blur-up placeholder
       return `${src}?w=40&q=20&f=webp&blur=10`;
     }
-    return placeholder;
+    return placeholder; // Use placeholder for non-CDN images
   };
 
   // Preload critical images
@@ -160,9 +163,6 @@ export function OptimizedImage({
       </div>
     );
   }
-
-  // Ultra-lightweight placeholder (1x1 transparent pixel)
-  const placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"%3E%3C/svg%3E';
 
   // Load blur-up placeholder immediately for CDN images
   useEffect(() => {
