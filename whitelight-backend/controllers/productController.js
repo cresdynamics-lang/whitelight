@@ -15,7 +15,7 @@ class ProductController {
 
       const {
         name, brand, category, categories, price, originalPrice,
-        description, tags, isNew, isBestSeller, isOnOffer, variants
+        description, tags, isNew, isBestSeller, isOnOffer, variants, imageUrls
       } = req.body;
 
       // Parse categories from JSON string if needed
