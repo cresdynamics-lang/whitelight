@@ -1,0 +1,73 @@
+================================================================================
+VERIFICATION COMMANDS AFTER DROPLET RESTART
+Run these on the DigitalOcean server console
+================================================================================
+
+# 1. Check if backend is running
+pm2 list
+
+# If backend is NOT running, start it:
+cd /home/brian/whitelight/whitelight-backend
+pm2 start server.js --name whitelight-backend
+pm2 save
+pm2 startup  # (run this once to auto-start on reboot)
+
+# 2. Check backend logs
+pm2 logs whitelight-backend --lines 20
+
+# Look for:
+# ✅ "Database connected successfully"
+# ✅ "WhiteLight API Server running on http://localhost:5000"
+# ❌ "Database connection failed" = MySQL not running
+
+# 3. Test database connection
+cd /home/brian/whitelight/whitelight-backend
+node -e "require('dotenv').config(); const {pool} = require('./config/database'); pool.getConnection().then(c => {console.log('✅ DB OK'); c.release(); process.exit(0);}).catch(e => {console.error('❌ DB:', e.message); process.exit(1);});"
+
+# 4. Test API endpoint
+curl http://localhost:5000/api/health
+
+# Expected: {"status":"ok","timestamp":"...","uptime":...}
+
+# 5. Check MySQL is running
+sudo systemctl status mysql
+
+# If MySQL is stopped, start it:
+sudo systemctl start mysql
+sudo systemctl enable mysql  # Auto-start on reboot
+
+# 6. Verify .env files exist
+ls -la /home/brian/whitelight/whitelight-backend/.env
+ls -la /home/brian/whitelight/whitelight/.env
+
+# 7. Check if latest code is deployed
+cd /home/brian/whitelight
+git log --oneline -3
+
+# 8. If code needs updating, pull latest:
+git pull origin main
+cd whitelight-backend
+npm install --production
+pm2 restart all
+
+================================================================================
+QUICK FIX IF BACKEND NOT RUNNING
+================================================================================
+
+cd /home/brian/whitelight/whitelight-backend
+pm2 start server.js --name whitelight-backend
+pm2 save
+pm2 startup  # Save PM2 config for auto-start
+
+================================================================================
+QUICK FIX IF DATABASE NOT CONNECTING
+================================================================================
+
+# Start MySQL
+sudo systemctl start mysql
+sudo systemctl enable mysql
+
+# Verify MySQL is listening
+sudo netstat -tlnp | grep 3306
+
+================================================================================

@@ -20,6 +20,7 @@ app.use(helmet()); // Security headers
 const allowedOrigins = [
   process.env.FRONTEND_URL,
   'https://whitelightstore.co.ke',
+  'https://whitelight.co.ke',
   'http://localhost:8080',
   'http://localhost:5173',
   'http://127.0.0.1:8080',

@@ -1,0 +1,49 @@
+================================================================================
+DEPLOYMENT COMMANDS FOR DIGITALOCEAN SERVER CONSOLE
+Copy and paste these commands into the droplet console
+================================================================================
+
+# STEP 1: Backup .env files
+mkdir -p ~/backups/env_$(date +%Y%m%d_%H%M%S)
+BACKUP_DIR=~/backups/env_$(date +%Y%m%d_%H%M%S)
+cp /home/brian/whitelight/whitelight-backend/.env $BACKUP_DIR/backend.env
+cp /home/brian/whitelight/whitelight/.env $BACKUP_DIR/frontend.env
+echo "Backup saved to: $BACKUP_DIR"
+
+# STEP 2: Pull latest code
+cd /home/brian/whitelight
+git config --global --add safe.directory /home/brian/whitelight
+git pull origin main
+
+# STEP 3: Update backend dependencies
+cd /home/brian/whitelight/whitelight-backend
+npm install --production
+
+# STEP 4: Restart backend
+pm2 restart all
+
+# STEP 5: Verify
+pm2 list
+pm2 logs --lines 10
+
+================================================================================
+VERIFICATION CHECKLIST
+================================================================================
+
+✅ Backend running: pm2 list shows whitelight-backend
+✅ Database connected: Check pm2 logs for "Database connected successfully"
+✅ CORS updated: Server allows localhost:8080 (check server.js)
+✅ Image upload: Max 10 images (check routes/products.js)
+✅ SEO: Structured data in SEOHead.tsx
+✅ Admin UX: Image count display, seamless upload
+
+================================================================================
+TEST IMAGE UPLOAD (Optional)
+================================================================================
+
+cd /home/brian/whitelight/whitelight-backend
+API_BASE_URL=http://localhost:5000/api node scripts/test-image-upload.js
+
+Expected: ✅ Image upload test passed
+
+================================================================================
