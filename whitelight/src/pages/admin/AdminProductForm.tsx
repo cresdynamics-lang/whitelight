@@ -370,7 +370,7 @@ const AdminProductForm = () => {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="imageFiles">Upload Images</Label>
+                <Label htmlFor="imageFiles">Upload Images (max 10)</Label>
                 <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-primary/50 hover:bg-muted/30 transition-colors">
                   <input
                     id="imageFiles"
@@ -386,7 +386,7 @@ const AdminProductForm = () => {
                   >
                     <Upload className="h-8 w-8 text-gray-400" />
                     <span className="text-sm text-gray-600">
-                      Click to upload or drag and drop (max {MAX_PRODUCT_IMAGES} images)
+                      Click to upload or drag and drop · Max 10 images
                     </span>
                     <span className="text-xs text-gray-400">
                       PNG, JPG, JPEG up to 10MB each · Upload is seamless on save

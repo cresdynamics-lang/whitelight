@@ -18,9 +18,24 @@ class ProductController {
         description, tags, isNew, isBestSeller, isOnOffer, variants
       } = req.body;
 
-      // Generate slug and ID
-      const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+      // Validate required fields
+      if (!name || !brand || !category || price === undefined || price === null || price === '') {
+        try { await connection.rollback(); } catch (e) { /* ignore */ }
+        connection.release();
+        return res.status(400).json({
+          success: false,
+          message: 'Missing required fields: name, brand, category, and price are required',
+          error: 'VALIDATION_ERROR'
+        });
+      }
+
       const productId = Date.now().toString();
+      let slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'product';
+      // Ensure slug is unique (DB has UNIQUE on slug)
+      const [existing] = await connection.execute('SELECT id FROM products WHERE slug = ?', [slug]);
+      if (existing && existing.length > 0) {
+        slug = `${slug}-${productId}`;
+      }
 
       // Parse variants from JSON string if needed
       let parsedVariants = variants;

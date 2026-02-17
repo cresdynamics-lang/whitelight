@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # Verify everything after droplet restart
 # Run on server console
+# PROJECT_USER=cresdynamics (or brian, etc.)
+
+PROJECT_USER="${PROJECT_USER:-cresdynamics}"
+PROJECT_DIR="/home/$PROJECT_USER/whitelight"
 
 echo "🔍 Verifying system after restart..."
 echo ""
@@ -19,7 +23,7 @@ fi
 
 echo ""
 echo "2️⃣ Database Connection:"
-cd /home/brian/whitelight/whitelight-backend 2>/dev/null || cd /root/whitelight/whitelight-backend
+cd "$PROJECT_DIR/whitelight-backend" 2>/dev/null || cd /root/whitelight/whitelight-backend
 node -e "
 require('dotenv').config();
 const { pool } = require('./config/database');
@@ -41,12 +45,12 @@ curl -s http://localhost:5000/api/health | head -5 || echo "❌ API not respondi
 
 echo ""
 echo "4️⃣ .env Files:"
-[ -f "/home/brian/whitelight/whitelight-backend/.env" ] && echo "✅ Backend .env exists" || echo "❌ Backend .env missing"
-[ -f "/home/brian/whitelight/whitelight/.env" ] && echo "✅ Frontend .env exists" || echo "❌ Frontend .env missing"
+[ -f "$PROJECT_DIR/whitelight-backend/.env" ] && echo "✅ Backend .env exists" || echo "❌ Backend .env missing"
+[ -f "$PROJECT_DIR/whitelight/.env" ] && echo "✅ Frontend .env exists" || echo "❌ Frontend .env missing"
 
 echo ""
 echo "5️⃣ Recent Code Changes:"
-cd /home/brian/whitelight 2>/dev/null || cd /root/whitelight
+cd "$PROJECT_DIR" 2>/dev/null || cd /root/whitelight
 git log --oneline -5 2>/dev/null || echo "⚠️  Could not check git log"
 
 echo ""

@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 # Backup .env files from server
 # Run on server console
+# Change PROJECT_USER if different (brian, cresdynamics, etc.)
 
-BACKUP_DIR="/home/brian/backups/env_$(date +%Y%m%d_%H%M%S)"
-PROJECT_DIR="/home/brian/whitelight"
+PROJECT_USER="${PROJECT_USER:-cresdynamics}"
+PROJECT_DIR="/home/$PROJECT_USER/whitelight"
+BACKUP_DIR="/home/$PROJECT_USER/backups/env_$(date +%Y%m%d_%H%M%S)"
 
 mkdir -p "$BACKUP_DIR"
 

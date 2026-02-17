@@ -42,7 +42,8 @@ async function login() {
 
 async function createProductWithImage(token) {
   const form = new FormData();
-  form.append('name', 'Test Product Image Upload');
+  const uniqueName = `Test Product Image Upload ${Date.now()}`;
+  form.append('name', uniqueName);
   form.append('brand', 'TestBrand');
   form.append('category', 'running');
   form.append('price', '9999');

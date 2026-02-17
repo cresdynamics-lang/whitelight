@@ -4,9 +4,11 @@
 
 set -e
 
-PROJECT_DIR="/home/brian/whitelight"
-BACKUP_DIR="/home/brian/backups/$(date +%Y%m%d_%H%M%S)"
-USER="brian"
+# Server user (change if different: brian, cresdynamics, etc.)
+PROJECT_USER="${PROJECT_USER:-cresdynamics}"
+PROJECT_DIR="/home/$PROJECT_USER/whitelight"
+BACKUP_DIR="/home/$PROJECT_USER/backups/$(date +%Y%m%d_%H%M%S)"
+USER="$PROJECT_USER"
 
 echo "🚀 Starting deployment..."
 
@@ -28,7 +30,7 @@ fi
 if [ "$(whoami)" = "root" ]; then
   echo "⚠️  Running as root, switching to $USER..."
   su - "$USER" << 'EOF'
-cd /home/brian/whitelight || exit 1
+cd "$PROJECT_DIR" || exit 1
 
 # Pull latest code
 echo "📥 Pulling latest code..."
@@ -59,7 +61,7 @@ fi
 echo "✅ Deployment complete!"
 EOF
 else
-  # Running as brian user
+  # Running as project user
   cd "$PROJECT_DIR" || exit 1
   
   echo "📥 Pulling latest code..."

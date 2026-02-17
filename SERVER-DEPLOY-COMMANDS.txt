@@ -3,20 +3,24 @@ DEPLOYMENT COMMANDS FOR DIGITALOCEAN SERVER CONSOLE
 Copy and paste these commands into the droplet console
 ================================================================================
 
+# If project user is cresdynamics (default); else: export PROJECT_USER=brian
+PROJECT_USER="${PROJECT_USER:-cresdynamics}"
+PROJECT_DIR="/home/$PROJECT_USER/whitelight"
+
 # STEP 1: Backup .env files
 mkdir -p ~/backups/env_$(date +%Y%m%d_%H%M%S)
 BACKUP_DIR=~/backups/env_$(date +%Y%m%d_%H%M%S)
-cp /home/brian/whitelight/whitelight-backend/.env $BACKUP_DIR/backend.env
-cp /home/brian/whitelight/whitelight/.env $BACKUP_DIR/frontend.env
+cp $PROJECT_DIR/whitelight-backend/.env $BACKUP_DIR/backend.env
+cp $PROJECT_DIR/whitelight/.env $BACKUP_DIR/frontend.env
 echo "Backup saved to: $BACKUP_DIR"
 
 # STEP 2: Pull latest code
-cd /home/brian/whitelight
-git config --global --add safe.directory /home/brian/whitelight
+cd $PROJECT_DIR
+git config --global --add safe.directory $PROJECT_DIR
 git pull origin main
 
 # STEP 3: Update backend dependencies
-cd /home/brian/whitelight/whitelight-backend
+cd $PROJECT_DIR/whitelight-backend
 npm install --production
 
 # STEP 4: Restart backend
