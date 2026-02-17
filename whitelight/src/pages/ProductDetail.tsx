@@ -397,6 +397,16 @@ const ProductDetail = () => {
       </main>
 
       <Footer />
+      
+      {/* Image Lightbox */}
+      {product.images.length > 0 && (
+        <ImageLightbox
+          images={product.images.map(img => ({ url: img.url, alt: img.alt }))}
+          initialIndex={selectedImageIndex}
+          isOpen={isLightboxOpen}
+          onClose={() => setIsLightboxOpen(false)}
+        />
+      )}
     </div>
   );
 };

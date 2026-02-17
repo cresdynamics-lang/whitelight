@@ -57,6 +57,33 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
     setCurrentIndex((prev) => (prev + 1) % images.length);
   };
 
+  // Preload next and previous images for smoother navigation
+  useEffect(() => {
+    if (!isOpen || images.length === 0) return;
+
+    const preloadImages = [];
+    const nextIndex = (currentIndex + 1) % images.length;
+    const prevIndex = (currentIndex - 1 + images.length) % images.length;
+
+    // Preload next image
+    if (images[nextIndex]) {
+      const nextImg = new Image();
+      nextImg.src = images[nextIndex].url;
+      preloadImages.push(nextImg);
+    }
+
+    // Preload previous image
+    if (images[prevIndex]) {
+      const prevImg = new Image();
+      prevImg.src = images[prevIndex].url;
+      preloadImages.push(prevImg);
+    }
+
+    return () => {
+      // Cleanup if needed
+    };
+  }, [isOpen, currentIndex, images]);
+
   if (!isOpen || images.length === 0) return null;
 
   const currentImage = images[currentIndex];
@@ -89,6 +116,7 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
             loading="eager"
             fetchPriority="high"
             objectFit="contain"
+            preload={true}
           />
         </div>
 

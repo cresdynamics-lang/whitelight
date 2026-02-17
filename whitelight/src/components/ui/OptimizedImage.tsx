@@ -41,13 +41,23 @@ export function OptimizedImage({
   const webpSrc = getWebpPath(src);
   const isCdn = src.includes('digitaloceanspaces.com');
 
-  // Ultra-optimized CDN URL with aggressive compression
-  const getOptimizedUrl = (width: number, quality: number = 75) => {
+  // Ultra-optimized CDN URL with aggressive compression for fastest loading
+  const getOptimizedUrl = (width: number, quality: number = 60) => {
     if (isCdn) {
       // Use CDN optimization parameters for fastest loading
-      return `${src}?w=${width}&q=${quality}&f=webp&auto=compress`;
+      // Lower quality (60) for faster loading, WebP format, auto compression
+      return `${src}?w=${width}&q=${quality}&f=webp&auto=compress&dpr=1`;
     }
     return src;
+  };
+
+  // Generate low-quality placeholder URL for blur-up effect
+  const getPlaceholderUrl = () => {
+    if (isCdn) {
+      // Ultra-low quality (20) tiny image for instant blur-up placeholder
+      return `${src}?w=40&q=20&f=webp&blur=10`;
+    }
+    return placeholder;
   };
 
   // Preload critical images
@@ -67,7 +77,7 @@ export function OptimizedImage({
     }
   }, [preload, src, webpSrc]);
 
-  // Intersection Observer for lazy loading optimization
+  // Intersection Observer for lazy loading optimization - start loading earlier
   useEffect(() => {
     if (loading === 'lazy' && imgRef.current) {
       const observer = new IntersectionObserver(
@@ -83,19 +93,21 @@ export function OptimizedImage({
             }
           });
         },
-        { rootMargin: '50px' } // Start loading 50px before image enters viewport
+        { rootMargin: '200px' } // Start loading 200px before image enters viewport for faster perceived loading
       );
       observer.observe(imgRef.current);
       return () => observer.disconnect();
     }
   }, [loading]);
 
+  // Optimized srcset with lower quality for faster loading
   const cdnSrcSet = isCdn
     ? [
-        `${getOptimizedUrl(300, 70)} 300w`,
-        `${getOptimizedUrl(600, 75)} 600w`,
-        `${getOptimizedUrl(800, 80)} 800w`,
-        `${getOptimizedUrl(1200, 85)} 1200w`
+        `${getOptimizedUrl(200, 55)} 200w`,
+        `${getOptimizedUrl(400, 60)} 400w`,
+        `${getOptimizedUrl(600, 65)} 600w`,
+        `${getOptimizedUrl(800, 70)} 800w`,
+        `${getOptimizedUrl(1200, 75)} 1200w`
       ].join(', ')
     : '';
 
@@ -113,6 +125,18 @@ export function OptimizedImage({
     }
   };
 
+  // Determine the actual src to use
+  const getActualSrc = () => {
+    if (loading === 'eager') {
+      return isCdn ? getOptimizedUrl(600, 65) : (webpSrc || src);
+    }
+    // For lazy loading, use placeholder initially, will be replaced by IntersectionObserver
+    if (!isLoaded) {
+      return getPlaceholderUrl();
+    }
+    return isCdn ? getOptimizedUrl(600, 65) : (webpSrc || src);
+  };
+
   const imgProps = {
     ref: imgRef,
     alt,
@@ -122,7 +146,10 @@ export function OptimizedImage({
     onLoad: handleLoad,
     onError: () => setHasError(true),
     ...(fetchPriority && { fetchPriority }),
-    ...(loading === 'lazy' && !isLoaded && { 'data-src': webpSrc || getOptimizedUrl(600, 75) }),
+    ...(loading === 'lazy' && !isLoaded && { 
+      'data-src': isCdn ? getOptimizedUrl(600, 65) : (webpSrc || src),
+      src: getPlaceholderUrl()
+    }),
   };
 
   if (hasError) {
@@ -135,21 +162,42 @@ export function OptimizedImage({
 
   // Ultra-lightweight placeholder (1x1 transparent pixel)
   const placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"%3E%3C/svg%3E';
+  const [placeholderSrc, setPlaceholderSrc] = useState<string>(getPlaceholderUrl());
+
+  // Load blur-up placeholder immediately
+  useEffect(() => {
+    if (isCdn && !isLoaded) {
+      const placeholderImg = new Image();
+      placeholderImg.src = getPlaceholderUrl();
+      placeholderImg.onload = () => {
+        setPlaceholderSrc(getPlaceholderUrl());
+      };
+    }
+  }, [src, isCdn, isLoaded]);
 
   return (
     <div 
       className={cn('relative overflow-hidden', className, onClick && 'cursor-pointer')}
       onClick={onClick}
     >
-      {/* Minimal placeholder - removed immediately on load */}
-      {!isLoaded && (
-        <div 
-          className="absolute inset-0 bg-gray-100"
+      {/* Blur-up placeholder - shows low-quality version instantly */}
+      {!isLoaded && isCdn && (
+        <img
+          src={placeholderSrc}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover blur-sm scale-110"
           style={{ 
-            backgroundImage: `url("${placeholder}")`,
-            backgroundSize: 'cover',
-            transition: 'opacity 0.1s'
+            filter: 'blur(10px)',
+            transition: 'opacity 0.3s',
+            opacity: isLoaded ? 0 : 1
           }}
+          aria-hidden 
+        />
+      )}
+      {/* Fallback placeholder for non-CDN images */}
+      {!isLoaded && !isCdn && (
+        <div 
+          className="absolute inset-0 bg-gray-100 animate-pulse"
           aria-hidden 
         />
       )}
@@ -174,14 +222,16 @@ export function OptimizedImage({
         </picture>
       ) : isCdn ? (
         <img
-          src={loading === 'eager' ? getOptimizedUrl(600, 80) : placeholder}
+          src={loading === 'eager' ? getOptimizedUrl(600, 65) : (isLoaded ? getOptimizedUrl(600, 65) : placeholderSrc)}
           srcSet={cdnSrcSet}
           sizes={sizes}
           {...imgProps}
           style={{ 
             ...imgProps.style,
             contentVisibility: 'auto',
-            containIntrinsicSize: '400px 400px'
+            containIntrinsicSize: '400px 400px',
+            position: 'relative',
+            zIndex: 1
           }}
         />
       ) : (
