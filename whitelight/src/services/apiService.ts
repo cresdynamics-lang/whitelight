@@ -244,6 +244,10 @@ class ApiService {
 
   // Upload images separately and get URLs
   async uploadImages(images: File[]): Promise<ApiResponse> {
+    if (!this.token) {
+      throw new Error('Authentication required. Please log in again.');
+    }
+
     const formData = new FormData();
     images.forEach((image) => {
       formData.append('images', image);
@@ -253,10 +257,16 @@ class ApiService {
     const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
     
     try {
-      const response = await fetch(`${API_BASE_URL}/products/images`, {
+      const url = `${API_BASE_URL}/products/images`;
+      console.log('Uploading images to:', url);
+      console.log('Token present:', !!this.token);
+      console.log('Number of images:', images.length);
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${this.token}`,
+          // Don't set Content-Type - browser will set it with boundary for FormData
         },
         body: formData,
         signal: controller.signal,
@@ -264,26 +274,42 @@ class ApiService {
 
       clearTimeout(timeoutId);
       
+      console.log('Upload response status:', response.status, response.statusText);
+      
       if (!response.ok) {
         let errorMessage = `Server error: ${response.status} ${response.statusText}`;
         try {
           const errorData = await response.json();
           errorMessage = errorData.error || errorData.message || errorMessage;
+          console.error('Upload error response:', errorData);
         } catch (e) {
           const text = await response.text();
           if (text) errorMessage = text.substring(0, 200);
+          console.error('Upload error text:', text);
         }
         throw new Error(errorMessage);
       }
 
       const data = await response.json();
+      console.log('Upload success:', data);
       return data;
     } catch (error) {
       clearTimeout(timeoutId);
+      console.error('Upload catch error:', error);
       if (error.name === 'AbortError') {
         throw new Error('Upload timeout - please try again');
       }
       if (error instanceof TypeError && (error.message.includes('fetch') || error.message.includes('Failed to fetch'))) {
+        const networkError = error.message || 'Unknown network error';
+        console.error('Network error details:', {
+          url: `${API_BASE_URL}/products/images`,
+          apiBaseUrl: API_BASE_URL,
+          error: networkError,
+          message: error.message,
+          name: error.name,
+          stack: error.stack,
+          tokenPresent: !!this.token
+        });
         throw new Error('Network error: Failed to upload images. Please check your connection and try again.');
       }
       const message = error instanceof Error ? error.message : 'Failed to upload images';

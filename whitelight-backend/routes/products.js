@@ -22,12 +22,12 @@ router.get('/categories', productController.getCategories);
 // GET /api/products/brands - Get product brands
 router.get('/brands', productController.getBrands);
 
-// GET /api/products/:id - Get specific product
-router.get('/:id', productController.getProduct);
-
-// Admin protected routes
+// Admin protected routes - MUST come before /:id route to avoid route conflicts
 // POST /api/products/images - Upload images separately (admin only)
 router.post('/images', authenticateToken, upload.array('images', 10), productController.uploadImages);
+
+// GET /api/products/:id - Get specific product (must come after specific routes)
+router.get('/:id', productController.getProduct);
 
 // POST /api/products - Create new product (admin only)
 router.post('/', authenticateToken, upload.array('images', 10), productController.createProduct);

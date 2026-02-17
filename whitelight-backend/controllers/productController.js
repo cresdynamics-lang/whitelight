@@ -765,7 +765,12 @@ class ProductController {
   // Upload images separately and return URLs
   async uploadImages(req, res) {
     try {
+      console.log('📸 Upload images endpoint called');
+      console.log('Request headers:', JSON.stringify(req.headers, null, 2));
+      console.log('Files received:', req.files ? req.files.length : 0);
+      
       if (!req.files || req.files.length === 0) {
+        console.error('❌ No files in request');
         return res.status(400).json({
           success: false,
           message: 'No images provided'
@@ -778,6 +783,7 @@ class ProductController {
       for (let i = 0; i < req.files.length; i++) {
         const file = req.files[i];
         try {
+          console.log(`📤 Uploading image ${i + 1}/${req.files.length}: ${file.originalname} (${file.size} bytes)`);
           const uploadResult = await spacesService.uploadFile(file, 'products');
           
           if (uploadResult.success) {
@@ -793,10 +799,19 @@ class ProductController {
           }
         } catch (error) {
           console.error(`❌ Error uploading image ${i + 1}/${req.files.length}:`, error.message);
+          console.error('Error stack:', error.stack);
         }
       }
 
       console.log(`📸 Upload complete: ${uploadedImages.length}/${req.files.length} images uploaded`);
+
+      if (uploadedImages.length === 0) {
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to upload any images',
+          error: 'All image uploads failed'
+        });
+      }
 
       res.json({
         success: true,
@@ -808,6 +823,7 @@ class ProductController {
 
     } catch (error) {
       console.error('Upload images error:', error);
+      console.error('Error stack:', error.stack);
       res.status(500).json({
         success: false,
         message: 'Failed to upload images',
