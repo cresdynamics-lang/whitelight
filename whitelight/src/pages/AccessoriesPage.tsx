@@ -2,6 +2,8 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { useProducts } from "@/hooks/useProducts";
 import { ProductGrid } from "@/components/sections/ProductGrid";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { seoConfig } from "@/config/seo";
 
 const AccessoriesPage = () => {
   const { data: products = [], isLoading, error } = useProducts();
@@ -9,6 +11,12 @@ const AccessoriesPage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
+        <SEOHead
+          title={seoConfig.pages.accessories.title}
+          description={seoConfig.pages.accessories.description}
+          keywords={seoConfig.pages.accessories.keywords}
+          canonical="https://whitelightstore.co.ke/accessories"
+        />
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -21,6 +29,12 @@ const AccessoriesPage = () => {
   if (error) {
     return (
       <div className="min-h-screen flex flex-col">
+        <SEOHead
+          title={seoConfig.pages.accessories.title}
+          description={seoConfig.pages.accessories.description}
+          keywords={seoConfig.pages.accessories.keywords}
+          canonical="https://whitelightstore.co.ke/accessories"
+        />
         <Header />
         <main className="flex-1">
           <div className="container py-12">
@@ -41,6 +55,13 @@ const AccessoriesPage = () => {
 
   return (
     <div className="min-h-screen flex flex-col">
+      <SEOHead
+        title={seoConfig.pages.accessories.title}
+        description={seoConfig.pages.accessories.description}
+        keywords={seoConfig.pages.accessories.keywords}
+        canonical="https://whitelightstore.co.ke/accessories"
+        ogImage="/couresel_images/running/running2.webp"
+      />
       <Header />
       
       <main className="flex-1">

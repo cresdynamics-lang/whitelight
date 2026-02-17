@@ -4,11 +4,11 @@ const BASE_URL = "https://whitelightstore.co.ke";
 
 /**
  * Generate SEO-optimized title for a product
- * Format: "Product Name - Brand Category Shoes | Buy in Nairobi Kenya"
+ * Format: "Product Name - Brand Category Shoes | Best Trusted Seller in Nairobi Kenya"
  */
 export function generateProductTitle(product: Product): string {
   const categoryName = getCategoryDisplayName(product.category);
-  return `${product.name} - ${product.brand} ${categoryName} | Buy in Nairobi Kenya`;
+  return `${product.name} - ${product.brand} ${categoryName} | Best Trusted Seller in Nairobi Kenya`;
 }
 
 /**
@@ -24,13 +24,16 @@ export function generateProductDescription(product: Product): string {
     ? `Now KES ${product.price.toLocaleString()} (was KES ${product.originalPrice.toLocaleString()})`
     : `KES ${product.price.toLocaleString()}`;
 
-  return `Buy ${product.name} by ${product.brand} in Nairobi, Kenya. ${product.description.substring(0, 100)}... Available sizes: ${availableSizes || "Check availability"}. ${priceText}. Same day delivery in Nairobi CBD. Visit Whitelight Store at Rware Building, Luthuli Avenue.`;
+  const categoryName = getCategoryDisplayName(product.category);
+  
+  return `Buy ${product.name} by ${product.brand} - Kenya's best trusted specialized seller for premium ${categoryName.toLowerCase()} in Nairobi. ${product.description.substring(0, 100)}... Available sizes: ${availableSizes || "Check availability"}. ${priceText}. Same day delivery in Nairobi CBD. Visit Whitelight Store - Kenya's trusted specialized footwear retailer at Rware Building, Luthuli Avenue, Shop 410.`;
 }
 
 /**
  * Generate SEO keywords for a product
  */
 export function generateProductKeywords(product: Product): string {
+  const categoryName = getCategoryDisplayName(product.category);
   const keywords = [
     product.name,
     `${product.brand} ${product.category} shoes`,
@@ -39,16 +42,23 @@ export function generateProductKeywords(product: Product): string {
     `buy ${product.name} Kenya`,
     `${product.brand} shoes Nairobi`,
     `best ${product.category} shoes Nairobi`,
+    `best trusted ${product.category} shoes seller Kenya`,
+    `specialized ${product.category} shoes Nairobi`,
+    `trusted ${product.category} shoes seller Nairobi`,
     `cheap ${product.category} shoes Kenya`,
     `affordable ${product.category} shoes Nairobi`,
+    "trusted shoe seller Nairobi",
+    "best shoe store Kenya",
+    "specialized footwear seller Nairobi",
+    "premium shoes Nairobi CBD",
   ];
 
   // Add brand-specific keywords
   if (product.brand.toLowerCase().includes("nike")) {
-    keywords.push("Nike shoes Kenya", "Nike Nairobi");
+    keywords.push("Nike shoes Kenya", "Nike Nairobi", "best Nike seller Kenya");
   }
   if (product.brand.toLowerCase().includes("adidas")) {
-    keywords.push("Adidas shoes Kenya", "Adidas Nairobi");
+    keywords.push("Adidas shoes Kenya", "Adidas Nairobi", "best Adidas seller Kenya");
   }
 
   return keywords.join(", ");
@@ -73,37 +83,4 @@ function getCategoryDisplayName(category: string): string {
     accessories: "Accessories",
   };
   return categoryMap[category] || category;
-}
-
-/**
- * Generate structured data for product schema
- */
-export function generateProductStructuredData(product: Product) {
-  return {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.name,
-    description: product.description,
-    brand: {
-      "@type": "Brand",
-      name: product.brand,
-    },
-    category: getCategoryDisplayName(product.category),
-    sku: product.id,
-    image: product.images.map((img) => img.url),
-    offers: {
-      "@type": "Offer",
-      url: `${BASE_URL}/product/${product.slug}`,
-      priceCurrency: "KES",
-      price: product.price.toString(),
-      availability: product.variants.some((v) => v.inStock)
-        ? "https://schema.org/InStock"
-        : "https://schema.org/OutOfStock",
-      itemCondition: "https://schema.org/NewCondition",
-      seller: {
-        "@type": "LocalBusiness",
-        name: "Whitelight Store Kenya",
-      },
-    },
-  };
 }

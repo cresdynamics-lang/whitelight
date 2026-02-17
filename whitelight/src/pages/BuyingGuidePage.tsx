@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { CheckCircle, Ruler, Activity, MapPin, Dumbbell, Zap } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { seoConfig } from "@/config/seo";
 
 const BuyingGuidePage = () => {
   const { data: products = [], isLoading } = useProducts();
@@ -22,6 +24,12 @@ const BuyingGuidePage = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col bg-gray-50">
+        <SEOHead
+          title={seoConfig.pages.buyingGuide.title}
+          description={seoConfig.pages.buyingGuide.description}
+          keywords={seoConfig.pages.buyingGuide.keywords}
+          canonical="https://whitelightstore.co.ke/buying-guide"
+        />
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
@@ -79,6 +87,13 @@ const BuyingGuidePage = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
+      <SEOHead
+        title={seoConfig.pages.buyingGuide.title}
+        description={seoConfig.pages.buyingGuide.description}
+        keywords={seoConfig.pages.buyingGuide.keywords}
+        canonical="https://whitelightstore.co.ke/buying-guide"
+        ogImage="/couresel_images/running/running2.webp"
+      />
       <Header />
       
       <main className="flex-1">

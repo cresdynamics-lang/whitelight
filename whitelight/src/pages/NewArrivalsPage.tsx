@@ -2,12 +2,21 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductGrid } from "@/components/sections/ProductGrid";
 import { useNewArrivals } from "@/hooks/useProducts";
+import { SEOHead } from "@/components/seo/SEOHead";
+import { seoConfig } from "@/config/seo";
 
 export default function NewArrivalsPage() {
   const { data: products = [], isLoading } = useNewArrivals();
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <SEOHead
+        title={seoConfig.pages.newArrivals.title}
+        description={seoConfig.pages.newArrivals.description}
+        keywords={seoConfig.pages.newArrivals.keywords}
+        canonical="https://whitelightstore.co.ke/new-arrivals"
+        ogImage="/couresel_images/running/running2.webp"
+      />
       <Header />
       
       <main className="flex-1">
