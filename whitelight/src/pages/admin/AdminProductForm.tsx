@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Loader2, Save, Upload, X, Plus, Minus } from "lucide-react";
 import { toast } from "sonner";
 
@@ -43,7 +44,8 @@ const AdminProductForm = () => {
   const [formData, setFormData] = useState({
     name: "",
     brand: "",
-    category: "running" as ProductCategory,
+    category: "running" as ProductCategory, // Primary category (for backward compatibility)
+    categories: [] as ProductCategory[], // Multiple categories
     price: "",
     originalPrice: "",
     description: "",
@@ -83,6 +85,7 @@ const AdminProductForm = () => {
             name: product.name,
             brand: product.brand,
             category: product.category,
+            categories: product.categories || [product.category], // Use categories array or fallback to single category
             price: String(product.price),
             originalPrice: product.originalPrice ? String(product.originalPrice) : "",
             description: product.description,
@@ -171,11 +174,19 @@ const AdminProductForm = () => {
       toast.loading(`Uploading product and ${selectedFiles.length} image${selectedFiles.length === 1 ? "" : "s"}...`, { id: "product-save" });
     }
 
+    // Validate at least one category is selected
+    if (formData.categories.length === 0) {
+      toast.error("Please select at least one category");
+      setIsSaving(false);
+      return;
+    }
+
     const productData: Omit<Product, "id" | "createdAt"> = {
       name: formData.name,
       slug: formData.name.toLowerCase().replace(/\s+/g, "-"),
       brand: formData.brand,
-      category: formData.category,
+      category: formData.categories[0] || formData.category, // Primary category (first selected)
+      categories: formData.categories, // Multiple categories
       price: Number(formData.price),
       originalPrice: formData.originalPrice ? Number(formData.originalPrice) : undefined,
       description: formData.description,
@@ -272,24 +283,48 @@ const AdminProductForm = () => {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category *</Label>
-                  <Select
-                    value={formData.category}
-                    onValueChange={(value) =>
-                      setFormData({ ...formData, category: value as ProductCategory })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CATEGORIES.map((cat) => (
-                        <SelectItem key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label>Categories * (Select one or more)</Label>
+                  <div className="space-y-3 p-4 border rounded-lg bg-muted/30">
+                    {CATEGORIES.map((cat) => {
+                      const isChecked = formData.categories.includes(cat.value);
+                      return (
+                        <div key={cat.value} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`category-${cat.value}`}
+                            checked={isChecked}
+                            onCheckedChange={(checked) => {
+                              if (checked) {
+                                // Add category
+                                const newCategories = [...formData.categories, cat.value];
+                                setFormData({ 
+                                  ...formData, 
+                                  categories: newCategories,
+                                  category: newCategories[0] || formData.category // Set primary category
+                                });
+                              } else {
+                                // Remove category
+                                const newCategories = formData.categories.filter(c => c !== cat.value);
+                                setFormData({ 
+                                  ...formData, 
+                                  categories: newCategories,
+                                  category: newCategories[0] || formData.category // Set primary category
+                                });
+                              }
+                            }}
+                          />
+                          <label
+                            htmlFor={`category-${cat.value}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer"
+                          >
+                            {cat.label}
+                          </label>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {formData.categories.length === 0 && (
+                    <p className="text-xs text-destructive">Please select at least one category</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="tags">Tags (comma separated)</Label>

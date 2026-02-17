@@ -19,15 +19,32 @@ class ProductController {
       } = req.body;
 
       // Validate required fields
-      if (!name || !brand || !category || price === undefined || price === null || price === '') {
+      if (!name || !brand || (!category && (!parsedCategories || parsedCategories.length === 0)) || price === undefined || price === null || price === '') {
         try { await connection.rollback(); } catch (e) { /* ignore */ }
         connection.release();
         return res.status(400).json({
           success: false,
-          message: 'Missing required fields: name, brand, category, and price are required',
+          message: 'Missing required fields: name, brand, at least one category, and price are required',
           error: 'VALIDATION_ERROR'
         });
       }
+      
+      // Ensure we have at least one category
+      if (parsedCategories.length === 0 && category) {
+        parsedCategories = [category];
+      }
+      if (parsedCategories.length === 0) {
+        try { await connection.rollback(); } catch (e) { /* ignore */ }
+        connection.release();
+        return res.status(400).json({
+          success: false,
+          message: 'At least one category is required',
+          error: 'VALIDATION_ERROR'
+        });
+      }
+      
+      // Use first category as primary category for backward compatibility
+      const primaryCategory = parsedCategories[0];
 
       const productId = Date.now().toString();
       let slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'product';
@@ -57,13 +74,13 @@ class ProductController {
         }
       }
 
-      // Insert product with all data
+      // Insert product with all data (use primary category)
       await connection.execute(
         `INSERT INTO products (id, slug, name, brand, category, price, original_price, 
          description, tags, is_new, is_best_seller, is_on_offer) 
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          productId, slug, name, brand, category, price, originalPrice || null,
+          productId, slug, name, brand, primaryCategory, price, originalPrice || null,
           description, JSON.stringify(parsedTags), isNew === 'true' || isNew === true, 
           isBestSeller === 'true' || isBestSeller === true, isOnOffer === 'true' || isOnOffer === true
         ]
@@ -84,6 +101,24 @@ class ProductController {
               'INSERT INTO product_images (id, product_id, url, alt_text) VALUES (?, ?, ?, ?)',
               [imageId, productId, uploadResult.url, name]
             );
+          }
+        }
+      }
+
+      // Insert categories into junction table
+      if (parsedCategories && parsedCategories.length > 0) {
+        for (const cat of parsedCategories) {
+          const categoryId = `${productId}-${cat}-${Date.now()}`;
+          try {
+            await connection.execute(
+              'INSERT INTO product_categories (id, product_id, category) VALUES (?, ?, ?)',
+              [categoryId, productId, cat]
+            );
+          } catch (e) {
+            // Ignore duplicate category errors
+            if (!e.message.includes('Duplicate entry')) {
+              console.error('Error inserting category:', e);
+            }
           }
         }
       }
@@ -147,13 +182,27 @@ class ProductController {
       await connection.beginTransaction();
       const { id } = req.params;
       const {
-        name, brand, category, price, originalPrice,
+        name, brand, category, categories, price, originalPrice,
         description, tags, isNew, isBestSeller, isOnOffer, variants
       } = req.body;
 
       console.log('✏️ Update product request - ID:', id);
       console.log('📝 Request body:', JSON.stringify(req.body, null, 2));
       console.log('📸 Files:', req.files ? req.files.length : 0);
+
+      // Parse categories array from JSON string if needed
+      let parsedCategories = categories;
+      if (typeof categories === 'string') {
+        try {
+          parsedCategories = JSON.parse(categories);
+        } catch (e) {
+          parsedCategories = category ? [category] : [];
+        }
+      }
+      // Fallback to single category if no categories array provided
+      if (!parsedCategories || parsedCategories.length === 0) {
+        parsedCategories = category ? [category] : [];
+      }
 
       // Parse variants and tags from FormData
       let parsedVariants = variants;
@@ -203,6 +252,30 @@ class ProductController {
           success: false,
           message: 'Product not found'
         });
+      }
+
+      // Update categories in junction table
+      if (parsedCategories && parsedCategories.length > 0) {
+        // Delete existing categories
+        await connection.execute(
+          'DELETE FROM product_categories WHERE product_id = ?',
+          [id]
+        );
+        // Insert new categories
+        for (const cat of parsedCategories) {
+          const categoryId = `${id}-${cat}-${Date.now()}`;
+          try {
+            await connection.execute(
+              'INSERT INTO product_categories (id, product_id, category) VALUES (?, ?, ?)',
+              [categoryId, id, cat]
+            );
+          } catch (e) {
+            // Ignore duplicate category errors
+            if (!e.message.includes('Duplicate entry')) {
+              console.error('Error inserting category:', e);
+            }
+          }
+        }
       }
 
       // Delete specified images
@@ -360,16 +433,28 @@ class ProductController {
       const limit = parseInt(req.query.limit) || 150;
       const offset = (page - 1) * limit;
       
-      const { category, brand, search, isNew, isBestSeller, minPrice, maxPrice } = req.query;
+      const { category, categories, brand, search, isNew, isBestSeller, minPrice, maxPrice } = req.query;
 
       let query = 'SELECT * FROM products';
       let countQuery = 'SELECT COUNT(*) as total FROM products';
       const conditions = [];
       const params = [];
 
+      // Support both single category and multiple categories
       if (category) {
-        conditions.push('category = ?');
-        params.push(category);
+        // Check both products.category and product_categories junction table
+        conditions.push(`(products.category = ? OR products.id IN (
+          SELECT product_id FROM product_categories WHERE category = ?
+        ))`);
+        params.push(category, category);
+      } else if (categories) {
+        // Handle multiple categories filter
+        const categoryList = Array.isArray(categories) ? categories : [categories];
+        const placeholders = categoryList.map(() => '?').join(',');
+        conditions.push(`products.id IN (
+          SELECT DISTINCT product_id FROM product_categories WHERE category IN (${placeholders})
+        )`);
+        params.push(...categoryList);
       }
 
       if (brand) {
@@ -422,7 +507,7 @@ class ProductController {
       const [products] = await pool.query(query, queryParams);
       const [countResult] = await pool.query(countQuery, params);
 
-      // Fetch images and variants for each product
+      // Fetch images, variants, and categories for each product
       const productsWithDetails = await Promise.all(
         products.map(async (product) => {
           const [images] = await pool.execute(
@@ -435,12 +520,22 @@ class ProductController {
             [product.id]
           );
 
+          // Fetch categories from junction table
+          const [categories] = await pool.execute(
+            'SELECT category FROM product_categories WHERE product_id = ?',
+            [product.id]
+          );
+          const categoryList = categories.length > 0 
+            ? categories.map(c => c.category)
+            : [product.category]; // Fallback to primary category
+
           return {
             id: product.id,
             slug: product.slug,
             name: product.name,
             brand: product.brand,
             category: product.category,
+            categories: categoryList,
             price: parseFloat(product.price),
             originalPrice: product.original_price ? parseFloat(product.original_price) : null,
             images: images,
@@ -506,7 +601,7 @@ class ProductController {
 
       const product = products[0];
       
-      // Fetch images and variants separately
+      // Fetch images, variants, and categories separately
       const [images] = await pool.execute(
         'SELECT id, url, alt_text as alt FROM product_images WHERE product_id = ?',
         [product.id]
@@ -517,12 +612,22 @@ class ProductController {
         [product.id]
       );
 
+      // Fetch categories from junction table
+      const [categories] = await pool.execute(
+        'SELECT category FROM product_categories WHERE product_id = ?',
+        [product.id]
+      );
+      const categoryList = categories.length > 0 
+        ? categories.map(c => c.category)
+        : [product.category]; // Fallback to primary category
+
       const formattedProduct = {
         id: product.id,
         slug: product.slug,
         name: product.name,
         brand: product.brand,
         category: product.category,
+        categories: categoryList,
         price: parseFloat(product.price),
         originalPrice: product.original_price ? parseFloat(product.original_price) : null,
         images: images,

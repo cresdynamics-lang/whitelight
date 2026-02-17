@@ -67,6 +67,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               className="h-full w-full transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
               fetchPriority="low"
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
             />
           ) : (
             <div className="h-full w-full bg-gray-200 animate-pulse" />

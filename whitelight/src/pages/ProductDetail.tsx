@@ -164,10 +164,14 @@ const ProductDetail = () => {
             {/* Images with multiple angles */}
             <div className="space-y-4">
               <div className="relative aspect-[4/3] lg:aspect-[4/3] overflow-hidden rounded-lg bg-secondary group">
-                <img
+                <OptimizedImage
                   src={product.images[selectedImageIndex]?.url || product.images[0]?.url}
                   alt={product.images[selectedImageIndex]?.alt || product.name}
-                  className="h-full w-full object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
+                  className="h-full w-full cursor-pointer hover:scale-105 transition-transform duration-300"
+                  loading="eager"
+                  fetchPriority="high"
+                  preload={selectedImageIndex === 0}
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   onClick={() => {
                     // Cycle through images on tap
                     setSelectedImageIndex((prev) => 
@@ -213,10 +217,12 @@ const ProductDetail = () => {
                           : "border-border hover:border-primary/50"
                       )}
                     >
-                      <img
+                      <OptimizedImage
                         src={image.url}
                         alt={image.alt || `${product.name} angle ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full"
+                        loading="lazy"
+                        sizes="80px"
                       />
                     </button>
                   ))}
@@ -327,10 +333,12 @@ const ProductDetail = () => {
                           : "border-border hover:border-primary/50"
                       )}
                     >
-                      <img
+                      <OptimizedImage
                         src={image.url}
                         alt={image.alt || `${product.name} angle ${index + 1}`}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full"
+                        loading="lazy"
+                        sizes="80px"
                       />
                     </button>
                   ))}

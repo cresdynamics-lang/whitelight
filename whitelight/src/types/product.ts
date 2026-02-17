@@ -19,7 +19,8 @@ export interface Product {
   slug: string;
   name: string;
   brand: string;
-  category: "running" | "trail" | "gym" | "basketball" | "accessories";
+  category: "running" | "trail" | "gym" | "basketball" | "accessories"; // Primary category (backward compatibility)
+  categories?: ("running" | "trail" | "gym" | "basketball" | "accessories")[]; // Multiple categories
   price: number;
   originalPrice?: number;
   images: ProductImage[];

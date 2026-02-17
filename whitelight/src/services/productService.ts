@@ -10,6 +10,7 @@ const transformProduct = (backendProduct: any): Product => {
     name: backendProduct.name,
     brand: backendProduct.brand,
     category: backendProduct.category,
+    categories: backendProduct.categories || [backendProduct.category], // Use categories array or fallback to single category
     price: backendProduct.price,
     originalPrice: backendProduct.originalPrice,
     images: backendProduct.images || [],
@@ -30,6 +31,10 @@ const transformProductForBackend = (product: Omit<Product, "id" | "createdAt">) 
   formData.append('name', product.name);
   formData.append('brand', product.brand);
   formData.append('category', product.category);
+  // Add multiple categories if available
+  if (product.categories && product.categories.length > 0) {
+    formData.append('categories', JSON.stringify(product.categories));
+  }
   formData.append('price', product.price.toString());
   if (product.originalPrice) {
     formData.append('originalPrice', product.originalPrice.toString());
