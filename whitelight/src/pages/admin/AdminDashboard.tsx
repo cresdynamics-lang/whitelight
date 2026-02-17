@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { productService } from "@/services/productService";
 import { contactService } from "@/services/contactService";
 import { Package, MessageSquare, TrendingUp, DollarSign } from "lucide-react";
+import { apiService } from "@/services/apiService";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -13,9 +14,22 @@ const AdminDashboard = () => {
     totalValue: 0,
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [apiStatus, setApiStatus] = useState<"checking" | "connected" | "disconnected">("checking");
 
   useEffect(() => {
     const fetchStats = async () => {
+      // Check API health status
+      try {
+        const healthResponse = await fetch(`${apiService.baseURL.replace('/api', '')}/api/health`);
+        if (healthResponse.ok) {
+          setApiStatus("connected");
+        } else {
+          setApiStatus("disconnected");
+        }
+      } catch (error) {
+        setApiStatus("disconnected");
+      }
+
       const [products, messages, unreadCount] = await Promise.all([
         productService.getAll(),
         contactService.getAll(),
@@ -156,11 +170,23 @@ const AdminDashboard = () => {
           <CardContent className="space-y-3">
             <div className="flex justify-between py-2 border-b border-border">
               <span className="text-muted-foreground">Data Source</span>
-              <span className="font-medium">Local Storage</span>
+              <span className="font-medium">API</span>
             </div>
             <div className="flex justify-between py-2 border-b border-border">
               <span className="text-muted-foreground">API Status</span>
-              <span className="text-amber-500 font-medium">Not Connected</span>
+              <span className={`font-medium ${
+                apiStatus === "connected" 
+                  ? "text-green-500" 
+                  : apiStatus === "disconnected" 
+                  ? "text-amber-500" 
+                  : "text-gray-500"
+              }`}>
+                {apiStatus === "connected" 
+                  ? "Connected" 
+                  : apiStatus === "disconnected" 
+                  ? "Not Connected" 
+                  : "Checking..."}
+              </span>
             </div>
             <div className="flex justify-between py-2">
               <span className="text-muted-foreground">Version</span>
