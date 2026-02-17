@@ -139,10 +139,19 @@ class ApiService {
         throw new Error('Upload timeout - please try again with fewer images or smaller file sizes');
       }
       if (error instanceof TypeError && error.message.includes('fetch')) {
-        throw new Error('Network error - please check your connection and try again');
+        // More detailed network error
+        const networkError = error.message || 'Unknown network error';
+        console.error('Network error details:', {
+          url: `${API_BASE_URL}/products`,
+          error: networkError,
+          message: error.message,
+          stack: error.stack
+        });
+        throw new Error(`Network error: ${networkError}. Please check your connection and try again. If the problem persists, contact support.`);
       }
       // Re-throw with better error message
       const message = error instanceof Error ? error.message : 'Failed to create product. Please try again.';
+      console.error('Product creation error:', error);
       throw new Error(message);
     }
   }
