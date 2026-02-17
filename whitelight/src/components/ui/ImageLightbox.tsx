@@ -35,7 +35,7 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, currentIndex]);
+  }, [isOpen, currentIndex, images.length]);
 
   // Prevent body scroll when lightbox is open
   useEffect(() => {
@@ -50,11 +50,31 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
   }, [isOpen]);
 
   const goToPrevious = () => {
-    setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+    setCurrentIndex((prev) => {
+      const newIndex = (prev - 1 + images.length) % images.length;
+      // Reset image opacity when changing
+      setTimeout(() => {
+        const img = document.querySelector('.lightbox-image') as HTMLImageElement;
+        if (img) {
+          img.style.opacity = '0';
+        }
+      }, 0);
+      return newIndex;
+    });
   };
 
   const goToNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % images.length);
+    setCurrentIndex((prev) => {
+      const newIndex = (prev + 1) % images.length;
+      // Reset image opacity when changing
+      setTimeout(() => {
+        const img = document.querySelector('.lightbox-image') as HTMLImageElement;
+        if (img) {
+          img.style.opacity = '0';
+        }
+      }, 0);
+      return newIndex;
+    });
   };
 
   // Preload next and previous images for smoother navigation
@@ -108,15 +128,50 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
         className="relative max-w-7xl max-h-[90vh] w-full mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="relative w-full h-full flex items-center justify-center">
-          <OptimizedImage
+        <div className="relative w-full h-full flex items-center justify-center min-h-[400px]">
+          {/* Loading state */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+          </div>
+          
+          {/* Main image - use regular img for lightbox for faster loading */}
+          <img
+            key={currentIndex} // Force re-render on index change
             src={currentImage.url}
             alt={currentImage.alt || `Image ${currentIndex + 1}`}
-            className="max-w-full max-h-[90vh] object-contain"
+            className="lightbox-image max-w-full max-h-[90vh] object-contain relative z-10"
+            style={{ 
+              opacity: 0,
+              transition: 'opacity 0.3s ease-in-out'
+            }}
+            onLoad={(e) => {
+              e.currentTarget.style.opacity = '1';
+              // Hide loading spinner
+              const spinner = e.currentTarget.parentElement?.querySelector('.animate-spin');
+              if (spinner) {
+                (spinner as HTMLElement).style.display = 'none';
+              }
+            }}
+            onError={(e) => {
+              // Show error state
+              e.currentTarget.style.opacity = '0';
+              const spinner = e.currentTarget.parentElement?.querySelector('.animate-spin');
+              if (spinner) {
+                (spinner as HTMLElement).style.display = 'none';
+              }
+              // Remove existing error message if any
+              const existingError = e.currentTarget.parentElement?.querySelector('.error-message');
+              if (existingError) {
+                existingError.remove();
+              }
+              const errorDiv = document.createElement('div');
+              errorDiv.className = 'error-message text-white text-center p-4';
+              errorDiv.textContent = 'Failed to load image';
+              e.currentTarget.parentElement?.appendChild(errorDiv);
+            }}
             loading="eager"
             fetchPriority="high"
-            objectFit="contain"
-            preload={true}
+            decoding="async"
           />
         </div>
 
