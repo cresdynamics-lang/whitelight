@@ -13,6 +13,7 @@ import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { ImageLightbox } from "@/components/ui/ImageLightbox";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -23,6 +24,7 @@ const ProductDetail = () => {
   const [selectedSizes, setSelectedSizes] = useState<(number | string)[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const { addItem } = useCart();
 
   // Helper function to display size correctly for accessories
@@ -173,10 +175,8 @@ const ProductDetail = () => {
                   preload={selectedImageIndex === 0}
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   onClick={() => {
-                    // Cycle through images on tap
-                    setSelectedImageIndex((prev) => 
-                      prev === product.images.length - 1 ? 0 : prev + 1
-                    );
+                    // Open lightbox when image is clicked
+                    setIsLightboxOpen(true);
                   }}
                 />
                 
@@ -209,9 +209,38 @@ const ProductDetail = () => {
                   {product.images.map((image, index) => (
                     <button
                       key={index}
-                      onClick={() => setSelectedImageIndex(index)}
+                      onClick={() => {
+                        setSelectedImageIndex(index);
+                        setIsLightboxOpen(true);
+                      }}
                       className={cn(
                         "flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all",
+                        selectedImageIndex === index
+                          ? "border-primary ring-2 ring-primary/20"
+                          : "border-border hover:border-primary/50"
+                      )}
+                    >
+                      <OptimizedImage
+                        src={image.url}
+                        alt={image.alt || `${product.name} angle ${index + 1}`}
+                        className="w-full h-full"
+                        loading="lazy"
+                        sizes="80px"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
+              
+              {/* Desktop thumbnail strip - show on desktop */}
+              {product.images.length > 1 && (
+                <div className="hidden lg:flex gap-2 overflow-x-auto">
+                  {product.images.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedImageIndex(index)}
+                      className={cn(
+                        "flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all cursor-pointer",
                         selectedImageIndex === index
                           ? "border-primary ring-2 ring-primary/20"
                           : "border-border hover:border-primary/50"
