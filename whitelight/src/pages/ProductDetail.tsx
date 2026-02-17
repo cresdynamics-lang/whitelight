@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
+import { OptimizedImage } from "@/components/ui/OptimizedImage";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();

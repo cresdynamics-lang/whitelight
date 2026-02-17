@@ -13,22 +13,29 @@ interface ImageLightboxProps {
 
 export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: ImageLightboxProps) {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
+  const [imageError, setImageError] = useState(false);
+  const [imageLoaded, setImageLoaded] = useState(false);
 
   // Update current index when initialIndex changes
   useEffect(() => {
     setCurrentIndex(initialIndex);
+    setImageError(false);
+    setImageLoaded(false);
   }, [initialIndex]);
+  
+  // Reset states when lightbox opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setImageError(false);
+      setImageLoaded(false);
+    }
+  }, [isOpen]);
 
   const goToPrevious = () => {
     setCurrentIndex((prev) => {
       const newIndex = (prev - 1 + images.length) % images.length;
-      // Reset image opacity when changing
-      setTimeout(() => {
-        const img = document.querySelector('.lightbox-image') as HTMLImageElement;
-        if (img) {
-          img.style.opacity = '0';
-        }
-      }, 0);
+      setImageLoaded(false);
+      setImageError(false);
       return newIndex;
     });
   };
@@ -36,13 +43,8 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
   const goToNext = () => {
     setCurrentIndex((prev) => {
       const newIndex = (prev + 1) % images.length;
-      // Reset image opacity when changing
-      setTimeout(() => {
-        const img = document.querySelector('.lightbox-image') as HTMLImageElement;
-        if (img) {
-          img.style.opacity = '0';
-        }
-      }, 0);
+      setImageLoaded(false);
+      setImageError(false);
       return newIndex;
     });
   };
@@ -55,9 +57,19 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
       if (e.key === 'Escape') {
         onClose();
       } else if (e.key === 'ArrowLeft') {
-        setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+        setCurrentIndex((prev) => {
+          const newIndex = (prev - 1 + images.length) % images.length;
+          setImageLoaded(false);
+          setImageError(false);
+          return newIndex;
+        });
       } else if (e.key === 'ArrowRight') {
-        setCurrentIndex((prev) => (prev + 1) % images.length);
+        setCurrentIndex((prev) => {
+          const newIndex = (prev + 1) % images.length;
+          setImageLoaded(false);
+          setImageError(false);
+          return newIndex;
+        });
       }
     };
 
@@ -104,21 +116,74 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
     };
   }, [isOpen, currentIndex, images]);
 
-  if (!isOpen || images.length === 0) return null;
+  // Debug logging
+  useEffect(() => {
+    if (isOpen) {
+      console.log('ImageLightbox opened:', { 
+        isOpen, 
+        imagesLength: images.length, 
+        currentIndex, 
+        images: images.map(img => ({ url: img.url?.substring(0, 50), alt: img.alt }))
+      });
+    }
+  }, [isOpen, images, currentIndex]);
 
-  const currentImage = images[currentIndex];
+  if (!isOpen || images.length === 0) {
+    console.log('ImageLightbox: Not rendering - isOpen:', isOpen, 'images.length:', images.length);
+    return null;
+  }
+
+  // Ensure currentIndex is valid
+  const validIndex = currentIndex >= 0 && currentIndex < images.length ? currentIndex : 0;
+  const currentImage = images[validIndex];
+  
+  // Safety check
+  if (!currentImage || !currentImage.url) {
+    console.error('ImageLightbox: Invalid image data', { currentImage, currentIndex, validIndex, images });
+    return (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
+        onClick={onClose}
+      >
+        <div className="text-white text-center p-4">
+          <p className="text-lg mb-2">No image available</p>
+          <p className="text-sm text-gray-400 mb-4">Images: {images.length}, Index: {currentIndex}</p>
+          <Button
+            variant="outline"
+            className="mt-4 text-white border-white hover:bg-white/20"
+            onClick={onClose}
+          >
+            Close
+          </Button>
+        </div>
+      </div>
+    );
+  }
+  
+  console.log('ImageLightbox: Rendering image', { validIndex, url: currentImage.url?.substring(0, 50), imageLoaded, imageError });
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
       onClick={onClose}
+      style={{ 
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999,
+        backgroundColor: 'rgba(0, 0, 0, 0.95)',
+        backdropFilter: 'blur(4px)'
+      }}
     >
       {/* Close button */}
       <Button
         variant="ghost"
         size="icon"
-        className="absolute top-4 right-4 z-10 text-white hover:bg-white/20"
+        className="absolute top-4 right-4 z-[10000] text-white hover:bg-white/20"
         onClick={onClose}
+        style={{ zIndex: 10000 }}
       >
         <X className="h-6 w-6" />
       </Button>
@@ -127,56 +192,80 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
       <div
         className="relative max-w-7xl max-h-[90vh] w-full mx-4"
         onClick={(e) => e.stopPropagation()}
+        style={{ zIndex: 10000 }}
       >
         <div className="relative w-full h-full flex items-center justify-center min-h-[400px]">
-          {/* Loading state - only show while image is loading */}
-          <div 
-            className="absolute inset-0 flex items-center justify-center z-0"
-            id="lightbox-spinner"
-          >
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-          </div>
+          {/* Always show loading or content - never blank */}
+          {!imageLoaded && !imageError && (
+            <div className="flex flex-col items-center justify-center z-10" style={{ zIndex: 10 }}>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mb-4"></div>
+              <p className="text-white text-sm">Loading image...</p>
+            </div>
+          )}
+          
+          {/* Error message container */}
+          {imageError && (
+            <div className="flex flex-col items-center justify-center z-20 p-8" style={{ zIndex: 20 }}>
+              <div className="text-white text-center p-6 bg-black/90 rounded-lg border border-white/20 max-w-md">
+                <p className="text-lg mb-2 font-semibold">Failed to load image</p>
+                <p className="text-xs text-gray-400 break-all mb-4 font-mono">{currentImage.url}</p>
+                <Button
+                  variant="outline"
+                  className="text-white border-white hover:bg-white/20"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setImageError(false);
+                    setImageLoaded(false);
+                    // Force reload by updating currentIndex slightly
+                    const current = currentIndex;
+                    setCurrentIndex(-1);
+                    setTimeout(() => setCurrentIndex(current), 10);
+                  }}
+                >
+                  Retry Loading
+                </Button>
+              </div>
+            </div>
+          )}
           
           {/* Main image - use regular img for lightbox for faster loading */}
-          <img
-            key={currentIndex} // Force re-render on index change
-            src={currentImage.url}
-            alt={currentImage.alt || `Image ${currentIndex + 1}`}
-            className="lightbox-image max-w-full max-h-[90vh] object-contain relative z-10"
-            style={{ 
-              opacity: 0,
-              transition: 'opacity 0.3s ease-in-out'
-            }}
-            onLoad={(e) => {
-              e.currentTarget.style.opacity = '1';
-              // Hide loading spinner
-              const spinner = document.getElementById('lightbox-spinner');
-              if (spinner) {
-                spinner.style.display = 'none';
-              }
-            }}
-            onError={(e) => {
-              // Show error state
-              e.currentTarget.style.opacity = '0';
-              const spinner = document.getElementById('lightbox-spinner');
-              if (spinner) {
-                spinner.style.display = 'none';
-              }
-              // Remove existing error message if any
-              const container = e.currentTarget.parentElement;
-              const existingError = container?.querySelector('.error-message');
-              if (existingError) {
-                existingError.remove();
-              }
-              const errorDiv = document.createElement('div');
-              errorDiv.className = 'error-message text-white text-center p-4 relative z-20';
-              errorDiv.textContent = 'Failed to load image';
-              container?.appendChild(errorDiv);
-            }}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-          />
+          {!imageError && (
+            <img
+              key={`lightbox-img-${validIndex}-${Date.now()}`} // Force re-render on index change
+              src={currentImage.url}
+              alt={currentImage.alt || `Image ${validIndex + 1}`}
+              className="lightbox-image max-w-full max-h-[90vh] object-contain"
+              style={{ 
+                opacity: imageLoaded ? 1 : 0,
+                transition: 'opacity 0.3s ease-in-out',
+                zIndex: 15,
+                position: 'relative',
+                maxWidth: '100%',
+                maxHeight: '90vh',
+                width: 'auto',
+                height: 'auto'
+              }}
+              onLoad={(e) => {
+                console.log('ImageLightbox: Image loaded successfully', currentImage.url?.substring(0, 50));
+                setImageLoaded(true);
+                setImageError(false);
+                e.currentTarget.style.opacity = '1';
+              }}
+              onError={(e) => {
+                console.error('ImageLightbox: Image failed to load', { 
+                  url: currentImage.url, 
+                  error: e.currentTarget.error,
+                  naturalWidth: e.currentTarget.naturalWidth,
+                  naturalHeight: e.currentTarget.naturalHeight
+                });
+                setImageError(true);
+                setImageLoaded(false);
+              }}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+            />
+          )}
         </div>
 
         {/* Navigation arrows */}
@@ -219,7 +308,7 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
         {/* Image counter */}
         {images.length > 1 && (
           <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 bg-black/50 text-white px-4 py-2 rounded-full text-sm">
-            {currentIndex + 1} / {images.length}
+            {validIndex + 1} / {images.length}
           </div>
         )}
 
@@ -232,10 +321,12 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
                 onClick={(e) => {
                   e.stopPropagation();
                   setCurrentIndex(index);
+                  setImageLoaded(false);
+                  setImageError(false);
                 }}
                 className={cn(
                   "flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all",
-                  index === currentIndex
+                  index === validIndex
                     ? "border-white scale-110"
                     : "border-white/30 hover:border-white/60"
                 )}
