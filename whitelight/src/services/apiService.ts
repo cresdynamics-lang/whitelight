@@ -99,11 +99,17 @@ class ApiService {
     const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
     
     try {
+      // Don't set Content-Type header - browser will set it automatically with boundary for FormData
+      const headers: HeadersInit = {
+        'Authorization': `Bearer ${this.token}`,
+      };
+      
+      console.log('Uploading to:', `${API_BASE_URL}/products`);
+      console.log('FormData entries:', Array.from(productData.entries()).map(([key]) => key));
+      
       const response = await fetch(`${API_BASE_URL}/products`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-        },
+        headers: headers,
         body: productData,
         signal: controller.signal,
       });
@@ -162,11 +168,17 @@ class ApiService {
     const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
     
     try {
+      // Don't set Content-Type header - browser will set it automatically with boundary for FormData
+      const headers: HeadersInit = {
+        'Authorization': `Bearer ${this.token}`,
+      };
+      
+      console.log('Updating product:', id);
+      console.log('FormData entries:', Array.from(productData.entries()).map(([key]) => key));
+      
       const response = await fetch(`${API_BASE_URL}/products/${id}`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${this.token}`,
-        },
+        headers: headers,
         body: productData,
         signal: controller.signal,
       });
