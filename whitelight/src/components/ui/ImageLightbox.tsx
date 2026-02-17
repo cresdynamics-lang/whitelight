@@ -77,34 +77,6 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
     };
   }, [isOpen]);
 
-  const goToPrevious = () => {
-    setCurrentIndex((prev) => {
-      const newIndex = (prev - 1 + images.length) % images.length;
-      // Reset image opacity when changing
-      setTimeout(() => {
-        const img = document.querySelector('.lightbox-image') as HTMLImageElement;
-        if (img) {
-          img.style.opacity = '0';
-        }
-      }, 0);
-      return newIndex;
-    });
-  };
-
-  const goToNext = () => {
-    setCurrentIndex((prev) => {
-      const newIndex = (prev + 1) % images.length;
-      // Reset image opacity when changing
-      setTimeout(() => {
-        const img = document.querySelector('.lightbox-image') as HTMLImageElement;
-        if (img) {
-          img.style.opacity = '0';
-        }
-      }, 0);
-      return newIndex;
-    });
-  };
-
   // Preload next and previous images for smoother navigation
   useEffect(() => {
     if (!isOpen || images.length === 0) return;
