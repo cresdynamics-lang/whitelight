@@ -493,7 +493,7 @@ class ProductController {
         countQuery += whereClause;
       }
 
-      query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+      query += ' ORDER BY updated_at DESC, created_at DESC LIMIT ? OFFSET ?';
       
       const queryParams = params.concat([limit, offset]);
       
