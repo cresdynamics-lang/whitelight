@@ -208,6 +208,17 @@ const AdminProductForm = () => {
         }));
         
         const errorMessage = error instanceof Error ? error.message : 'Failed to upload image';
+        
+        // If it's an authentication error, stop all uploads and show login message
+        if (errorMessage.includes('Session expired') || errorMessage.includes('Authentication required')) {
+          toast.error('Session expired. Please log in again.', { 
+            id: `image-upload-auth-error`,
+            duration: 5000
+          });
+          // Stop further uploads
+          break;
+        }
+        
         toast.error(`Image ${i + 1}/${toAdd.length} failed: ${errorMessage}`, { 
           id: `image-upload-${currentIndex}`,
           duration: 3000

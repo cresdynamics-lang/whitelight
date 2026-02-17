@@ -25,13 +25,19 @@ class ApiService {
     this.token = localStorage.getItem('admin_token');
   }
 
+  // Get token from localStorage (always fresh)
+  private getToken(): string | null {
+    return localStorage.getItem('admin_token');
+  }
+
   private getHeaders() {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
     };
 
-    if (this.token) {
-      headers['Authorization'] = `Bearer ${this.token}`;
+    const token = this.getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
     }
 
     return headers;
@@ -271,6 +277,15 @@ class ApiService {
       clearTimeout(timeoutId);
       
       if (!response.ok) {
+        // Handle authentication errors
+        if (response.status === 401 || response.status === 403) {
+          // Token expired or invalid - clear it
+          localStorage.removeItem('admin_token');
+          localStorage.removeItem('admin_user');
+          this.token = null;
+          throw new Error('Session expired. Please log in again.');
+        }
+        
         let errorMessage = `Server error: ${response.status} ${response.statusText}`;
         try {
           const errorData = await response.json();
@@ -299,7 +314,8 @@ class ApiService {
 
   // Upload images separately and get URLs (kept for backward compatibility)
   async uploadImages(images: File[]): Promise<ApiResponse> {
-    if (!this.token) {
+    const token = this.getToken(); // Get fresh token from localStorage
+    if (!token) {
       throw new Error('Authentication required. Please log in again.');
     }
 
@@ -314,13 +330,13 @@ class ApiService {
     try {
       const url = `${API_BASE_URL}/products/images`;
       console.log('Uploading images to:', url);
-      console.log('Token present:', !!this.token);
+      console.log('Token present:', !!token);
       console.log('Number of images:', images.length);
       
       const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${this.token}`,
+          'Authorization': `Bearer ${token}`,
           // Don't set Content-Type - browser will set it with boundary for FormData
         },
         body: formData,
@@ -332,6 +348,15 @@ class ApiService {
       console.log('Upload response status:', response.status, response.statusText);
       
       if (!response.ok) {
+        // Handle authentication errors
+        if (response.status === 401 || response.status === 403) {
+          // Token expired or invalid - clear it
+          localStorage.removeItem('admin_token');
+          localStorage.removeItem('admin_user');
+          this.token = null;
+          throw new Error('Session expired. Please log in again.');
+        }
+        
         let errorMessage = `Server error: ${response.status} ${response.statusText}`;
         try {
           const errorData = await response.json();
