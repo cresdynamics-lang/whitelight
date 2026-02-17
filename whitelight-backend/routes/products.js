@@ -26,6 +26,9 @@ router.get('/brands', productController.getBrands);
 router.get('/:id', productController.getProduct);
 
 // Admin protected routes
+// POST /api/products/images - Upload images separately (admin only)
+router.post('/images', authenticateToken, upload.array('images', 10), productController.uploadImages);
+
 // POST /api/products - Create new product (admin only)
 router.post('/', authenticateToken, upload.array('images', 10), productController.createProduct);
 

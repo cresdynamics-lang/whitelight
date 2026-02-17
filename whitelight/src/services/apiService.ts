@@ -242,6 +242,55 @@ class ApiService {
     });
   }
 
+  // Upload images separately and get URLs
+  async uploadImages(images: File[]): Promise<ApiResponse> {
+    const formData = new FormData();
+    images.forEach((image) => {
+      formData.append('images', image);
+    });
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/products/images`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+        },
+        body: formData,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        let errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (e) {
+          const text = await response.text();
+          if (text) errorMessage = text.substring(0, 200);
+        }
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Upload timeout - please try again');
+      }
+      if (error instanceof TypeError && (error.message.includes('fetch') || error.message.includes('Failed to fetch'))) {
+        throw new Error('Network error: Failed to upload images. Please check your connection and try again.');
+      }
+      const message = error instanceof Error ? error.message : 'Failed to upload images';
+      throw new Error(message);
+    }
+  }
+
   // Order methods
   async getOrders(params?: Record<string, string>): Promise<ApiResponse> {
     const queryString = params ? '?' + new URLSearchParams(params).toString() : '';

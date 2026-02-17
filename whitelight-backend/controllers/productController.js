@@ -85,23 +85,50 @@ class ProductController {
         ]
       );
 
-      // Handle image uploads with proper error handling
+      // Handle image URLs (pre-uploaded images) or file uploads
       const uploadedImages = [];
+      
+      // First, handle pre-uploaded image URLs
+      if (imageUrls && typeof imageUrls === 'string') {
+        try {
+          const parsedUrls = JSON.parse(imageUrls);
+          if (Array.isArray(parsedUrls) && parsedUrls.length > 0) {
+            for (let i = 0; i < parsedUrls.length; i++) {
+              const imageUrl = parsedUrls[i];
+              if (imageUrl && typeof imageUrl === 'string') {
+                const imageId = `${productId}-url-${i + 1}`;
+                await connection.execute(
+                  'INSERT INTO product_images (id, product_id, url, alt_text) VALUES (?, ?, ?, ?)',
+                  [imageId, productId, imageUrl, name]
+                );
+                uploadedImages.push(imageUrl);
+                console.log(`✅ Pre-uploaded image ${i + 1} saved: ${imageUrl}`);
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Error parsing imageUrls:', e);
+        }
+      }
+      
+      // Then handle file uploads (if any files are sent)
       if (req.files && req.files.length > 0) {
-        console.log(`📸 Starting upload of ${req.files.length} images...`);
+        console.log(`📸 Starting upload of ${req.files.length} new images...`);
+        let fileIndex = uploadedImages.length;
         for (let i = 0; i < req.files.length; i++) {
           const file = req.files[i];
           try {
             const uploadResult = await spacesService.uploadFile(file, 'products');
             
             if (uploadResult.success) {
-              const imageId = `${productId}-${i + 1}`;
+              const imageId = `${productId}-${fileIndex + 1}`;
               await connection.execute(
                 'INSERT INTO product_images (id, product_id, url, alt_text) VALUES (?, ?, ?, ?)',
                 [imageId, productId, uploadResult.url, name]
               );
               uploadedImages.push(uploadResult.url);
               console.log(`✅ Image ${i + 1}/${req.files.length} uploaded: ${uploadResult.url}`);
+              fileIndex++;
             } else {
               console.error(`❌ Failed to upload image ${i + 1}/${req.files.length}:`, uploadResult.error);
               // Continue with other images even if one fails
@@ -111,7 +138,7 @@ class ProductController {
             // Continue with other images even if one fails
           }
         }
-        console.log(`📸 Upload complete: ${uploadedImages.length}/${req.files.length} images saved to database`);
+        console.log(`📸 Upload complete: ${uploadedImages.length} total images saved to database`);
       }
 
       // Insert categories into junction table
@@ -730,6 +757,60 @@ class ProductController {
       res.status(500).json({
         success: false,
         message: 'Failed to retrieve brands',
+        error: error.message
+      });
+    }
+  }
+
+  // Upload images separately and return URLs
+  async uploadImages(req, res) {
+    try {
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'No images provided'
+        });
+      }
+
+      const uploadedImages = [];
+      console.log(`📸 Starting upload of ${req.files.length} images...`);
+      
+      for (let i = 0; i < req.files.length; i++) {
+        const file = req.files[i];
+        try {
+          const uploadResult = await spacesService.uploadFile(file, 'products');
+          
+          if (uploadResult.success) {
+            uploadedImages.push({
+              url: uploadResult.url,
+              filename: file.originalname,
+              size: file.size,
+              mimetype: file.mimetype
+            });
+            console.log(`✅ Image ${i + 1}/${req.files.length} uploaded: ${uploadResult.url}`);
+          } else {
+            console.error(`❌ Failed to upload image ${i + 1}/${req.files.length}:`, uploadResult.error);
+          }
+        } catch (error) {
+          console.error(`❌ Error uploading image ${i + 1}/${req.files.length}:`, error.message);
+        }
+      }
+
+      console.log(`📸 Upload complete: ${uploadedImages.length}/${req.files.length} images uploaded`);
+
+      res.json({
+        success: true,
+        message: `Successfully uploaded ${uploadedImages.length} image(s)`,
+        data: {
+          images: uploadedImages
+        }
+      });
+
+    } catch (error) {
+      console.error('Upload images error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to upload images',
         error: error.message
       });
     }

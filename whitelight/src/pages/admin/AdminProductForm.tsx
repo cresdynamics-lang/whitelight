@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { productService } from "@/services/productService";
+import { apiService } from "@/services/apiService";
 import { Product, ProductCategory } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,6 +41,8 @@ const AdminProductForm = () => {
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
   const [existingImages, setExistingImages] = useState<Array<{id: string, url: string}>>([]);
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
+  const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]); // URLs of images uploaded to server
+  const [uploadingImages, setUploadingImages] = useState(false); // Track if images are being uploaded
 
   const [formData, setFormData] = useState({
     name: "",
@@ -131,9 +134,9 @@ const AdminProductForm = () => {
     setSelectedSizes(newSelectedSizes);
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    const currentTotal = existingImages.length - imagesToDelete.length + selectedFiles.length;
+    const currentTotal = existingImages.length - imagesToDelete.length + uploadedImageUrls.length;
     const spaceLeft = MAX_PRODUCT_IMAGES - currentTotal;
     if (spaceLeft <= 0) {
       toast.error(`Maximum ${MAX_PRODUCT_IMAGES} images total. Remove some to add more.`);
@@ -142,17 +145,40 @@ const AdminProductForm = () => {
     }
     const toAdd = files.slice(0, spaceLeft);
     if (files.length > spaceLeft) {
-      toast.info(`Added ${toAdd.length} of ${files.length} images (max ${MAX_PRODUCT_IMAGES} total).`);
+      toast.info(`Adding ${toAdd.length} of ${files.length} images (max ${MAX_PRODUCT_IMAGES} total).`);
     }
 
-    const newFiles = [...selectedFiles, ...toAdd];
-    setSelectedFiles(newFiles);
-    const urls = newFiles.map(file => URL.createObjectURL(file));
+    // Create preview URLs immediately
+    const previewUrlsForNewFiles = toAdd.map(file => URL.createObjectURL(file));
     setPreviewUrls(prev => {
       prev.forEach(u => URL.revokeObjectURL(u));
-      return urls;
+      return [...prev, ...previewUrlsForNewFiles];
     });
-    e.target.value = "";
+
+    // Upload images immediately
+    setUploadingImages(true);
+    toast.loading(`Uploading ${toAdd.length} image${toAdd.length === 1 ? "" : "s"}...`, { id: "image-upload" });
+    
+    try {
+      const response = await apiService.uploadImages(toAdd);
+      if (response.success && response.data?.images) {
+        const newUrls = response.data.images.map((img: {url: string}) => img.url);
+        setUploadedImageUrls(prev => [...prev, ...newUrls]);
+        toast.success(`Successfully uploaded ${newUrls.length} image${newUrls.length === 1 ? "" : "s"}`, { id: "image-upload" });
+      } else {
+        throw new Error(response.message || 'Failed to upload images');
+      }
+    } catch (error) {
+      console.error('Image upload error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload images';
+      toast.error(errorMessage, { id: "image-upload" });
+      // Remove preview URLs for failed uploads
+      previewUrlsForNewFiles.forEach(url => URL.revokeObjectURL(url));
+      setPreviewUrls(prev => prev.filter(url => !previewUrlsForNewFiles.includes(url)));
+    } finally {
+      setUploadingImages(false);
+      e.target.value = "";
+    }
   };
 
   const removeExistingImage = (imageId: string) => {
@@ -161,22 +187,21 @@ const AdminProductForm = () => {
   };
 
   const removeFile = (index: number) => {
-    const newFiles = selectedFiles.filter((_, i) => i !== index);
+    // Remove from uploaded URLs
+    const newUploadedUrls = uploadedImageUrls.filter((_, i) => i !== index);
+    setUploadedImageUrls(newUploadedUrls);
+    
+    // Remove preview URL
     const newUrls = previewUrls.filter((_, i) => i !== index);
-    
-    // Revoke the removed URL to prevent memory leaks
     URL.revokeObjectURL(previewUrls[index]);
-    
-    setSelectedFiles(newFiles);
     setPreviewUrls(newUrls);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-    if (selectedFiles.length > 0) {
-      toast.loading(`Uploading product and ${selectedFiles.length} image${selectedFiles.length === 1 ? "" : "s"}...`, { id: "product-save" });
-    }
+    
+    toast.loading("Saving product...", { id: "product-save" });
 
     // Validate at least one category is selected
     if (formData.categories.length === 0) {
@@ -192,6 +217,12 @@ const AdminProductForm = () => {
       return;
     }
 
+    // Combine uploaded URLs with any URL from imageUrl field
+    const allImageUrls = [...uploadedImageUrls];
+    if (formData.imageUrl) {
+      allImageUrls.push(formData.imageUrl);
+    }
+
     const productData: Omit<Product, "id" | "createdAt"> = {
       name: formData.name,
       slug: formData.name.toLowerCase().replace(/\s+/g, "-"),
@@ -201,13 +232,11 @@ const AdminProductForm = () => {
       price: Number(formData.price),
       originalPrice: formData.originalPrice ? Number(formData.originalPrice) : undefined,
       description: formData.description,
-      images: formData.imageUrl ? [
-        {
-          id: "img-1",
-          url: formData.imageUrl,
-          alt: formData.name,
-        },
-      ] : [],
+      images: allImageUrls.map((url, index) => ({
+        id: `img-${index + 1}`,
+        url: url,
+        alt: formData.name,
+      })),
       variants: isAccessoryCategory 
         ? [] // Accessories will use old system if needed
         : Array.from(selectedSizes).map(size => ({
@@ -224,10 +253,12 @@ const AdminProductForm = () => {
 
     try {
       if (isEditing) {
-        await productService.update(id, productData, selectedFiles, imagesToDelete);
+        // For updates, still send files if any remain, but prioritize URLs
+        await productService.update(id, productData, selectedFiles.length > 0 ? selectedFiles : undefined, imagesToDelete);
         toast.success("Product updated successfully", { id: "product-save" });
       } else {
-        await productService.create(productData, selectedFiles);
+        // For create, send image URLs instead of files
+        await productService.create(productData, undefined, allImageUrls);
         toast.success("Product created successfully", { id: "product-save" });
       }
       navigate("/admin/products");
@@ -397,12 +428,13 @@ const AdminProductForm = () => {
             </CardContent>
           </Card>
 
-          <Card>
+              <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
                 Media
                 <span className="text-sm font-normal text-muted-foreground">
-                  {(existingImages.length - imagesToDelete.length) + selectedFiles.length} / {MAX_PRODUCT_IMAGES} images
+                  {(existingImages.length - imagesToDelete.length) + uploadedImageUrls.length} / {MAX_PRODUCT_IMAGES} images
+                  {uploadingImages && <span className="ml-2 text-primary">(Uploading...)</span>}
                 </span>
               </CardTitle>
             </CardHeader>
@@ -437,7 +469,7 @@ const AdminProductForm = () => {
                       Click to upload or drag and drop · Max 10 images
                     </span>
                     <span className="text-xs text-gray-400">
-                      PNG, JPG, JPEG up to 10MB each · Upload is seamless on save
+                      PNG, JPG, JPEG up to 10MB each · Images upload immediately when selected
                     </span>
                   </label>
                 </div>
@@ -470,27 +502,52 @@ const AdminProductForm = () => {
                 </div>
               )}
 
-              {/* Image Previews */}
-              {previewUrls.length > 0 && (
+              {/* Image Previews - Show uploaded images */}
+              {uploadedImageUrls.length > 0 && (
                 <div className="space-y-2">
-                  <Label>Selected Images</Label>
+                  <Label>Uploaded Images ({uploadedImageUrls.length})</Label>
                   <div className="grid grid-cols-2 gap-4">
-                    {previewUrls.map((url, index) => (
+                    {uploadedImageUrls.map((url, index) => (
                       <div key={index} className="relative">
                         <img
                           src={url}
-                          alt={`Preview ${index + 1}`}
+                          alt={`Uploaded ${index + 1}`}
                           className="w-full h-32 object-cover rounded-lg"
                         />
+                        <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                          ✓ Uploaded
+                        </div>
                         <Button
                           type="button"
                           variant="destructive"
                           size="icon"
                           className="absolute top-2 right-2 h-6 w-6"
                           onClick={() => removeFile(index)}
+                          disabled={uploadingImages}
                         >
                           <X className="h-3 w-3" />
                         </Button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Show preview URLs while uploading */}
+              {previewUrls.length > uploadedImageUrls.length && (
+                <div className="space-y-2">
+                  <Label>Uploading Images...</Label>
+                  <div className="grid grid-cols-2 gap-4">
+                    {previewUrls.slice(uploadedImageUrls.length).map((url, index) => (
+                      <div key={index} className="relative">
+                        <img
+                          src={url}
+                          alt={`Uploading ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg opacity-50"
+                        />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                        </div>
                       </div>
                     ))}
                   </div>

@@ -25,7 +25,7 @@ const transformProduct = (backendProduct: any): Product => {
 };
 
 // Transform frontend product data to backend format
-const transformProductForBackend = (product: Omit<Product, "id" | "createdAt">) => {
+const transformProductForBackend = (product: Omit<Product, "id" | "createdAt">, imageUrls?: string[]) => {
   const formData = new FormData();
   
   formData.append('name', product.name);
@@ -45,6 +45,11 @@ const transformProductForBackend = (product: Omit<Product, "id" | "createdAt">) 
   formData.append('isBestSeller', product.isBestSeller?.toString() || 'false');
   formData.append('isOnOffer', product.isOnOffer?.toString() || 'false');
   formData.append('variants', JSON.stringify(product.variants));
+  
+  // Add pre-uploaded image URLs if provided
+  if (imageUrls && imageUrls.length > 0) {
+    formData.append('imageUrls', JSON.stringify(imageUrls));
+  }
   
   return formData;
 };
@@ -79,13 +84,13 @@ export const productService = {
   },
 
   // Create new product
-  create: async (product: Omit<Product, "id" | "createdAt">, images?: File[]): Promise<Product> => {
+  create: async (product: Omit<Product, "id" | "createdAt">, images?: File[], imageUrls?: string[]): Promise<Product> => {
     try {
-      const formData = transformProductForBackend(product);
+      const formData = transformProductForBackend(product, imageUrls);
       
-      // Add image files
+      // Add image files (if any - usually images are pre-uploaded via imageUrls)
       if (images && images.length > 0) {
-        images.forEach((image, index) => {
+        images.forEach((image) => {
           formData.append('images', image);
         });
       }
