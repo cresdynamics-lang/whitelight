@@ -242,7 +242,62 @@ class ApiService {
     });
   }
 
-  // Upload images separately and get URLs
+  // Upload a single image and get URL
+  async uploadSingleImage(image: File): Promise<ApiResponse> {
+    if (!this.token) {
+      throw new Error('Authentication required. Please log in again.');
+    }
+
+    const formData = new FormData();
+    formData.append('images', image);
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2 * 60 * 1000); // 2 minutes per image
+    
+    try {
+      const url = `${API_BASE_URL}/products/images`;
+      console.log('Uploading single image:', image.name);
+      
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+          // Don't set Content-Type - browser will set it with boundary for FormData
+        },
+        body: formData,
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        let errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (e) {
+          const text = await response.text();
+          if (text) errorMessage = text.substring(0, 200);
+        }
+        throw new Error(errorMessage);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Upload timeout - please try again');
+      }
+      if (error instanceof TypeError && (error.message.includes('fetch') || error.message.includes('Failed to fetch'))) {
+        throw new Error('Network error: Failed to upload image. Please check your connection and try again.');
+      }
+      const message = error instanceof Error ? error.message : 'Failed to upload image';
+      throw new Error(message);
+    }
+  }
+
+  // Upload images separately and get URLs (kept for backward compatibility)
   async uploadImages(images: File[]): Promise<ApiResponse> {
     if (!this.token) {
       throw new Error('Authentication required. Please log in again.');

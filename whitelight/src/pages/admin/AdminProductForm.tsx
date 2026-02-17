@@ -43,6 +43,7 @@ const AdminProductForm = () => {
   const [imagesToDelete, setImagesToDelete] = useState<string[]>([]);
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]); // URLs of images uploaded to server
   const [uploadingImages, setUploadingImages] = useState(false); // Track if images are being uploaded
+  const [uploadProgress, setUploadProgress] = useState<Record<number, 'uploading' | 'success' | 'error'>>({}); // Track individual image upload status
 
   const [formData, setFormData] = useState({
     name: "",
@@ -150,35 +151,88 @@ const AdminProductForm = () => {
 
     // Create preview URLs immediately
     const previewUrlsForNewFiles = toAdd.map(file => URL.createObjectURL(file));
-    setPreviewUrls(prev => {
-      prev.forEach(u => URL.revokeObjectURL(u));
-      return [...prev, ...previewUrlsForNewFiles];
-    });
+    const startIndex = previewUrls.length;
+    setPreviewUrls(prev => [...prev, ...previewUrlsForNewFiles]);
 
-    // Upload images immediately
+    // Initialize upload progress for all new images
+    const initialProgress: Record<number, 'uploading' | 'success' | 'error'> = {};
+    toAdd.forEach((_, index) => {
+      initialProgress[startIndex + index] = 'uploading';
+    });
+    setUploadProgress(prev => ({ ...prev, ...initialProgress }));
+
+    // Upload images one by one sequentially
     setUploadingImages(true);
-    toast.loading(`Uploading ${toAdd.length} image${toAdd.length === 1 ? "" : "s"}...`, { id: "image-upload" });
-    
-    try {
-      const response = await apiService.uploadImages(toAdd);
-      if (response.success && response.data?.images) {
-        const newUrls = response.data.images.map((img: {url: string}) => img.url);
-        setUploadedImageUrls(prev => [...prev, ...newUrls]);
-        toast.success(`Successfully uploaded ${newUrls.length} image${newUrls.length === 1 ? "" : "s"}`, { id: "image-upload" });
-      } else {
-        throw new Error(response.message || 'Failed to upload images');
+    const uploadedUrls: string[] = [];
+    const failedIndices: number[] = [];
+
+    for (let i = 0; i < toAdd.length; i++) {
+      const file = toAdd[i];
+      const currentIndex = startIndex + i;
+      
+      try {
+        toast.loading(`Uploading image ${i + 1}/${toAdd.length}: ${file.name}...`, { 
+          id: `image-upload-${currentIndex}` 
+        });
+        
+        const response = await apiService.uploadSingleImage(file);
+        
+        if (response.success && response.data?.images && response.data.images.length > 0) {
+          const imageUrl = response.data.images[0].url;
+          uploadedUrls.push(imageUrl);
+          
+          // Update progress for this image
+          setUploadProgress(prev => ({
+            ...prev,
+            [currentIndex]: 'success'
+          }));
+          
+          // Add URL to uploaded URLs immediately
+          setUploadedImageUrls(prev => [...prev, imageUrl]);
+          
+          toast.success(`Image ${i + 1}/${toAdd.length} uploaded`, { 
+            id: `image-upload-${currentIndex}`,
+            duration: 2000
+          });
+        } else {
+          throw new Error(response.message || 'Failed to upload image');
+        }
+      } catch (error) {
+        console.error(`Image ${i + 1} upload error:`, error);
+        failedIndices.push(currentIndex);
+        
+        // Update progress for this image
+        setUploadProgress(prev => ({
+          ...prev,
+          [currentIndex]: 'error'
+        }));
+        
+        const errorMessage = error instanceof Error ? error.message : 'Failed to upload image';
+        toast.error(`Image ${i + 1}/${toAdd.length} failed: ${errorMessage}`, { 
+          id: `image-upload-${currentIndex}`,
+          duration: 3000
+        });
       }
-    } catch (error) {
-      console.error('Image upload error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Failed to upload images';
-      toast.error(errorMessage, { id: "image-upload" });
-      // Remove preview URLs for failed uploads
-      previewUrlsForNewFiles.forEach(url => URL.revokeObjectURL(url));
-      setPreviewUrls(prev => prev.filter(url => !previewUrlsForNewFiles.includes(url)));
-    } finally {
-      setUploadingImages(false);
-      e.target.value = "";
     }
+
+    // Clean up failed uploads
+    if (failedIndices.length > 0) {
+      failedIndices.forEach(index => {
+        URL.revokeObjectURL(previewUrlsForNewFiles[index - startIndex]);
+      });
+      setPreviewUrls(prev => prev.filter((_, idx) => !failedIndices.includes(idx)));
+    }
+
+    // Final summary
+    if (uploadedUrls.length > 0) {
+      toast.success(`Successfully uploaded ${uploadedUrls.length}/${toAdd.length} image${uploadedUrls.length === 1 ? "" : "s"}`, { 
+        id: "image-upload-summary",
+        duration: 3000
+      });
+    }
+
+    setUploadingImages(false);
+    e.target.value = "";
   };
 
   const removeExistingImage = (imageId: string) => {
@@ -502,54 +556,66 @@ const AdminProductForm = () => {
                 </div>
               )}
 
-              {/* Image Previews - Show uploaded images */}
-              {uploadedImageUrls.length > 0 && (
+              {/* Image Previews - Show all images with upload status */}
+              {previewUrls.length > 0 && (
                 <div className="space-y-2">
-                  <Label>Uploaded Images ({uploadedImageUrls.length})</Label>
+                  <Label>
+                    Images ({uploadedImageUrls.length} uploaded / {previewUrls.length} total)
+                    {uploadingImages && <span className="ml-2 text-primary text-xs">(Uploading...)</span>}
+                  </Label>
                   <div className="grid grid-cols-2 gap-4">
-                    {uploadedImageUrls.map((url, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={url}
-                          alt={`Uploaded ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg"
-                        />
-                        <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
-                          ✓ Uploaded
+                    {previewUrls.map((url, index) => {
+                      const isUploaded = index < uploadedImageUrls.length;
+                      const status = uploadProgress[index];
+                      const imageUrl = isUploaded ? uploadedImageUrls[index] : url;
+                      
+                      return (
+                        <div key={index} className="relative">
+                          <img
+                            src={imageUrl}
+                            alt={`Image ${index + 1}`}
+                            className={`w-full h-32 object-cover rounded-lg ${
+                              status === 'uploading' ? 'opacity-50' : ''
+                            }`}
+                          />
+                          {/* Status badge */}
+                          <div className={`absolute top-2 left-2 text-white text-xs px-2 py-1 rounded ${
+                            status === 'success' || isUploaded 
+                              ? 'bg-green-500' 
+                              : status === 'error' 
+                              ? 'bg-red-500' 
+                              : 'bg-blue-500'
+                          }`}>
+                            {status === 'success' || isUploaded 
+                              ? '✓ Uploaded' 
+                              : status === 'error' 
+                              ? '✗ Failed' 
+                              : status === 'uploading'
+                              ? '⏳ Uploading...'
+                              : '⏳ Pending'}
+                          </div>
+                          {/* Loading spinner */}
+                          {status === 'uploading' && (
+                            <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-lg">
+                              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+                            </div>
+                          )}
+                          {/* Remove button */}
+                          {(isUploaded || status === 'error') && (
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-2 right-2 h-6 w-6"
+                              onClick={() => removeFile(index)}
+                              disabled={uploadingImages}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          )}
                         </div>
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="icon"
-                          className="absolute top-2 right-2 h-6 w-6"
-                          onClick={() => removeFile(index)}
-                          disabled={uploadingImages}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-              
-              {/* Show preview URLs while uploading */}
-              {previewUrls.length > uploadedImageUrls.length && (
-                <div className="space-y-2">
-                  <Label>Uploading Images...</Label>
-                  <div className="grid grid-cols-2 gap-4">
-                    {previewUrls.slice(uploadedImageUrls.length).map((url, index) => (
-                      <div key={index} className="relative">
-                        <img
-                          src={url}
-                          alt={`Uploading ${index + 1}`}
-                          className="w-full h-32 object-cover rounded-lg opacity-50"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
