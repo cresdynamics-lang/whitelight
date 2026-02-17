@@ -86,23 +86,33 @@ class ProductController {
         ]
       );
 
-      // Handle image uploads
+      // Handle image uploads with proper error handling
+      const uploadedImages = [];
       if (req.files && req.files.length > 0) {
+        console.log(`📸 Starting upload of ${req.files.length} images...`);
         for (let i = 0; i < req.files.length; i++) {
           const file = req.files[i];
-          const uploadResult = await spacesService.uploadFile(file, 'products');
-          
-          console.log('📸 Image uploaded:', uploadResult.url);
-          console.log('🌐 CDN URL used:', uploadResult.url.includes('cdn.digitaloceanspaces.com') ? 'YES' : 'NO');
-          
-          if (uploadResult.success) {
-            const imageId = `${productId}-${i + 1}`;
-            await connection.execute(
-              'INSERT INTO product_images (id, product_id, url, alt_text) VALUES (?, ?, ?, ?)',
-              [imageId, productId, uploadResult.url, name]
-            );
+          try {
+            const uploadResult = await spacesService.uploadFile(file, 'products');
+            
+            if (uploadResult.success) {
+              const imageId = `${productId}-${i + 1}`;
+              await connection.execute(
+                'INSERT INTO product_images (id, product_id, url, alt_text) VALUES (?, ?, ?, ?)',
+                [imageId, productId, uploadResult.url, name]
+              );
+              uploadedImages.push(uploadResult.url);
+              console.log(`✅ Image ${i + 1}/${req.files.length} uploaded: ${uploadResult.url}`);
+            } else {
+              console.error(`❌ Failed to upload image ${i + 1}/${req.files.length}:`, uploadResult.error);
+              // Continue with other images even if one fails
+            }
+          } catch (error) {
+            console.error(`❌ Error uploading image ${i + 1}/${req.files.length}:`, error.message);
+            // Continue with other images even if one fails
           }
         }
+        console.log(`📸 Upload complete: ${uploadedImages.length}/${req.files.length} images saved to database`);
       }
 
       // Insert categories into junction table
@@ -296,23 +306,33 @@ class ProductController {
         }
       }
 
-      // Handle new image uploads
+      // Handle new image uploads with proper error handling
+      const uploadedImages = [];
       if (req.files && req.files.length > 0) {
+        console.log(`📸 Starting upload of ${req.files.length} new images...`);
         for (let i = 0; i < req.files.length; i++) {
           const file = req.files[i];
-          const uploadResult = await spacesService.uploadFile(file, 'products');
-          
-          console.log('📸 Image uploaded:', uploadResult.url);
-          console.log('🌐 CDN URL used:', uploadResult.url.includes('cdn.digitaloceanspaces.com') ? 'YES' : 'NO');
-          
-          if (uploadResult.success) {
-            const imageId = `${id}-${Date.now()}-${i}`;
-            await connection.execute(
-              'INSERT INTO product_images (id, product_id, url, alt_text) VALUES (?, ?, ?, ?)',
-              [imageId, id, uploadResult.url, name]
-            );
+          try {
+            const uploadResult = await spacesService.uploadFile(file, 'products');
+            
+            if (uploadResult.success) {
+              const imageId = `${id}-${Date.now()}-${i}`;
+              await connection.execute(
+                'INSERT INTO product_images (id, product_id, url, alt_text) VALUES (?, ?, ?, ?)',
+                [imageId, id, uploadResult.url, name]
+              );
+              uploadedImages.push(uploadResult.url);
+              console.log(`✅ Image ${i + 1}/${req.files.length} uploaded: ${uploadResult.url}`);
+            } else {
+              console.error(`❌ Failed to upload image ${i + 1}/${req.files.length}:`, uploadResult.error);
+              // Continue with other images even if one fails
+            }
+          } catch (error) {
+            console.error(`❌ Error uploading image ${i + 1}/${req.files.length}:`, error.message);
+            // Continue with other images even if one fails
           }
         }
+        console.log(`📸 Upload complete: ${uploadedImages.length}/${req.files.length} images saved to database`);
       }
 
       // Update variants if provided

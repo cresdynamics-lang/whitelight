@@ -92,7 +92,10 @@ export function CheckoutForm({ onBack }: CheckoutFormProps) {
           productName: item.product.name,
           productPrice: item.product.price,
           size: getBackendSize(item.size, item.product.category),
-          quantity: item.quantity
+          quantity: item.quantity,
+          productImage: item.product.images && item.product.images.length > 0 ? item.product.images[0].url : undefined,
+          selectedSizes: item.selectedSizes,
+          referenceLink: item.referenceLink
         }))
       };
 
@@ -117,8 +120,12 @@ export function CheckoutForm({ onBack }: CheckoutFormProps) {
         
         message += `\nORDER ITEMS:\n`;
         items.forEach((item, index) => {
+          const productImage = item.product.images && item.product.images.length > 0 ? item.product.images[0].url : null;
           message += `${index + 1}. ${item.product.name}\n`;
           message += `   Size: ${getDisplaySize(item.size, item.product.category)} | Qty: ${item.quantity} | ${formatPrice(item.product.price * item.quantity, siteConfig.currency)}\n`;
+          if (productImage) {
+            message += `   Image: ${productImage}\n`;
+          }
         });
         
         message += `\nTOTAL: ${formatPrice(total, siteConfig.currency)}\n`;

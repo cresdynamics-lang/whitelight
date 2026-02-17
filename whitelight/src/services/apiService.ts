@@ -94,38 +94,66 @@ class ApiService {
   }
 
   async createProduct(productData: FormData): Promise<ApiResponse> {
-    const response = await fetch(`${API_BASE_URL}/products`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-      },
-      body: productData,
-    });
+    // Create AbortController for timeout (5 minutes for large uploads)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/products`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+        },
+        body: productData,
+        signal: controller.signal,
+      });
 
-    const data = await response.json();
-    if (!response.ok) {
-      const message = data.error || data.message || 'Failed to create product';
-      throw new Error(message);
+      clearTimeout(timeoutId);
+      const data = await response.json();
+      if (!response.ok) {
+        const message = data.error || data.message || 'Failed to create product';
+        throw new Error(message);
+      }
+
+      return data;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Upload timeout - please try again with fewer images or smaller file sizes');
+      }
+      throw error;
     }
-
-    return data;
   }
 
   async updateProduct(id: string, productData: FormData): Promise<ApiResponse> {
-    const response = await fetch(`${API_BASE_URL}/products/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `Bearer ${this.token}`,
-      },
-      body: productData,
-    });
+    // Create AbortController for timeout (5 minutes for large uploads)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5 * 60 * 1000); // 5 minutes
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/products/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${this.token}`,
+        },
+        body: productData,
+        signal: controller.signal,
+      });
 
-    const data = await response.json();
-    if (!response.ok) {
-      throw new Error(data.message || 'Failed to update product');
+      clearTimeout(timeoutId);
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to update product');
+      }
+
+      return data;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (error.name === 'AbortError') {
+        throw new Error('Upload timeout - please try again with fewer images or smaller file sizes');
+      }
+      throw error;
     }
-
-    return data;
   }
 
   async deleteProduct(id: string): Promise<ApiResponse> {
@@ -163,6 +191,9 @@ class ApiService {
       productPrice: number;
       size: number;
       quantity: number;
+      productImage?: string;
+      selectedSizes?: number[];
+      referenceLink?: string;
     }>;
   }): Promise<ApiResponse> {
     return this.request('/orders', {

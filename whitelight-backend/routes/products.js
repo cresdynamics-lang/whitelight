@@ -4,8 +4,14 @@ const productController = require('../controllers/productController');
 const { authenticateToken } = require('../middleware/auth');
 const multer = require('multer');
 
-// Configure multer for memory storage
-const upload = multer({ storage: multer.memoryStorage() });
+// Configure multer for memory storage with increased limits
+const upload = multer({ 
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10MB per file
+    files: 10 // Max 10 files
+  }
+});
 
 // GET /api/products - Get all products with filtering
 router.get('/', productController.getProducts);
