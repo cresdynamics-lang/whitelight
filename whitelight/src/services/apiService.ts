@@ -144,16 +144,30 @@ class ApiService {
       if (error.name === 'AbortError') {
         throw new Error('Upload timeout - please try again with fewer images or smaller file sizes');
       }
-      if (error instanceof TypeError && error.message.includes('fetch')) {
+      if (error instanceof TypeError && (error.message.includes('fetch') || error.message.includes('Failed to fetch'))) {
         // More detailed network error
         const networkError = error.message || 'Unknown network error';
+        const apiUrl = `${API_BASE_URL}/products`;
         console.error('Network error details:', {
-          url: `${API_BASE_URL}/products`,
+          url: apiUrl,
+          apiBaseUrl: API_BASE_URL,
           error: networkError,
           message: error.message,
-          stack: error.stack
+          name: error.name,
+          stack: error.stack,
+          tokenPresent: !!this.token
         });
-        throw new Error(`Network error: ${networkError}. Please check your connection and try again. If the problem persists, contact support.`);
+        
+        // Provide more helpful error message
+        let userMessage = 'Network error: Failed to connect to server. ';
+        if (apiUrl.includes('localhost')) {
+          userMessage += 'Make sure the API server is running. ';
+        } else {
+          userMessage += 'Please check your internet connection. ';
+        }
+        userMessage += 'If the problem persists, contact support.';
+        
+        throw new Error(userMessage);
       }
       // Re-throw with better error message
       const message = error instanceof Error ? error.message : 'Failed to create product. Please try again.';
