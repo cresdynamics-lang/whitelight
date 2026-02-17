@@ -14,31 +14,30 @@ class ProductController {
       await connection.beginTransaction();
 
       const {
-        name, brand, category, price, originalPrice,
+        name, brand, category, categories, price, originalPrice,
         description, tags, isNew, isBestSeller, isOnOffer, variants
       } = req.body;
 
+      // Parse categories from JSON string if needed
+      let parsedCategories = categories;
+      if (categories && typeof categories === 'string') {
+        try {
+          parsedCategories = JSON.parse(categories);
+        } catch (e) {
+          parsedCategories = category ? [category] : [];
+        }
+      }
+      if (!parsedCategories || parsedCategories.length === 0) {
+        parsedCategories = category ? [category] : [];
+      }
+
       // Validate required fields
-      if (!name || !brand || (!category && (!parsedCategories || parsedCategories.length === 0)) || price === undefined || price === null || price === '') {
+      if (!name || !brand || parsedCategories.length === 0 || price === undefined || price === null || price === '') {
         try { await connection.rollback(); } catch (e) { /* ignore */ }
         connection.release();
         return res.status(400).json({
           success: false,
           message: 'Missing required fields: name, brand, at least one category, and price are required',
-          error: 'VALIDATION_ERROR'
-        });
-      }
-      
-      // Ensure we have at least one category
-      if (parsedCategories.length === 0 && category) {
-        parsedCategories = [category];
-      }
-      if (parsedCategories.length === 0) {
-        try { await connection.rollback(); } catch (e) { /* ignore */ }
-        connection.release();
-        return res.status(400).json({
-          success: false,
-          message: 'At least one category is required',
           error: 'VALIDATION_ERROR'
         });
       }
