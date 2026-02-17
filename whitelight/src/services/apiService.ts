@@ -109,10 +109,27 @@ class ApiService {
       });
 
       clearTimeout(timeoutId);
-      const data = await response.json();
+      
+      // Check if response is ok before parsing
       if (!response.ok) {
-        const message = data.error || data.message || 'Failed to create product';
-        throw new Error(message);
+        let errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (e) {
+          // If response is not JSON, use status text
+          const text = await response.text();
+          if (text) errorMessage = text.substring(0, 200);
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Parse JSON response
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new Error('Invalid response from server. Please try again.');
       }
 
       return data;
@@ -121,7 +138,12 @@ class ApiService {
       if (error.name === 'AbortError') {
         throw new Error('Upload timeout - please try again with fewer images or smaller file sizes');
       }
-      throw error;
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error - please check your connection and try again');
+      }
+      // Re-throw with better error message
+      const message = error instanceof Error ? error.message : 'Failed to create product. Please try again.';
+      throw new Error(message);
     }
   }
 
@@ -141,9 +163,27 @@ class ApiService {
       });
 
       clearTimeout(timeoutId);
-      const data = await response.json();
+      
+      // Check if response is ok before parsing
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to update product');
+        let errorMessage = `Server error: ${response.status} ${response.statusText}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (e) {
+          // If response is not JSON, use status text
+          const text = await response.text();
+          if (text) errorMessage = text.substring(0, 200);
+        }
+        throw new Error(errorMessage);
+      }
+
+      // Parse JSON response
+      let data;
+      try {
+        data = await response.json();
+      } catch (e) {
+        throw new Error('Invalid response from server. Please try again.');
       }
 
       return data;
@@ -152,7 +192,12 @@ class ApiService {
       if (error.name === 'AbortError') {
         throw new Error('Upload timeout - please try again with fewer images or smaller file sizes');
       }
-      throw error;
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error - please check your connection and try again');
+      }
+      // Re-throw with better error message
+      const message = error instanceof Error ? error.message : 'Failed to update product. Please try again.';
+      throw new Error(message);
     }
   }
 

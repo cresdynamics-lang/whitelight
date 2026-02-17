@@ -174,10 +174,12 @@ class ProductController {
         try { await connection.rollback(); } catch (e) { /* ignore */ }
       }
       console.error('Create product error:', error);
+      console.error('Error stack:', error.stack);
+      const errorMessage = error.message || 'Unknown error occurred';
       res.status(500).json({
         success: false,
         message: 'Failed to create product',
-        error: error.message
+        error: process.env.NODE_ENV === 'development' ? errorMessage : 'An error occurred while creating the product. Please try again with fewer images or check file sizes.'
       });
     } finally {
       if (connection) connection.release();
