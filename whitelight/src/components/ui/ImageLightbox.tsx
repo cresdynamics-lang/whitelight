@@ -129,8 +129,11 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
         onClick={(e) => e.stopPropagation()}
       >
         <div className="relative w-full h-full flex items-center justify-center min-h-[400px]">
-          {/* Loading state */}
-          <div className="absolute inset-0 flex items-center justify-center">
+          {/* Loading state - only show while image is loading */}
+          <div 
+            className="absolute inset-0 flex items-center justify-center z-0"
+            id="lightbox-spinner"
+          >
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
           </div>
           
@@ -147,27 +150,28 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
             onLoad={(e) => {
               e.currentTarget.style.opacity = '1';
               // Hide loading spinner
-              const spinner = e.currentTarget.parentElement?.querySelector('.animate-spin');
+              const spinner = document.getElementById('lightbox-spinner');
               if (spinner) {
-                (spinner as HTMLElement).style.display = 'none';
+                spinner.style.display = 'none';
               }
             }}
             onError={(e) => {
               // Show error state
               e.currentTarget.style.opacity = '0';
-              const spinner = e.currentTarget.parentElement?.querySelector('.animate-spin');
+              const spinner = document.getElementById('lightbox-spinner');
               if (spinner) {
-                (spinner as HTMLElement).style.display = 'none';
+                spinner.style.display = 'none';
               }
               // Remove existing error message if any
-              const existingError = e.currentTarget.parentElement?.querySelector('.error-message');
+              const container = e.currentTarget.parentElement;
+              const existingError = container?.querySelector('.error-message');
               if (existingError) {
                 existingError.remove();
               }
               const errorDiv = document.createElement('div');
-              errorDiv.className = 'error-message text-white text-center p-4';
+              errorDiv.className = 'error-message text-white text-center p-4 relative z-20';
               errorDiv.textContent = 'Failed to load image';
-              e.currentTarget.parentElement?.appendChild(errorDiv);
+              container?.appendChild(errorDiv);
             }}
             loading="eager"
             fetchPriority="high"
