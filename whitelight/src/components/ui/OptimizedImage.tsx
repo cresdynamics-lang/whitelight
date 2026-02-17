@@ -36,6 +36,7 @@ export function OptimizedImage({
 }: OptimizedImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [placeholderLoaded, setPlaceholderLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
   const webpSrc = getWebpPath(src);
@@ -162,18 +163,17 @@ export function OptimizedImage({
 
   // Ultra-lightweight placeholder (1x1 transparent pixel)
   const placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"%3E%3C/svg%3E';
-  const [placeholderSrc, setPlaceholderSrc] = useState<string>(getPlaceholderUrl());
 
-  // Load blur-up placeholder immediately
+  // Load blur-up placeholder immediately for CDN images
   useEffect(() => {
-    if (isCdn && !isLoaded) {
+    if (isCdn && !isLoaded && !placeholderLoaded) {
       const placeholderImg = new Image();
       placeholderImg.src = getPlaceholderUrl();
       placeholderImg.onload = () => {
-        setPlaceholderSrc(getPlaceholderUrl());
+        setPlaceholderLoaded(true);
       };
     }
-  }, [src, isCdn, isLoaded]);
+  }, [src, isCdn, isLoaded, placeholderLoaded]);
 
   return (
     <div 
@@ -181,15 +181,16 @@ export function OptimizedImage({
       onClick={onClick}
     >
       {/* Blur-up placeholder - shows low-quality version instantly */}
-      {!isLoaded && isCdn && (
+      {!isLoaded && isCdn && placeholderLoaded && (
         <img
-          src={placeholderSrc}
+          src={getPlaceholderUrl()}
           alt=""
-          className="absolute inset-0 w-full h-full object-cover blur-sm scale-110"
+          className="absolute inset-0 w-full h-full object-cover"
           style={{ 
             filter: 'blur(10px)',
             transition: 'opacity 0.3s',
-            opacity: isLoaded ? 0 : 1
+            opacity: isLoaded ? 0 : 1,
+            transform: 'scale(1.1)'
           }}
           aria-hidden 
         />
@@ -222,7 +223,7 @@ export function OptimizedImage({
         </picture>
       ) : isCdn ? (
         <img
-          src={loading === 'eager' ? getOptimizedUrl(600, 65) : (isLoaded ? getOptimizedUrl(600, 65) : placeholderSrc)}
+          src={loading === 'eager' ? getOptimizedUrl(600, 65) : (isLoaded ? getOptimizedUrl(600, 65) : getPlaceholderUrl())}
           srcSet={cdnSrcSet}
           sizes={sizes}
           {...imgProps}
