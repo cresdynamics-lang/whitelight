@@ -3,13 +3,15 @@ import type { Product, ProductFilters, ProductsResponse, ProductCategory } from 
 import { apiService } from "@/services/apiService";
 import productsData from "@/data/products.json";
 
-// Transform backend response to frontend format
+// Transform backend response to frontend format (handles undefined/malformed response)
 const transformBackendResponse = (backendData: any): ProductsResponse => {
+  const data = backendData ?? {};
+  const products = Array.isArray(data.products) ? data.products : [];
   return {
-    products: backendData.products || [],
-    total: backendData.pagination?.total || backendData.products?.length || 0,
-    page: backendData.pagination?.page || 1,
-    limit: backendData.pagination?.limit || backendData.products?.length || 0,
+    products,
+    total: data.pagination?.total ?? products.length ?? 0,
+    page: data.pagination?.page ?? 1,
+    limit: data.pagination?.limit ?? products.length ?? 0,
   };
 };
 
@@ -66,7 +68,7 @@ export async function getProducts(filters?: ProductFilters): Promise<ProductsRes
     const response = await apiService.getProducts(params);
     
     if (response.success) {
-      return transformBackendResponse(response.data);
+      return transformBackendResponse(response.data ?? {});
     }
     
     throw new Error(response.message || "Failed to fetch products");
