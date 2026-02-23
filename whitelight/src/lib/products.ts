@@ -160,7 +160,9 @@ export async function getProductsByCategory(category: ProductCategory): Promise<
   return products;
 }
 
-// Format price with currency
+// Format price with currency (safe for NaN / invalid)
 export function formatPrice(price: number, currency: string = "KSh"): string {
-  return `${currency} ${price.toLocaleString()}`;
+  const n = Number(price);
+  if (!Number.isFinite(n)) return `${currency} 0`;
+  return `${currency} ${n.toLocaleString()}`;
 }

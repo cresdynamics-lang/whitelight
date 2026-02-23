@@ -29,8 +29,10 @@ export function VirtualProductGrid({
     4: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
   };
 
-  const visibleProducts = useMemo(() => 
-    safeProducts.slice(0, visibleItems), 
+  const visibleProducts = useMemo(() =>
+    safeProducts
+      .filter((p) => p != null && p.id)
+      .slice(0, visibleItems),
     [safeProducts, visibleItems]
   );
 
