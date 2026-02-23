@@ -58,7 +58,11 @@ export const seoConfig = {
       description: "🔥 Kenya's best trusted specialized seller for premium basketball shoes! High-performance court shoes for streetball & professional play. Superior grip, cushioning & ankle support. Same day delivery in Nairobi CBD • Expert selection • Visit Rware Building, Luthuli Avenue, Shop 410",
       keywords: "best basketball shoes Kenya, trusted basketball shoe seller Nairobi, court shoes Kenya, streetball footwear Nairobi, basketball sneakers Kenya, performance basketball shoes Nairobi, professional court footwear Kenya, basketball shoe specialists Nairobi CBD"
     },
-    
+    training: {
+      title: "👟 Best Training Shoes Kenya | Trusted Specialized Seller | Drills & Conditioning Footwear Nairobi",
+      description: "🔥 Kenya's best trusted specialized seller for premium training shoes! Built for drills, conditioning & multi-sport training. Lightweight, supportive & durable. Same day delivery in Nairobi CBD • Expert fitting • Visit Whitelight Store at Rware Building, Luthuli Avenue, Shop 410",
+      keywords: "best training shoes Kenya, trusted training shoe seller Nairobi, drills shoes Kenya, conditioning footwear Nairobi, multi-sport training shoes Kenya, athletic training shoes Nairobi, training footwear Kenya, training shoe specialists Nairobi CBD"
+    },
     accessories: {
       title: "✨ Premium Shoe Accessories Kenya | Trusted Specialized Seller | Care Products & Comfort Enhancers Nairobi",
       description: "🔥 Kenya's best trusted specialized seller for premium shoe accessories! Shoe care products, comfort enhancers & footwear maintenance items. Complete your athletic footwear collection. Same day delivery in Nairobi CBD • Visit Whitelight Store at Rware Building, Luthuli Avenue, Shop 410",

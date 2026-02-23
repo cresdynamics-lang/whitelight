@@ -10,8 +10,9 @@ interface CategoryBannerProps {
 
 const categoryLabels: Record<string, string> = {
   running: "Running Shoes",
-  trail: "Trail Shoes", 
+  trail: "Trail Shoes",
   gym: "Gym Shoes",
+  training: "Training Shoes",
   basketball: "Basketball Shoes",
   orthopedic: "Orthopedic Shoes",
 };
@@ -37,6 +38,11 @@ const localCategories: CategoryImage[] = [
     category: "basketball",
     url: "/couresel_images/basketball/bk1.png",
     alt_text: "Basketball Shoes"
+  },
+  {
+    category: "training",
+    url: "/couresel_images/gym/gym3.png",
+    alt_text: "Training Shoes"
   },
   {
     category: "orthopedic",

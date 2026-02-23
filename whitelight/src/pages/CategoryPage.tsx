@@ -14,6 +14,7 @@ const categoryTitles: Record<ProductCategory, string> = {
   running: "Running Shoes",
   trail: "Trail Shoes",
   gym: "Gym Shoes",
+  training: "Training Shoes",
   basketball: "Basketball Shoes",
   accessories: "Accessories",
 };
@@ -22,6 +23,7 @@ const categoryDescriptions: Record<ProductCategory, string> = {
   running: "Engineered for speed and comfort on every run",
   trail: "Built for rugged terrain and outdoor adventures",
   gym: "Designed for training, lifting, and high-intensity workouts",
+  training: "Built for drills, conditioning, and multi-sport training",
   basketball: "Performance footwear for the court",
   accessories: "Complete your footwear experience with premium accessories",
 };
@@ -54,6 +56,12 @@ const categoryImages: Record<ProductCategory, string[]> = {
     "/couresel_images/basketball/bk2.png",
     "/couresel_images/basketball/bk3.jpg",
     "/couresel_images/basketball/bk5.jpg",
+  ],
+  training: [
+    "/couresel_images/gym/gym.png",
+    "/couresel_images/gym/gym1.jpg",
+    "/couresel_images/gym/gym3.png",
+    "/couresel_images/gym/gym4.png",
   ],
   accessories: [
     "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800",

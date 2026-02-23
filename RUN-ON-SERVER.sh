@@ -1,10 +1,16 @@
 #!/bin/bash
 # Copy and paste this entire script into your server terminal
 
-cd /home/cresdynamics/whitelight || cd /home/brian/whitelight || exit 1
+cd /home/whitelight/whitelight || cd /home/cresdynamics/whitelight || cd /home/brian/whitelight || exit 1
 
 echo "📥 Pulling latest code..."
 git pull origin main || git pull origin master
+
+echo ""
+echo "🗄️  Running database migrations..."
+cd whitelight-backend
+node scripts/runMigrations.js || echo "⚠️  Migrations skipped or failed"
+cd ..
 
 echo ""
 echo "🔨 Rebuilding frontend..."

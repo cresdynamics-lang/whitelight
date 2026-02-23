@@ -62,6 +62,7 @@ const App = () => {
               <Route path="/running" element={<CategoryPage />} />
               <Route path="/trail" element={<CategoryPage />} />
               <Route path="/gym" element={<CategoryPage />} />
+              <Route path="/training" element={<CategoryPage />} />
               <Route path="/basketball" element={<CategoryPage />} />
               
               {/* Admin routes */}

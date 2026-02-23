@@ -15,6 +15,16 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [imageError, setImageError] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  
+  // Helper function to get optimized image URL for faster loading
+  const getOptimizedImageUrl = (url: string, width: number = 1200, quality: number = 80) => {
+    if (url.includes('digitaloceanspaces.com')) {
+      // Use CDN optimization parameters for faster loading
+      // For lightbox, use 1200px width (good for most screens) with WebP format
+      return `${url}?w=${width}&q=${quality}&f=webp&auto=compress&dpr=1`;
+    }
+    return url;
+  };
 
   // Update current index when initialIndex changes
   useEffect(() => {
@@ -89,7 +99,21 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
     };
   }, [isOpen]);
 
-  // Preload next and previous images for smoother navigation
+  // Preload current image immediately when lightbox opens
+  useEffect(() => {
+    if (!isOpen || images.length === 0) return;
+    
+    const currentImage = images[currentIndex];
+    if (currentImage?.url) {
+      // Preload optimized version immediately
+      const optimizedUrl = getOptimizedImageUrl(currentImage.url, 1200, 80);
+      const img = new Image();
+      img.src = optimizedUrl;
+      console.log('ImageLightbox: Preloading current image', optimizedUrl.substring(0, 60));
+    }
+  }, [isOpen, currentIndex, images]);
+
+  // Preload next and previous images for smoother navigation (with optimized URLs)
   useEffect(() => {
     if (!isOpen || images.length === 0) return;
 
@@ -97,17 +121,17 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
     const nextIndex = (currentIndex + 1) % images.length;
     const prevIndex = (currentIndex - 1 + images.length) % images.length;
 
-    // Preload next image
-    if (images[nextIndex]) {
+    // Preload next image (optimized)
+    if (images[nextIndex]?.url) {
       const nextImg = new Image();
-      nextImg.src = images[nextIndex].url;
+      nextImg.src = getOptimizedImageUrl(images[nextIndex].url, 1200, 80);
       preloadImages.push(nextImg);
     }
 
-    // Preload previous image
-    if (images[prevIndex]) {
+    // Preload previous image (optimized)
+    if (images[prevIndex]?.url) {
       const prevImg = new Image();
-      prevImg.src = images[prevIndex].url;
+      prevImg.src = getOptimizedImageUrl(images[prevIndex].url, 1200, 80);
       preloadImages.push(prevImg);
     }
 
@@ -228,16 +252,16 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
             </div>
           )}
           
-          {/* Main image - use regular img for lightbox for faster loading */}
+          {/* Main image - use optimized URL for faster loading */}
           {!imageError && (
             <img
-              key={`lightbox-img-${validIndex}-${Date.now()}`} // Force re-render on index change
-              src={currentImage.url}
+              key={`lightbox-img-${validIndex}`} // Force re-render on index change
+              src={getOptimizedImageUrl(currentImage.url, 1200, 80)}
               alt={currentImage.alt || `Image ${validIndex + 1}`}
               className="lightbox-image max-w-full max-h-[90vh] object-contain"
               style={{ 
                 opacity: imageLoaded ? 1 : 0,
-                transition: 'opacity 0.3s ease-in-out',
+                transition: 'opacity 0.2s ease-in-out',
                 zIndex: 15,
                 position: 'relative',
                 maxWidth: '100%',
@@ -246,18 +270,18 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
                 height: 'auto'
               }}
               onLoad={(e) => {
-                console.log('ImageLightbox: Image loaded successfully', currentImage.url?.substring(0, 50));
+                console.log('ImageLightbox: Image loaded successfully');
                 setImageLoaded(true);
                 setImageError(false);
                 e.currentTarget.style.opacity = '1';
               }}
               onError={(e) => {
-                console.error('ImageLightbox: Image failed to load', { 
-                  url: currentImage.url, 
-                  error: e.currentTarget.error,
-                  naturalWidth: e.currentTarget.naturalWidth,
-                  naturalHeight: e.currentTarget.naturalHeight
-                });
+                console.error('ImageLightbox: Image failed to load, trying fallback', currentImage.url);
+                // Try fallback to original URL if optimized fails
+                if (e.currentTarget.src !== currentImage.url) {
+                  e.currentTarget.src = currentImage.url;
+                  return;
+                }
                 setImageError(true);
                 setImageLoaded(false);
               }}

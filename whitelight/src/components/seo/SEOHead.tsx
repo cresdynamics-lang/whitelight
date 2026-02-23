@@ -384,6 +384,7 @@ function getCategoryName(category: string): string {
     running: "Running Shoes",
     trail: "Trail Running Shoes",
     gym: "Gym Training Shoes",
+    training: "Training Shoes",
     basketball: "Basketball Shoes",
     accessories: "Shoe Accessories",
   };

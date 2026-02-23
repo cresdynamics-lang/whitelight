@@ -104,6 +104,11 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link to="/category/training" className="text-gray-300 hover:text-white transition-colors text-sm">
+                    Training
+                  </Link>
+                </li>
+                <li>
                   <Link to="/contact" className="text-gray-300 hover:text-white transition-colors text-sm">
                     Contact Us
                   </Link>
@@ -174,6 +179,11 @@ export function Footer() {
               <li>
                 <Link to="/category/gym" className="text-gray-300 hover:text-white transition-colors text-sm">
                   Casuals
+                </Link>
+              </li>
+              <li>
+                <Link to="/category/training" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Training
                 </Link>
               </li>
               <li>

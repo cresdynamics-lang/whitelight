@@ -26,6 +26,7 @@ const CATEGORIES: { value: ProductCategory; label: string }[] = [
   { value: "running", label: "Running" },
   { value: "trail", label: "Trail" },
   { value: "gym", label: "Gym" },
+  { value: "training", label: "Training" },
   { value: "basketball", label: "Basketball" },
   { value: "accessories", label: "Accessories" },
 ];

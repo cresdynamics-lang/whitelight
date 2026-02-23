@@ -41,6 +41,12 @@ echo "📦 Updating backend..."
 cd whitelight-backend
 npm install --production
 
+# Run DB migrations (keeps DB in sync with code, e.g. training category)
+if [ -f "scripts/runMigrations.js" ]; then
+  echo "🗄️  Running database migrations..."
+  node scripts/runMigrations.js || echo "⚠️  Migrations failed (MySQL down or already applied)"
+fi
+
 # Restart backend (PM2)
 if command -v pm2 &> /dev/null; then
   echo "🔄 Restarting backend with PM2..."

@@ -18,6 +18,7 @@ router.get('/sitemap.xml', async (req, res) => {
       { url: '/category/running', priority: '0.9', changefreq: 'weekly' },
       { url: '/category/trail', priority: '0.9', changefreq: 'weekly' },
       { url: '/category/gym', priority: '0.9', changefreq: 'weekly' },
+      { url: '/category/training', priority: '0.9', changefreq: 'weekly' },
       { url: '/category/basketball', priority: '0.9', changefreq: 'weekly' },
       { url: '/category/accessories', priority: '0.8', changefreq: 'weekly' },
       { url: '/buying-guide', priority: '0.8', changefreq: 'monthly' },

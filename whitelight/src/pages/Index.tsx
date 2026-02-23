@@ -19,6 +19,7 @@ const Index = () => {
   const { data: runningShoes = [], error: runningError } = useProductsByCategory("running");
   const { data: basketballShoes = [], error: basketballError } = useProductsByCategory("basketball");
   const { data: gymShoes = [], error: gymError } = useProductsByCategory("gym");
+  const { data: trainingShoes = [], error: trainingError } = useProductsByCategory("training");
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -81,6 +82,14 @@ const Index = () => {
           products={gymShoes.slice(0, 8)}
           columns={4}
           className="bg-secondary/30"
+          itemsPerPage={8}
+        />
+
+        {/* Training Shoes Section */}
+        <VirtualProductGrid
+          title="Training Shoes"
+          products={trainingShoes.slice(0, 8)}
+          columns={4}
           itemsPerPage={8}
         />
 
