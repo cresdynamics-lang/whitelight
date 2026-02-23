@@ -3,10 +3,24 @@ import type { Product, ProductFilters, ProductsResponse, ProductCategory } from 
 import { apiService } from "@/services/apiService";
 import productsData from "@/data/products.json";
 
+// Normalize a single product so images/variants are always arrays and inStock is boolean
+function normalizeProduct(p: any): any {
+  if (!p || typeof p !== "object") return p;
+  const images = Array.isArray(p.images) ? p.images : [];
+  const variants = Array.isArray(p.variants)
+    ? p.variants.map((v: any) => ({
+        ...v,
+        inStock: Boolean(v?.inStock ?? v?.in_stock),
+      }))
+    : [];
+  return { ...p, images, variants };
+}
+
 // Transform backend response to frontend format (handles undefined/malformed response)
 const transformBackendResponse = (backendData: any): ProductsResponse => {
   const data = backendData ?? {};
-  const products = Array.isArray(data.products) ? data.products : [];
+  const raw = Array.isArray(data.products) ? data.products : [];
+  const products = raw.map(normalizeProduct);
   return {
     products,
     total: data.pagination?.total ?? products.length ?? 0,
@@ -91,8 +105,8 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
     const response = await apiService.getProduct(slug);
     
-    if (response.success) {
-      return response.data;
+    if (response.success && response.data) {
+      return normalizeProduct(response.data);
     }
     
     return null;

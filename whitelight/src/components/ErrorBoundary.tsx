@@ -26,15 +26,19 @@ export class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError && this.state.error) {
       const msg = this.state.error.message || String(this.state.error);
-      const showDetail = typeof window !== "undefined" && (window.location.search.includes("debug=1") || !import.meta.env.PROD);
+      const showFull = typeof window !== "undefined" && window.location.search.includes("debug=1");
       return (
         <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-background text-foreground font-sans">
           <h1 className="text-xl font-semibold mb-2">Something went wrong</h1>
           <p className="text-muted-foreground text-center mb-4 max-w-md">
             The page could not load. Try refreshing. If it keeps happening, clear your browser cache.
           </p>
-          {showDetail && (
-            <pre className="text-left text-sm bg-muted p-3 rounded mb-4 max-w-lg overflow-auto">
+          <p className="text-sm text-left max-w-lg mb-2 font-mono break-words">
+            {showFull ? msg : msg.slice(0, 200)}
+            {!showFull && msg.length > 200 && "…"}
+          </p>
+          {showFull && (
+            <pre className="text-left text-sm bg-muted p-3 rounded mb-4 max-w-lg overflow-auto max-h-48">
               {msg}
             </pre>
           )}
