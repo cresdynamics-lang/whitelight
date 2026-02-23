@@ -1,10 +1,12 @@
 // server.js
+const path = require('path');
+// Load .env from backend root first so DB/auth env are set under PM2 (cwd may not be backend)
+require('dotenv').config({ path: path.join(__dirname, '.env') });
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-// Do NOT load dotenv here - config/database.js loads .env from backend folder explicitly.
-// Loading here uses process.cwd() which can be wrong when run via PM2.
 
 const { testConnection } = require('./config/database');
 const productRoutes = require('./routes/products');
