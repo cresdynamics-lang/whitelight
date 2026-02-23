@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
-require('dotenv').config();
+// Do NOT load dotenv here - config/database.js loads .env from backend folder explicitly.
+// Loading here uses process.cwd() which can be wrong when run via PM2.
 
 const { testConnection } = require('./config/database');
 const productRoutes = require('./routes/products');
