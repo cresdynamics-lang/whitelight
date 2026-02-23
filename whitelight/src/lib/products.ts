@@ -1,4 +1,4 @@
-// Product data service - Fallback to local data when API fails
+// Product data service - Production uses ONLY backend API data
 import type { Product, ProductFilters, ProductsResponse, ProductCategory } from "@/types/product";
 import { apiService } from "@/services/apiService";
 import productsData from "@/data/products.json";
@@ -13,7 +13,7 @@ const transformBackendResponse = (backendData: any): ProductsResponse => {
   };
 };
 
-// Fallback to local data
+// Local data helper (kept for potential future use in local/dev-only tools)
 const getLocalProducts = (filters?: ProductFilters): ProductsResponse => {
   let products = productsData.products || [];
   
@@ -69,11 +69,18 @@ export async function getProducts(filters?: ProductFilters): Promise<ProductsRes
       return transformBackendResponse(response.data);
     }
     
-    throw new Error(response.message || 'Failed to fetch products');
+    throw new Error(response.message || "Failed to fetch products");
   } catch (error) {
-    console.error('Error fetching products, using local data:', error);
-    // Fallback to local data
-    return getLocalProducts(filters);
+    // In production we DO NOT fall back to placeholder/local data.
+    // If the API fails, surface an empty list so the UI shows "No products found"
+    // instead of demo products that are not in the real database.
+    console.error("Error fetching products from API:", error);
+    return {
+      products: [],
+      total: 0,
+      page: 1,
+      limit: 0,
+    };
   }
 }
 
@@ -88,10 +95,10 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     
     return null;
   } catch (error) {
-    console.error('Error fetching product, using local data:', error);
-    // Fallback to local data
-    const product = productsData.products.find(p => p.slug === slug);
-    return product || null;
+    // Do NOT fall back to local demo products in production; if the API fails,
+    // return null so the UI can show an appropriate error/404 state.
+    console.error("Error fetching product from API:", error);
+    return null;
   }
 }
 
