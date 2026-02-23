@@ -5,13 +5,13 @@ set -e
 
 echo "🚀 Starting deployment..."
 
-# Detect project user
-if [ -d "/home/cresdynamics/whitelight" ]; then
+# Detect project directory
+if [ -d "/home/whitelight/whitelight" ]; then
+  PROJECT_DIR="/home/whitelight/whitelight"
+elif [ -d "/home/cresdynamics/whitelight" ]; then
   PROJECT_DIR="/home/cresdynamics/whitelight"
-  USER="cresdynamics"
 elif [ -d "/home/brian/whitelight" ]; then
   PROJECT_DIR="/home/brian/whitelight"
-  USER="brian"
 else
   echo "❌ Project directory not found"
   exit 1
@@ -21,6 +21,11 @@ cd "$PROJECT_DIR"
 
 echo "📥 Pulling latest code..."
 git pull origin main || git pull origin master
+
+echo ""
+echo "🔄 Running database migrations..."
+cd whitelight-backend && node scripts/runMigrations.js 2>/dev/null || true
+cd ..
 
 echo ""
 echo "🔨 Rebuilding frontend..."

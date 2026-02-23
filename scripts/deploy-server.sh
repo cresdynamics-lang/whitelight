@@ -77,7 +77,10 @@ else
   echo "📦 Updating backend..."
   cd whitelight-backend
   npm install --production
-  
+  if [ -f "scripts/runMigrations.js" ]; then
+    echo "🔄 Running database migrations..."
+    node scripts/runMigrations.js || echo "⚠️  Migrations failed (check MySQL and .env)"
+  fi
   if command -v pm2 &> /dev/null; then
     echo "🔄 Restarting backend with PM2..."
     pm2 restart all || pm2 start server.js --name whitelight-backend
