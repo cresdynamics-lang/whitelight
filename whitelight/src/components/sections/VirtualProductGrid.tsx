@@ -14,11 +14,12 @@ interface VirtualProductGridProps {
 
 export function VirtualProductGrid({
   title,
-  products,
+  products = [],
   columns = 4,
   className,
   itemsPerPage = 12,
 }: VirtualProductGridProps) {
+  const safeProducts = Array.isArray(products) ? products : [];
   const [visibleItems, setVisibleItems] = useState(itemsPerPage);
   const { ref, isVisible } = useLazyLoading();
 
@@ -29,17 +30,17 @@ export function VirtualProductGrid({
   };
 
   const visibleProducts = useMemo(() => 
-    products.slice(0, visibleItems), 
-    [products, visibleItems]
+    safeProducts.slice(0, visibleItems), 
+    [safeProducts, visibleItems]
   );
 
-  const hasMore = visibleItems < products.length;
+  const hasMore = visibleItems < safeProducts.length;
 
   useEffect(() => {
     if (isVisible && hasMore) {
-      setVisibleItems(prev => Math.min(prev + itemsPerPage, products.length));
+      setVisibleItems(prev => Math.min(prev + itemsPerPage, safeProducts.length));
     }
-  }, [isVisible, hasMore, itemsPerPage, products.length]);
+  }, [isVisible, hasMore, itemsPerPage, safeProducts.length]);
 
   return (
     <section className={cn('py-12 md:py-16', className)}>
@@ -63,7 +64,7 @@ export function VirtualProductGrid({
           </div>
         )}
 
-        {products.length === 0 && (
+        {safeProducts.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">No products found.</p>
           </div>
