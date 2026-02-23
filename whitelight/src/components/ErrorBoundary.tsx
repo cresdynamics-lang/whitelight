@@ -1,4 +1,4 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Component, type ErrorInfo, type ReactNode } from "react";
 
 interface Props {
   children: ReactNode;
@@ -20,38 +20,27 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Uncaught error:', error, errorInfo);
+    console.error("App error:", error, errorInfo.componentStack);
   }
 
   render() {
-    if (this.state.hasError) {
+    if (this.state.hasError && this.state.error) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50">
-          <div className="text-center p-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Something went wrong</h1>
-            <p className="text-gray-600 mb-4">
-              {this.state.error?.message || 'An unexpected error occurred'}
-            </p>
-            <button
-              onClick={() => {
-                this.setState({ hasError: false, error: null });
-                window.location.href = '/';
-              }}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Go to Home
-            </button>
-            <details className="mt-4 text-left">
-              <summary className="cursor-pointer text-sm text-gray-500">Error Details</summary>
-              <pre className="mt-2 text-xs bg-gray-100 p-4 rounded overflow-auto">
-                {this.state.error?.stack}
-              </pre>
-            </details>
-          </div>
+        <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-background text-foreground font-sans">
+          <h1 className="text-xl font-semibold mb-2">Something went wrong</h1>
+          <p className="text-muted-foreground text-center mb-4 max-w-md">
+            The page could not load. Try refreshing. If it keeps happening, clear your browser cache.
+          </p>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:opacity-90"
+          >
+            Reload page
+          </button>
         </div>
       );
     }
-
     return this.props.children;
   }
 }

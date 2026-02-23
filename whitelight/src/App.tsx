@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CartProvider } from "@/context/CartContext";
 import { SearchProvider } from "@/context/SearchContext";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
@@ -37,6 +38,7 @@ const queryClient = new QueryClient({
 
 const App = () => {
   return (
+    <ErrorBoundary>
     <QueryClientProvider client={queryClient}>
     <HelmetProvider>
       <AdminAuthProvider>
@@ -128,6 +130,7 @@ const App = () => {
     </AdminAuthProvider>
     </HelmetProvider>
     </QueryClientProvider>
+    </ErrorBoundary>
   );
 };
 
