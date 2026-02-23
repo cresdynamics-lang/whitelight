@@ -2,6 +2,9 @@
 const path = require('path');
 // Load .env from backend root first so DB/auth env are set under PM2 (cwd may not be backend)
 require('dotenv').config({ path: path.join(__dirname, '.env') });
+if (!process.env.DB_USER) {
+  console.warn('[ENV] DB_USER not set - .env path was', path.join(__dirname, '.env'));
+}
 
 const express = require('express');
 const cors = require('cors');
