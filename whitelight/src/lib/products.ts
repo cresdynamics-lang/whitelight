@@ -3,24 +3,48 @@ import type { Product, ProductFilters, ProductsResponse, ProductCategory } from 
 import { apiService } from "@/services/apiService";
 import productsData from "@/data/products.json";
 
-// Normalize a single product so images/variants are always arrays and inStock is boolean
+// Normalize a single product: safe arrays, boolean inStock, and required display fields never null/undefined
 function normalizeProduct(p: any): any {
-  if (!p || typeof p !== "object") return p;
+  if (!p || typeof p !== "object") return null;
   const images = Array.isArray(p.images) ? p.images : [];
   const variants = Array.isArray(p.variants)
     ? p.variants.map((v: any) => ({
         ...v,
+        id: v?.id ?? `${p.id}-${v?.size ?? "s"}`,
+        size: v?.size ?? 0,
         inStock: Boolean(v?.inStock ?? v?.in_stock),
       }))
     : [];
-  return { ...p, images, variants };
+  return {
+    ...p,
+    id: String(p.id ?? ""),
+    slug: String(p.slug ?? p.id ?? ""),
+    name: String(p.name ?? "Product"),
+    brand: String(p.brand ?? ""),
+    category: p.category ?? "running",
+    price: Number(p.price) || 0,
+    originalPrice: p.originalPrice != null ? Number(p.originalPrice) : undefined,
+    description: String(p.description ?? ""),
+    tags: Array.isArray(p.tags) ? p.tags : [],
+    images,
+    variants,
+    isNew: Boolean(p.isNew ?? p.is_new),
+    isBestSeller: Boolean(p.isBestSeller ?? p.is_best_seller),
+    isOnOffer: Boolean(p.isOnOffer ?? p.is_on_offer),
+    createdAt: p.createdAt ?? p.created_at ?? "",
+  };
+}
+
+// Only include products that have at least an id (so display never crashes on missing key/data)
+function safeProductList(raw: any[]): any[] {
+  return raw.map(normalizeProduct).filter((p) => p != null && p.id);
 }
 
 // Transform backend response to frontend format (handles undefined/malformed response)
 const transformBackendResponse = (backendData: any): ProductsResponse => {
   const data = backendData ?? {};
   const raw = Array.isArray(data.products) ? data.products : [];
-  const products = raw.map(normalizeProduct);
+  const products = safeProductList(raw);
   return {
     products,
     total: data.pagination?.total ?? products.length ?? 0,

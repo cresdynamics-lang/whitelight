@@ -21,19 +21,27 @@ export function ProductCard({ product, className }: ProductCardProps) {
   const { addToCart } = useCart();
   const [selectedSize, setSelectedSize] = useState<number | string | null>(null);
   const { ref, isVisible } = useLazyLoading();
-  
-  const hasDiscount = product.originalPrice && product.originalPrice > product.price;
-  const discountPercent = hasDiscount
-    ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
+
+  // Defensive: ensure we never throw when products load (missing/null from API)
+  const id = product?.id ?? "";
+  const slug = product?.slug ?? product?.id ?? "";
+  const name = String(product?.name ?? "Product");
+  const brand = String(product?.brand ?? "");
+  const category = String(product?.category ?? "running");
+  const price = Number(product?.price) || 0;
+  const originalPrice = product?.originalPrice != null ? Number(product.originalPrice) : undefined;
+  const hasDiscount = originalPrice != null && originalPrice > price;
+  const discountPercent = hasDiscount && originalPrice
+    ? Math.round(((originalPrice - price) / originalPrice) * 100)
     : 0;
 
-  const images = product.images ?? [];
-  const variants = product.variants ?? [];
-  const availableSizes = variants.filter((v) => v.inStock);
+  const images = Array.isArray(product?.images) ? product.images : [];
+  const variants = Array.isArray(product?.variants) ? product.variants : [];
+  const availableSizes = variants.filter((v) => Boolean(v?.inStock ?? (v as any)?.in_stock));
 
   // Helper function to display size correctly for accessories
-  const getDisplaySize = (size: number | string, category: string) => {
-    if (category === 'accessories' && typeof size === 'number') {
+  const getDisplaySize = (size: number | string, cat: string) => {
+    if (String(cat) === "accessories" && typeof size === "number") {
       const sizeMap: Record<number, string> = {
         1: 'XS', 2: '2XL', 3: '3XL', 4: '4XL', 5: '5XL', 
         6: 'L', 7: 'XL', 8: 'M', 9: 'S'
@@ -47,25 +55,28 @@ export function ProductCard({ product, className }: ProductCardProps) {
     e.preventDefault();
     e.stopPropagation();
 
-    const size = selectedSize || availableSizes[0]?.size;
-    if (!size) {
+    const size = selectedSize ?? availableSizes[0]?.size;
+    if (size == null || size === "") {
       toast.error("No sizes available");
       return;
     }
 
     addToCart(product, size, 1);
-    toast.success(`${product.name} added to cart`);
+    toast.success(`${name} added to cart`);
   };
+
+  // Skip rendering if product has no id (should not happen if list is filtered)
+  if (!id) return null;
 
   return (
     <div ref={ref} className={cn("group block product-card", className)}>
-      <Link to={`/product/${product.slug}`}>
+      <Link to={`/product/${slug}`}>
         {/* Image container with green border */}
         <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-primary bg-white mb-3">
           {isVisible ? (
             <OptimizedImage
-              src={images[0]?.url || ''}
-              alt={images[0]?.alt || product.name}
+              src={images[0]?.url ?? ""}
+              alt={images[0]?.alt ?? name}
               className="h-full w-full transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
               fetchPriority="low"
@@ -77,7 +88,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           
           {/* Badges */}
           <div className="absolute top-2 left-2 flex flex-col gap-1">
-            {product.isNew && (
+            {product?.isNew && (
               <Badge className="bg-primary text-primary-foreground text-xs px-2 py-0.5">
                 NEW
               </Badge>
@@ -90,7 +101,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           </div>
           
           {/* Offer Badge - Top Right */}
-          {product.isOnOffer && (
+          {product?.isOnOffer && (
             <div className="absolute top-2 right-2">
               <Badge className="bg-orange-500 text-white text-xs px-2 py-0.5">
                 OFFER
@@ -103,22 +114,22 @@ export function ProductCard({ product, className }: ProductCardProps) {
       {/* Product info */}
       <div className="space-y-2">
         <p className="text-xs text-muted-foreground uppercase tracking-wider">
-          {product.brand}
+          {brand}
         </p>
-        <Link to={`/product/${product.slug}`}>
+        <Link to={`/product/${slug}`}>
           <h3 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
-            {product.name}
+            {name}
           </h3>
         </Link>
         
         {/* Price */}
         <div className="flex items-center gap-2">
           <span className="font-semibold text-foreground">
-            {formatPrice(product.price, siteConfig.currency)}
+            {formatPrice(price, siteConfig.currency)}
           </span>
-          {hasDiscount && (
+          {hasDiscount && originalPrice != null && (
             <span className="text-sm text-muted-foreground line-through">
-              {formatPrice(product.originalPrice!, siteConfig.currency)}
+              {formatPrice(originalPrice, siteConfig.currency)}
             </span>
           )}
         </div>
@@ -126,10 +137,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
         {/* Sizes */}
         <div className="flex flex-wrap gap-1">
           {availableSizes.slice(0, 5).map((variant) => {
-            const displaySize = getDisplaySize(variant.size, product.category);
+            const displaySize = getDisplaySize(variant?.size ?? "", category);
             return (
               <button
-                key={variant.id}
+                key={variant?.id ?? `${id}-${variant?.size ?? "s"}`}
                 onClick={(e) => {
                   e.preventDefault();
                   setSelectedSize(variant.size);
