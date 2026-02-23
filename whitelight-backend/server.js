@@ -3,6 +3,14 @@ const path = require('path');
 // Load .env from backend root first so DB/auth env are set under PM2 (cwd may not be backend)
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
+// Keep process alive on unhandled rejections (e.g. DB down) and log instead of crashing
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+});
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
