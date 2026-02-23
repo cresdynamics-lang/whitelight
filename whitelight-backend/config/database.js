@@ -1,5 +1,8 @@
 const mysql = require('mysql2/promise');
-require('dotenv').config();
+const path = require('path');
+
+// Load .env from backend root so it works when cwd is different (e.g. PM2)
+require('dotenv').config({ path: path.join(__dirname, '..', '.env') });
 
 const dbConfig = {
   host: process.env.DB_HOST || 'localhost',

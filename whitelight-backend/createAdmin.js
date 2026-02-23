@@ -1,6 +1,7 @@
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcrypt');
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 async function createAdminTable() {
   const connection = await mysql.createConnection({
