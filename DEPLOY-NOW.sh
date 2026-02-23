@@ -1,5 +1,6 @@
 #!/bin/bash
 # Complete deployment script - Copy entire block and paste into server SSH terminal
+# First time? Ensure MySQL is running on the server (see DATABASE-DIGITAL-OCEAN.md and scripts/setup-mysql-digitalocean.sh).
 
 set -e
 

@@ -56,6 +56,7 @@ So: **a product selected in different categories appears on every category page 
 
 Before deploying:
 
+- [ ] **Database on server:** MySQL is running on the droplet (see [DATABASE-DIGITAL-OCEAN.md](DATABASE-DIGITAL-OCEAN.md); run `sudo bash scripts/setup-mysql-digitalocean.sh` on a fresh server) or use a DigitalOcean Managed Database and set `DB_HOST` to its host.
 - [ ] Server has MySQL running and backend `.env` has correct `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` (and optionally `DB_PORT`).
 - [ ] Deploy script will run migrations (already in `deploy-server.sh`, `RUN-ON-SERVER.sh`, `DEPLOY-NOW.sh`), so **005 will run on the server** when you deploy.
 - [ ] After deploy: frontend rebuild, backend restart (e.g. PM2), Nginx reload as per your scripts.

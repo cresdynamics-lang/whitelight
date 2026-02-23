@@ -193,26 +193,24 @@ certbot --nginx -d whitelightstore.co.ke -d www.whitelightstore.co.ke
 
 ---
 
-## Step 11: Setup Database
+## Step 11: Setup Database (run on Digital Ocean server)
+
+**Option A – use the setup script (recommended):**
 
 ```bash
-# Install MySQL
-sudo apt-get install mysql-server
+cd ~/whitelight
+sudo bash scripts/setup-mysql-digitalocean.sh
+# Set DB_USER, DB_PASSWORD, DB_NAME in whitelight-backend/.env as shown by the script
+```
 
-# Secure installation
-sudo mysql_secure_installation
+**Option B – manual install:** See [DATABASE-DIGITAL-OCEAN.md](DATABASE-DIGITAL-OCEAN.md) for manual MySQL install or using a DigitalOcean Managed Database.
 
-# Create database and user
-sudo mysql <<EOF
-CREATE DATABASE whitelight_db;
-CREATE USER 'whitelight_user'@'localhost' IDENTIFIED BY 'your_password';
-GRANT ALL PRIVILEGES ON whitelight_db.* TO 'whitelight_user'@'localhost';
-FLUSH PRIVILEGES;
-EOF
+Then run migrations:
 
-# Run migrations
+```bash
 cd ~/whitelight/whitelight-backend
-node migrate.js
+node scripts/runMigrations.js
+# Optional: node createAdmin.js  (creates default admin user)
 ```
 
 ---
