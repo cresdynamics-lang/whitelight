@@ -27,7 +27,9 @@ export function ProductCard({ product, className }: ProductCardProps) {
     ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
     : 0;
 
-  const availableSizes = product.variants.filter((v) => v.inStock);
+  const images = product.images ?? [];
+  const variants = product.variants ?? [];
+  const availableSizes = variants.filter((v) => v.inStock);
 
   // Helper function to display size correctly for accessories
   const getDisplaySize = (size: number | string, category: string) => {
@@ -62,8 +64,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
         <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-primary bg-white mb-3">
           {isVisible ? (
             <OptimizedImage
-              src={product.images[0]?.url || ''}
-              alt={product.images[0]?.alt || product.name}
+              src={images[0]?.url || ''}
+              alt={images[0]?.alt || product.name}
               className="h-full w-full transition-transform duration-500 group-hover:scale-105"
               loading="lazy"
               fetchPriority="low"
