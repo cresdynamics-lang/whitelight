@@ -72,7 +72,10 @@ CREATE TABLE IF NOT EXISTS order_items (
 );
 
 -- Create indexes for better performance
-CREATE INDEX idx_products_category ON products(category);
+-- NOTE: idx_products_category already exists in production; leaving this CREATE
+-- here makes re-running migrations fail with "Duplicate key name 'idx_products_category'".
+-- Since the index is already present, it is safe to comment this out.
+-- CREATE INDEX idx_products_category ON products(category);
 CREATE INDEX idx_products_brand ON products(brand);
 CREATE INDEX idx_products_created_at ON products(created_at);
 CREATE INDEX idx_orders_status ON orders(status);
