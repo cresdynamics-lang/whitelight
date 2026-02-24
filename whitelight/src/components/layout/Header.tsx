@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
-import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { SearchBar } from "@/components/SearchBar";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
@@ -24,12 +23,11 @@ export function Header() {
       <div className="container flex h-20 items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
-          <OptimizedImage
+          <img
             src={siteConfig.logo}
             alt={siteConfig.name}
-            className="h-12 w-12 sm:h-16 sm:w-16 rounded-full ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300"
+            className="h-12 w-12 sm:h-16 sm:w-16 rounded-full ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300 object-cover"
             loading="eager"
-            fetchPriority="high"
           />
           <span className="font-heading text-lg sm:text-xl lg:text-2xl font-black tracking-tight bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-blue-600 group-hover:via-purple-600 group-hover:to-pink-600 transition-all duration-300 hidden xs:block">
             {siteConfig.name}

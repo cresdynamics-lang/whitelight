@@ -6,7 +6,6 @@ import { formatPrice } from "@/lib/products";
 import { siteConfig } from "@/config/site";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
@@ -74,13 +73,11 @@ export function ProductCard({ product, className }: ProductCardProps) {
         {/* Image container with green border */}
         <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-primary bg-white mb-3">
           {isVisible ? (
-            <OptimizedImage
+            <img
               src={images[0]?.url ?? ""}
               alt={images[0]?.alt ?? name}
-              className="h-full w-full transition-transform duration-500 group-hover:scale-105"
+              className="h-full w-full transition-transform duration-500 group-hover:scale-105 object-cover"
               loading="lazy"
-              fetchPriority="low"
-              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
             />
           ) : (
             <div className="h-full w-full bg-gray-200 animate-pulse" />
