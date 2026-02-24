@@ -149,7 +149,8 @@ export function OptimizedImage({
     className: imgClass,
     onLoad: handleLoad,
     onError: () => setHasError(true),
-    ...(fetchPriority && { fetchPriority }),
+    // Use lowercase attribute to avoid React warning while still hinting priority to the browser
+    ...(fetchPriority && { fetchpriority: fetchPriority }),
     ...(loading === 'lazy' && !isLoaded && { 
       'data-src': isCdn ? getOptimizedUrl(600, 65) : (webpSrc || src),
       src: getPlaceholderUrl()
