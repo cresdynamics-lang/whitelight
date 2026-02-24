@@ -27,8 +27,8 @@ cd ..
 
 echo ""
 echo "🔄 Restarting services..."
+pm2 restart all 2>/dev/null && pm2 save 2>/dev/null || sudo systemctl restart whitelight-backend 2>/dev/null || true
 sudo systemctl reload nginx 2>/dev/null || true
-pm2 restart all 2>/dev/null || sudo systemctl restart whitelight-backend 2>/dev/null || echo "⚠️  Restart PM2 or backend service manually"
 
 echo ""
 echo "✅ Deploy done. Site: https://whitelightstore.co.ke"
