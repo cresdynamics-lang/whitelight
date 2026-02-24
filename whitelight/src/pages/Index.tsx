@@ -1,15 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { PromotionBanner } from "@/components/PromotionBanner";
-import { HeroSection } from "@/components/sections/HeroSection";
 import { VirtualProductGrid } from "@/components/sections/VirtualProductGrid";
-import { CategoryBanner } from "@/components/sections/CategoryBanner";
-import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
-import { Newsletter } from "@/components/sections/Newsletter";
-import { CtaBanner } from "@/components/sections/CtaBanner";
-import { ServicesSection } from "@/components/sections/ServicesSection";
 import { useBestSellers, useNewArrivals, useProductsByCategory } from "@/hooks/useProducts";
-import { siteConfig } from "@/config/site";
 import { HomePageHead } from "@/components/seo/HomePageHead";
 
 const Index = () => {
@@ -24,12 +16,8 @@ const Index = () => {
     <div className="min-h-screen flex flex-col">
       <HomePageHead />
       <Header />
-      <PromotionBanner />
-      
-      <main className="flex-1">
-        {/* Hero */}
-        <HeroSection />
 
+      <main className="flex-1">
         {/* Best Sellers */}
         <VirtualProductGrid
           title="Best Selling"
@@ -37,12 +25,6 @@ const Index = () => {
           columns={4}
           itemsPerPage={12}
         />
-
-        {/* CTA Banner - Time to Move */}
-        <CtaBanner />
-
-        {/* Category Banners */}
-        <CategoryBanner />
 
         {/* Running Shoes Section */}
         <VirtualProductGrid
@@ -85,12 +67,6 @@ const Index = () => {
           columns={4}
           itemsPerPage={8}
         />
-
-        {/* Services Section */}
-        <ServicesSection />
-
-        {/* Newsletter */}
-        <Newsletter />
       </main>
 
       <Footer />
