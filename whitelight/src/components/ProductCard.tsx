@@ -74,10 +74,13 @@ export function ProductCard({ product, className }: ProductCardProps) {
         <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-primary bg-white mb-3">
           {isVisible ? (
             <img
-              src={images[0]?.url ?? ""}
+              src={images[0]?.url ?? "/whitelight_logo.jpeg"}
               alt={images[0]?.alt ?? name}
               className="h-full w-full transition-transform duration-500 group-hover:scale-105 object-cover"
               loading="lazy"
+              onError={(e) => {
+                e.currentTarget.src = "/whitelight_logo.jpeg";
+              }}
             />
           ) : (
             <div className="h-full w-full bg-gray-200 animate-pulse" />

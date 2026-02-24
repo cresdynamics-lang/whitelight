@@ -140,9 +140,13 @@ export function SearchBar() {
               className="w-full flex items-center gap-3 p-3 hover:bg-secondary transition-colors border-b last:border-b-0 text-left"
             >
               <img
-                src={product.images[0]?.url}
+                src={product.images[0]?.url || "/whitelight_logo.jpeg"}
                 alt={product.name}
                 className="w-10 h-10 object-cover rounded"
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.src = "/whitelight_logo.jpeg";
+                }}
               />
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-sm truncate">{product.name}</p>
