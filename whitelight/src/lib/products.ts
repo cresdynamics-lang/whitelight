@@ -111,10 +111,18 @@ export async function getProducts(filters?: ProductFilters): Promise<ProductsRes
     
     throw new Error(response.message || "Failed to fetch products");
   } catch (error) {
+    console.error("Error fetching products from API:", error);
+
+    // In development, fall back to local demo data so we can reproduce
+    // UI issues (like React hook errors) even when the API/database is down.
+    if (import.meta.env.DEV) {
+      console.warn("Falling back to local products.json in development.");
+      return getLocalProducts(filters);
+    }
+
     // In production we DO NOT fall back to placeholder/local data.
     // If the API fails, surface an empty list so the UI shows "No products found"
     // instead of demo products that are not in the real database.
-    console.error("Error fetching products from API:", error);
     return {
       products: [],
       total: 0,
