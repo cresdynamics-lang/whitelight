@@ -58,14 +58,14 @@ const AdminLogin = () => {
             
             <div className="space-y-2">
               <Label htmlFor="username" className="text-sm font-medium">
-                Username
+                Email
               </Label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="username"
-                  type="text"
-                  placeholder="Enter your username"
+                  type="email"
+                  placeholder="admin@whitelightstore.co.ke"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   className="pl-10 h-12"
@@ -107,12 +107,6 @@ const AdminLogin = () => {
               )}
             </Button>
           </form>
-          
-          <div className="mt-6 pt-6 border-t border-border">
-            <p className="text-center text-sm text-muted-foreground">
-              Default credentials: <code className="bg-muted px-2 py-1 rounded">admin</code> / <code className="bg-muted px-2 py-1 rounded">admin123</code>
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>

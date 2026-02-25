@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { apiService } from "@/services/apiService";
+import { supabase } from "@/lib/supabaseClient";
 
 interface AdminUser {
   id: number;
@@ -56,25 +56,52 @@ export const AdminAuthProvider = ({ children }: AdminAuthProviderProps) => {
 
   const login = async (username: string, password: string) => {
     try {
-      const response = await apiService.login(username, password);
-      
-      if (response.success) {
-        setUser(response.data.admin);
-        setIsAuthenticated(true);
-        return { success: true };
-      } else {
-        return { success: false, error: response.message || "Login failed" };
+      if (!supabase) {
+        return {
+          success: false,
+          error: "Supabase client is not initialised. Check your environment variables.",
+        };
       }
+
+      // Treat the username field as email for login
+      const { data, error } = await supabase.rpc("admin_login", {
+        p_email: username,
+        p_password: password,
+      });
+
+      if (error) {
+        return { success: false, error: error.message || "Login failed" };
+      }
+
+      const admin = Array.isArray(data) && data.length > 0 ? data[0] : null;
+
+      if (!admin) {
+        return { success: false, error: "Invalid email or password" };
+      }
+
+      // Create a simple client-side token for session state
+      const token =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+          ? crypto.randomUUID()
+          : `supabase-admin-${Date.now()}`;
+
+      localStorage.setItem("admin_token", token);
+      localStorage.setItem("admin_user", JSON.stringify(admin));
+
+      setUser(admin);
+      setIsAuthenticated(true);
+      return { success: true };
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : "Login failed. Please try again." 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : "Login failed. Please try again.",
       };
     }
   };
 
   const logout = () => {
-    apiService.logout();
+    localStorage.removeItem("admin_token");
+    localStorage.removeItem("admin_user");
     setUser(null);
     setIsAuthenticated(false);
   };

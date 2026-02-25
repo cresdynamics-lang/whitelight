@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { productService } from "@/services/productService";
+import { adminProductsService } from "@/services/adminSupabaseProducts";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,7 +35,7 @@ const AdminProducts = () => {
 
   const fetchProducts = async () => {
     setIsLoading(true);
-    const data = await productService.getAll();
+    const data = await adminProductsService.getAll();
     setProducts(data);
     setFilteredProducts(data);
     setIsLoading(false);
@@ -58,7 +58,7 @@ const AdminProducts = () => {
   const handleDelete = async () => {
     if (!deleteId) return;
 
-    const success = await productService.delete(deleteId);
+    const success = await adminProductsService.delete(deleteId);
     if (success) {
       toast.success("Product deleted successfully");
       fetchProducts();
@@ -69,8 +69,7 @@ const AdminProducts = () => {
   };
 
   const handleReset = async () => {
-    await productService.resetToDefault();
-    toast.success("Products reset to default");
+    toast.info("Reset to default is not available in Supabase mode. Manage products directly here or in Supabase.");
     fetchProducts();
   };
 

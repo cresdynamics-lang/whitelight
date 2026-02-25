@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { productService } from "@/services/productService";
-import { apiService } from "@/services/apiService";
+import { adminProductsService } from "@/services/adminSupabaseProducts";
+import { uploadProductImage } from "@/services/adminSupabaseStorage";
 import { Product, ProductCategory } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -85,7 +85,7 @@ const AdminProductForm = () => {
   useEffect(() => {
     if (isEditing) {
       setIsLoading(true);
-      productService.getById(id).then((product) => {
+      adminProductsService.getById(id).then((product) => {
         if (product) {
           console.log('📦 Product loaded in form:', JSON.stringify(product, null, 2));
           console.log('🔢 Variants received:', product.variants);
@@ -176,10 +176,9 @@ const AdminProductForm = () => {
           id: `image-upload-${currentIndex}` 
         });
         
-        const response = await apiService.uploadSingleImage(file);
+        const imageUrl = await uploadProductImage(file);
         
-        if (response.success && response.data?.images && response.data.images.length > 0) {
-          const imageUrl = response.data.images[0].url;
+        if (imageUrl) {
           uploadedUrls.push(imageUrl);
           
           // Update progress for this image
@@ -320,11 +319,11 @@ const AdminProductForm = () => {
     try {
       if (isEditing) {
         // For updates, still send files if any remain, but prioritize URLs
-        await productService.update(id, productData, selectedFiles.length > 0 ? selectedFiles : undefined, imagesToDelete);
+        await adminProductsService.update(id, productData);
         toast.success("Product updated successfully", { id: "product-save" });
       } else {
         // For create, send image URLs instead of files
-        await productService.create(productData, undefined, allImageUrls);
+        await adminProductsService.create(productData);
         toast.success("Product created successfully", { id: "product-save" });
       }
       navigate("/admin/products");

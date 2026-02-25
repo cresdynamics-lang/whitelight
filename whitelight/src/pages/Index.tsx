@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { VirtualProductGrid } from "@/components/sections/VirtualProductGrid";
+import { CategoryBanner } from "@/components/sections/CategoryBanner";
 import { useBestSellers, useNewArrivals, useProductsByCategory } from "@/hooks/useProducts";
 import { HomePageHead } from "@/components/seo/HomePageHead";
 
@@ -25,6 +26,9 @@ const Index = () => {
           columns={4}
           itemsPerPage={12}
         />
+
+        {/* Scrolling Category Cards */}
+        <CategoryBanner />
 
         {/* Running Shoes Section */}
         <VirtualProductGrid

@@ -1,8 +1,8 @@
-// Product data service - Production uses ONLY backend API data
+// Product data service - now uses Supabase directly so the app
+// can be hosted as a single frontend on Vercel.
 import type { Product, ProductFilters, ProductsResponse, ProductCategory } from "@/types/product";
-import { apiService } from "@/services/apiService";
+import { supabase } from "@/lib/supabaseClient";
 import productsData from "@/data/products.json";
-
 // Normalize a single product: safe arrays, boolean inStock, and required display fields never null/undefined
 function normalizeProduct(p: any): any {
   if (!p || typeof p !== "object") return null;
@@ -40,19 +40,6 @@ function safeProductList(raw: any[]): any[] {
   return raw.map(normalizeProduct).filter((p) => p != null && p.id);
 }
 
-// Transform backend response to frontend format (handles undefined/malformed response)
-const transformBackendResponse = (backendData: any): ProductsResponse => {
-  const data = backendData ?? {};
-  const raw = Array.isArray(data.products) ? data.products : [];
-  const products = safeProductList(raw);
-  return {
-    products,
-    total: data.pagination?.total ?? products.length ?? 0,
-    page: data.pagination?.page ?? 1,
-    limit: data.pagination?.limit ?? products.length ?? 0,
-  };
-};
-
 // Local data helper (kept for potential future use in local/dev-only tools)
 const getLocalProducts = (filters?: ProductFilters): ProductsResponse => {
   let products = productsData.products || [];
@@ -88,30 +75,69 @@ const getLocalProducts = (filters?: ProductFilters): ProductsResponse => {
   };
 };
 
-// Get all products with optional filters
+// Get all products with optional filters (Supabase)
 export async function getProducts(filters?: ProductFilters): Promise<ProductsResponse> {
   try {
-    const params: Record<string, string> = {};
-    
-    if (filters) {
-      if (filters.category) params.category = filters.category;
-      if (filters.brand) params.brand = filters.brand;
-      if (filters.isNew !== undefined) params.isNew = filters.isNew.toString();
-      if (filters.isBestSeller !== undefined) params.isBestSeller = filters.isBestSeller.toString();
-      if (filters.minPrice !== undefined) params.minPrice = filters.minPrice.toString();
-      if (filters.maxPrice !== undefined) params.maxPrice = filters.maxPrice.toString();
-      if (filters.search) params.search = filters.search;
+    if (!supabase) {
+      throw new Error("Supabase client not initialised");
     }
-    
-    const response = await apiService.getProducts(params);
-    
-    if (response.success) {
-      return transformBackendResponse(response.data ?? {});
+
+    let query = supabase
+      .from("products")
+      .select(
+        `
+        *,
+        product_images (*),
+        product_variants (*)
+      `
+      )
+      .order("updated_at", { ascending: false })
+      .order("created_at", { ascending: false });
+
+    if (filters?.category) {
+      query = query.eq("category", filters.category);
     }
-    
-    throw new Error(response.message || "Failed to fetch products");
+    if (filters?.brand) {
+      query = query.ilike("brand", `%${filters.brand}%`);
+    }
+    if (filters?.isNew !== undefined) {
+      query = query.eq("is_new", filters.isNew);
+    }
+    if (filters?.isBestSeller !== undefined) {
+      query = query.eq("is_best_seller", filters.isBestSeller);
+    }
+    if (filters?.minPrice !== undefined) {
+      query = query.gte("price", filters.minPrice);
+    }
+    if (filters?.maxPrice !== undefined) {
+      query = query.lte("price", filters.maxPrice);
+    }
+    if (filters?.search) {
+      const s = `%${filters.search}%`;
+      query = query.or(`name.ilike.${s},description.ilike.${s},brand.ilike.${s}`);
+    }
+
+    const { data, error } = await query;
+    if (error) {
+      throw error;
+    }
+
+    const products = safeProductList(
+      (data || []).map((row: any) => ({
+        ...row,
+        images: row.product_images || [],
+        variants: row.product_variants || [],
+      }))
+    );
+
+    return {
+      products,
+      total: products.length,
+      page: 1,
+      limit: products.length,
+    };
   } catch (error) {
-    console.error("Error fetching products from API:", error);
+    console.error("Error fetching products from Supabase:", error);
 
     // In development, fall back to local demo data so we can reproduce
     // UI issues (like React hook errors) even when the API/database is down.
@@ -121,8 +147,7 @@ export async function getProducts(filters?: ProductFilters): Promise<ProductsRes
     }
 
     // In production we DO NOT fall back to placeholder/local data.
-    // If the API fails, surface an empty list so the UI shows "No products found"
-    // instead of demo products that are not in the real database.
+    // If Supabase fails, surface an empty list so the UI shows "No products found".
     return {
       products: [],
       total: 0,
@@ -135,17 +160,38 @@ export async function getProducts(filters?: ProductFilters): Promise<ProductsRes
 // Get single product by slug
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   try {
-    const response = await apiService.getProduct(slug);
-    
-    if (response.success && response.data) {
-      return normalizeProduct(response.data);
+    if (!supabase) {
+      throw new Error("Supabase client not initialised");
     }
-    
-    return null;
+
+    const { data, error } = await supabase
+      .from("products")
+      .select(
+        `
+        *,
+        product_images (*),
+        product_variants (*)
+      `
+      )
+      .eq("slug", slug)
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      throw error;
+    }
+
+    if (!data) return null;
+
+    return normalizeProduct({
+      ...data,
+      images: data.product_images || [],
+      variants: data.product_variants || [],
+    });
   } catch (error) {
-    // Do NOT fall back to local demo products in production; if the API fails,
+    // Do NOT fall back to local demo products in production; if Supabase fails,
     // return null so the UI can show an appropriate error/404 state.
-    console.error("Error fetching product from API:", error);
+    console.error("Error fetching product from Supabase:", error);
     return null;
   }
 }

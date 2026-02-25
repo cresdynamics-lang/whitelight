@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { productService } from "@/services/productService";
+import { adminProductsService } from "@/services/adminSupabaseProducts";
 import { contactService } from "@/services/contactService";
 import { Package, MessageSquare, TrendingUp, DollarSign } from "lucide-react";
-import { apiService } from "@/services/apiService";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
@@ -18,37 +17,26 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     const fetchStats = async () => {
-      // Check API health status
       try {
-        const healthResponse = await fetch(`${apiService.baseURL}/health`);
-        if (healthResponse.ok) {
-          const data = await healthResponse.json();
-          if (data.status === 'ok') {
-            setApiStatus("connected");
-          } else {
-            setApiStatus("disconnected");
-          }
-        } else {
-          setApiStatus("disconnected");
-        }
+        const [products, messages, unreadCount] = await Promise.all([
+          adminProductsService.getAll(),
+          contactService.getAll(),
+          contactService.getUnreadCount(),
+        ]);
+
+        setStats({
+          totalProducts: products.length,
+          totalMessages: messages.length,
+          unreadMessages: unreadCount,
+          totalValue: products.reduce((sum, p) => sum + p.price, 0),
+        });
+        setApiStatus("connected");
       } catch (error) {
-        console.error('API health check failed:', error);
+        console.error("Failed to load dashboard stats:", error);
         setApiStatus("disconnected");
+      } finally {
+        setIsLoading(false);
       }
-
-      const [products, messages, unreadCount] = await Promise.all([
-        productService.getAll(),
-        contactService.getAll(),
-        contactService.getUnreadCount(),
-      ]);
-
-      setStats({
-        totalProducts: products.length,
-        totalMessages: messages.length,
-        unreadMessages: unreadCount,
-        totalValue: products.reduce((sum, p) => sum + p.price, 0),
-      });
-      setIsLoading(false);
     };
 
     fetchStats();
@@ -176,7 +164,7 @@ const AdminDashboard = () => {
           <CardContent className="space-y-3">
             <div className="flex justify-between py-2 border-b border-border">
               <span className="text-muted-foreground">Data Source</span>
-              <span className="font-medium">API</span>
+              <span className="font-medium">Supabase</span>
             </div>
             <div className="flex justify-between py-2 border-b border-border">
               <span className="text-muted-foreground">API Status</span>
