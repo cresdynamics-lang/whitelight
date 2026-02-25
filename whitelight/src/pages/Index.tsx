@@ -19,6 +19,15 @@ const Index = () => {
       <Header />
 
       <main className="flex-1">
+        {/* New Arrivals - latest products first */}
+        <VirtualProductGrid
+          title="New In"
+          products={newArrivals}
+          columns={4}
+          className="bg-secondary/30"
+          itemsPerPage={12}
+        />
+
         {/* Best Sellers */}
         <VirtualProductGrid
           title="Best Selling"
@@ -36,15 +45,6 @@ const Index = () => {
           products={runningShoes.slice(0, 8)}
           columns={4}
           itemsPerPage={8}
-        />
-
-        {/* New Arrivals */}
-        <VirtualProductGrid
-          title="New In"
-          products={newArrivals}
-          columns={4}
-          className="bg-secondary/30"
-          itemsPerPage={12}
         />
 
         {/* Basketball Shoes Section */}

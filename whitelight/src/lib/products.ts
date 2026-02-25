@@ -202,9 +202,10 @@ export async function getBestSellers(limit?: number): Promise<Product[]> {
   return limit ? products.slice(0, limit) : products;
 }
 
-// Get new arrivals
+// Get new arrivals - latest products first (Nairobi store catalog)
 export async function getNewArrivals(limit?: number): Promise<Product[]> {
-  const { products } = await getProducts({ isNew: true });
+  // getProducts already returns latest updated/created first
+  const { products } = await getProducts();
   return limit ? products.slice(0, limit) : products;
 }
 
