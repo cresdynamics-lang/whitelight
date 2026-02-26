@@ -46,7 +46,11 @@ const getLocalProducts = (filters?: ProductFilters): ProductsResponse => {
   
   if (filters) {
     if (filters.category) {
-      products = products.filter(p => p.category === filters.category);
+      products = products.filter(
+        (p) =>
+          p.category === filters.category ||
+          (Array.isArray(p.categories) && p.categories.includes(filters.category!))
+      );
     }
     if (filters.brand) {
       products = products.filter(p => p.brand.toLowerCase().includes(filters.brand!.toLowerCase()));
@@ -94,8 +98,11 @@ export async function getProducts(filters?: ProductFilters): Promise<ProductsRes
       .order("updated_at", { ascending: false })
       .order("created_at", { ascending: false });
 
+    // Show product in a category if it's the primary category OR in the categories array
     if (filters?.category) {
-      query = query.eq("category", filters.category);
+      query = query.or(
+        `category.eq.${filters.category},categories.cs.{"${filters.category}"}`
+      );
     }
     if (filters?.brand) {
       query = query.ilike("brand", `%${filters.brand}%`);

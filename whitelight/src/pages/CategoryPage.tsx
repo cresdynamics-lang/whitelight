@@ -78,8 +78,12 @@ export default function CategoryPage() {
   const { data: products = [], isLoading } = useProductsByCategory(validCategory);
   
   // Use filtered products if searching, otherwise use category products
-  const displayProducts = isSearching && searchQuery 
-    ? filteredProducts.filter(p => p.category === validCategory)
+  const displayProducts = isSearching && searchQuery
+    ? filteredProducts.filter(
+        (p) =>
+          p.category === validCategory ||
+          (Array.isArray(p.categories) && p.categories.includes(validCategory))
+      )
     : products;
   
   const title = categoryTitles[validCategory] || "Products";
