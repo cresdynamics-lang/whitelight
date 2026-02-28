@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
+import { BrandHighlightCarousel } from "@/components/sections/BrandHighlightCarousel";
 import { VirtualProductGrid } from "@/components/sections/VirtualProductGrid";
 import { CategoryBanner } from "@/components/sections/CategoryBanner";
 import { useBestSellers, useNewArrivals, useProductsByCategory } from "@/hooks/useProducts";
@@ -31,6 +32,9 @@ const Index = () => {
           className="bg-secondary/30"
           itemsPerPage={12}
         />
+
+        {/* Brand story carousel using public images */}
+        <BrandHighlightCarousel />
 
         {/* Best Sellers */}
         <VirtualProductGrid
