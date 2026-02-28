@@ -1,5 +1,6 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { HeroSection } from "@/components/sections/HeroSection";
 import { VirtualProductGrid } from "@/components/sections/VirtualProductGrid";
 import { CategoryBanner } from "@/components/sections/CategoryBanner";
 import { useBestSellers, useNewArrivals, useProductsByCategory } from "@/hooks/useProducts";
@@ -19,6 +20,9 @@ const Index = () => {
       <Header />
 
       <main className="flex-1">
+        {/* Hero carousel: each slide talks about a different Whitelight Store category */}
+        <HeroSection />
+
         {/* New Arrivals - latest products first */}
         <VirtualProductGrid
           title="New In"
