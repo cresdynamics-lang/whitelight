@@ -198,7 +198,10 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
         bottom: 0,
         zIndex: 9999,
         backgroundColor: 'rgba(0, 0, 0, 0.95)',
-        backdropFilter: 'blur(4px)'
+        backdropFilter: 'blur(4px)',
+        // Prevent Android double-tap / pinch zoom from making the whole page zoom
+        touchAction: 'none',
+        overscrollBehavior: 'contain',
       }}
     >
       {/* Close button */}
@@ -267,7 +270,9 @@ export function ImageLightbox({ images, initialIndex = 0, isOpen, onClose }: Ima
                 maxWidth: '100%',
                 maxHeight: '90vh',
                 width: 'auto',
-                height: 'auto'
+                height: 'auto',
+                // Prevent gesture-zoom on the image itself on some Android browsers
+                touchAction: 'none',
               }}
               onLoad={(e) => {
                 console.log('ImageLightbox: Image loaded successfully');

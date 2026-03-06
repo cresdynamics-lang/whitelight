@@ -66,21 +66,21 @@ export function CategoryBanner({ className }: CategoryBannerProps) {
 
 
   return (
-    <section className={cn("py-12 md:py-16 overflow-hidden", className)}>
+    <section className={cn("py-6 md:py-8 overflow-hidden", className)}>
       <div className="container">
-        <h2 className="font-heading text-4xl md:text-5xl font-black mb-12 text-center bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent">
+        <h2 className="font-heading text-4xl md:text-5xl font-black mb-6 md:mb-8 text-center bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent">
           SHOP BY CATEGORY
         </h2>
         
         {/* Scrolling carousel */}
         <div className="relative">
-          <div className="flex animate-scroll space-x-6">
+          <div className="flex animate-scroll space-x-3">
             {/* First set */}
             {categories.map((category) => (
               <Link
                 key={`first-${category.category}`}
                 to={`/category/${category.category}`}
-                className="group relative flex-shrink-0 w-80 aspect-[4/5] overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                className="group relative flex-shrink-0 w-52 sm:w-60 md:w-64 aspect-[4/5] overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
               >
                 <OptimizedImage
                   src={category.url}
@@ -88,15 +88,15 @@ export function CategoryBanner({ className }: CategoryBannerProps) {
                   className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 group-hover:[&_img]:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute inset-0 flex items-end p-6">
+                <div className="absolute inset-0 flex items-end p-4">
                   <div className="text-center w-full space-y-2">
-                    <h3 className="font-heading text-2xl md:text-3xl font-bold text-white mb-1">
+                    <h3 className="font-heading text-xl md:text-2xl font-bold text-white mb-1">
                       {categoryLabels[category.category] || category.category}
                     </h3>
-                    <p className="whitespace-pre-line text-sm md:text-base text-white/85 leading-snug">
+                    <p className="whitespace-pre-line text-xs md:text-sm text-white/85 leading-snug">
                       {categoryTaglines[category.category] || ""}
                     </p>
-                    <span className="inline-flex items-center gap-2 mt-2 text-white text-sm md:text-base font-semibold group-hover:gap-3 transition-all duration-300 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+                    <span className="inline-flex items-center gap-2 mt-2 text-white text-xs md:text-sm font-semibold group-hover:gap-3 transition-all duration-300 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
                       Shop Now →
                     </span>
                   </div>
@@ -109,7 +109,7 @@ export function CategoryBanner({ className }: CategoryBannerProps) {
               <Link
                 key={`second-${category.category}`}
                 to={`/category/${category.category}`}
-                className="group relative flex-shrink-0 w-80 aspect-[4/5] overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                className="group relative flex-shrink-0 w-52 sm:w-60 md:w-64 aspect-[4/5] overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
               >
                 <OptimizedImage
                   src={category.url}
@@ -117,15 +117,15 @@ export function CategoryBanner({ className }: CategoryBannerProps) {
                   className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 group-hover:[&_img]:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                <div className="absolute inset-0 flex items-end p-6">
+                <div className="absolute inset-0 flex items-end p-4">
                   <div className="text-center w-full space-y-2">
-                    <h3 className="font-heading text-2xl md:text-3xl font-bold text-white mb-1">
+                    <h3 className="font-heading text-xl md:text-2xl font-bold text-white mb-1">
                       {categoryLabels[category.category] || category.category}
                     </h3>
-                    <p className="whitespace-pre-line text-sm md:text-base text-white/85 leading-snug">
+                    <p className="whitespace-pre-line text-xs md:text-sm text-white/85 leading-snug">
                       {categoryTaglines[category.category] || ""}
                     </p>
-                    <span className="inline-flex items-center gap-2 mt-2 text-white text-sm md:text-base font-semibold group-hover:gap-3 transition-all duration-300 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+                    <span className="inline-flex items-center gap-2 mt-2 text-white text-xs md:text-sm font-semibold group-hover:gap-3 transition-all duration-300 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
                       Shop Now →
                     </span>
                   </div>

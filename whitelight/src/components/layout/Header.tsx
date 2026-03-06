@@ -29,8 +29,13 @@ export function Header() {
             className="h-12 w-12 sm:h-16 sm:w-16 rounded-full ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300 object-cover"
             loading="eager"
           />
-          <span className="font-heading text-lg sm:text-xl lg:text-2xl font-black tracking-tight bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-blue-600 group-hover:via-purple-600 group-hover:to-pink-600 transition-all duration-300 hidden xs:block">
+          <span className="font-heading text-lg sm:text-xl lg:text-2xl font-black tracking-tight bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-blue-600 group-hover:via-purple-600 group-hover:to-pink-600 transition-all duration-300 hidden md:block">
             {siteConfig.name}
+          </span>
+          {/* Mobile fancy wordmark */}
+          <span className="ml-1 inline-flex md:hidden items-baseline font-heading italic text-[0.85rem] leading-none text-muted-foreground">
+            <span className="text-xl leading-none mr-0.5">W</span>
+            <span className="text-xs leading-none tracking-[0.12em]">hitelight</span>
           </span>
         </Link>
 
@@ -52,6 +57,12 @@ export function Header() {
 
         {/* Actions */}
         <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+          {/* Desktop fancy wordmark on the right side */}
+          <span className="hidden md:inline-flex mr-2 items-baseline font-heading italic text-sm leading-none text-muted-foreground">
+            <span className="text-2xl leading-none mr-0.5">W</span>
+            <span className="text-xs leading-none tracking-[0.18em]">hitelight</span>
+          </span>
+
           <SearchBar />
           <Button 
             variant="ghost" 

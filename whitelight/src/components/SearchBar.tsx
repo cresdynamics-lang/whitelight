@@ -27,10 +27,12 @@ function useDebounce(value: string, delay: number) {
 export function SearchBar() {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false); // controls whether the input is visible
   const { data: productsResponse, isLoading } = useProducts();
   const products = productsResponse?.products || [];
   const { setSearchQuery, setFilteredProducts, setIsSearching } = useSearch();
   const searchRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -72,6 +74,7 @@ export function SearchBar() {
     const handleClickOutside = (event: MouseEvent) => {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setIsExpanded(false);
       }
     };
 
@@ -87,6 +90,7 @@ export function SearchBar() {
   const clearSearch = () => {
     setQuery("");
     setIsOpen(false);
+    setIsExpanded(false);
     setSearchQuery("");
     setFilteredProducts([]);
     setIsSearching(false);
@@ -105,34 +109,58 @@ export function SearchBar() {
   };
 
   return (
-    <div ref={searchRef} className="relative w-56 sm:w-full sm:max-w-sm ml-2 sm:ml-0">
-      <form onSubmit={handleSearchSubmit}>
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-          <Input
-            type="text"
-            placeholder="Search products..."
-            value={query}
-            onChange={(e) => handleInputChange(e.target.value)}
-            className="pl-10 pr-10"
-            onFocus={() => query.length > 0 && setIsOpen(true)}
-          />
-          {query && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
-              onClick={clearSearch}
-            >
-              <X className="h-3 w-3" />
-            </Button>
-          )}
-        </div>
-      </form>
+    <div ref={searchRef} className="relative">
+      {/* Collapsed: icon button (same size as cart) */}
+      {!isExpanded && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="relative hover:scale-110 transition-transform duration-300 border-2 border-primary/20 rounded-full hover:border-primary/40"
+          onClick={() => {
+            setIsExpanded(true);
+            // slight delay so input is mounted before focusing
+            setTimeout(() => {
+              inputRef.current?.focus();
+            }, 10);
+          }}
+        >
+          <Search className="h-5 w-5 sm:h-6 sm:w-6" />
+          <span className="sr-only">Search products</span>
+        </Button>
+      )}
 
-      {isOpen && filteredProducts.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-md shadow-lg z-50 max-h-80 overflow-y-auto">
+      {/* Expanded: input with dropdown */}
+      {isExpanded && (
+        <div className="absolute right-0 top-full mt-2 w-64 sm:w-80 z-50">
+          <form onSubmit={handleSearchSubmit}>
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                ref={inputRef}
+                type="text"
+                placeholder="Search products..."
+                value={query}
+                onChange={(e) => handleInputChange(e.target.value)}
+                className="pl-10 pr-10 bg-background shadow-lg"
+                onFocus={() => query.length > 0 && setIsOpen(true)}
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6 p-0"
+                onClick={clearSearch}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {isExpanded && isOpen && filteredProducts.length > 0 && (
+        <div className="absolute right-0 mt-2 w-64 sm:w-80 bg-background border rounded-md shadow-lg z-50 max-h-80 overflow-y-auto">
           {filteredProducts.map((product) => (
             <button
               key={product.id}
@@ -158,8 +186,8 @@ export function SearchBar() {
         </div>
       )}
 
-      {isOpen && query.length > 0 && filteredProducts.length === 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-background border rounded-md shadow-lg z-50 p-4 text-center text-muted-foreground text-sm">
+      {isExpanded && isOpen && query.length > 0 && filteredProducts.length === 0 && (
+        <div className="absolute right-0 mt-2 w-64 sm:w-80 bg-background border rounded-md shadow-lg z-50 p-4 text-center text-muted-foreground text-sm">
           No products found for "{query}"
         </div>
       )}
