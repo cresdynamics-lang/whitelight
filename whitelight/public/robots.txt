@@ -1,38 +1,11 @@
 User-agent: *
 Allow: /
 
-# Block admin areas
-Disallow: /admin/
+# Keep sensitive/utility paths out of index
 Disallow: /api/
+Disallow: /admin/
+Disallow: /checkout/
 Disallow: /private/
 
-# Block temporary files
-Disallow: /*.tmp$
-Disallow: /*.log$
-Disallow: /*.bak$
-
-# Allow important files
-Allow: /sitemap.xml
-Allow: /geo-sitemap.kml
-Allow: /robots.txt
-Allow: /*.css$
-Allow: /*.js$
-Allow: /*.png$
-Allow: /*.jpg$
-Allow: /*.jpeg$
-Allow: /*.webp$
-
-# Crawl delay (1 second between requests)
-Crawl-delay: 1
-
-# Sitemaps
+# Canonical sitemap
 Sitemap: https://whitelightstore.co.ke/sitemap.xml
-Sitemap: https://whitelightstore.co.ke/api/sitemap.xml
-Sitemap: https://whitelightstore.co.ke/geo-sitemap.kml
-
-# Specific bot instructions
-User-agent: Googlebot
-Crawl-delay: 0.5
-
-User-agent: Bingbot
-Crawl-delay: 1

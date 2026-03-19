@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import type { Product } from "@/types/product";
 import { ProductCard } from "@/components/ProductCard";
@@ -17,22 +17,30 @@ export function HorizontalProductRow({ title, products, className, viewAllHref }
     : [];
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [userHasInteracted, setUserHasInteracted] = useState(false);
   const autoScrollDirectionRef = useRef<1 | -1>(1);
+  const pauseUntilRef = useRef(0);
 
-  // Gentle auto-scroll to hint that the row is scrollable.
+  // Continuous auto-scroll (left <-> right) to keep rows active.
   useEffect(() => {
     const container = scrollRef.current;
-    if (!container || userHasInteracted) return;
+    if (!container) return;
 
     const hasOverflow = container.scrollWidth > container.clientWidth + 8;
     if (!hasOverflow) return;
 
-    const speed = 0.5; // pixels per frame
+    const speed = 0.6; // pixels per frame
 
     let frameId: number;
     const step = () => {
       const el = container;
+      const now = Date.now();
+
+      // Briefly pause after user interaction, then continue.
+      if (now < pauseUntilRef.current) {
+        frameId = window.requestAnimationFrame(step);
+        return;
+      }
+
       const dir = autoScrollDirectionRef.current;
       const maxScroll = el.scrollWidth - el.clientWidth;
 
@@ -56,13 +64,16 @@ export function HorizontalProductRow({ title, products, className, viewAllHref }
     return () => {
       window.cancelAnimationFrame(frameId);
     };
-  }, [userHasInteracted, safeProducts.length]);
+  }, [safeProducts.length]);
 
   const handleUserInteraction = () => {
-    if (!userHasInteracted) {
-      setUserHasInteracted(true);
-    }
+    pauseUntilRef.current = Date.now() + 2500;
   };
+
+  // If there are no products for this row, skip rendering the section
+  if (safeProducts.length === 0) {
+    return null;
+  }
 
   return (
     <section className={cn("py-10 md:py-14", className)}>
@@ -82,29 +93,23 @@ export function HorizontalProductRow({ title, products, className, viewAllHref }
         </div>
 
         <div className="relative -mx-4 px-4 md:mx-0 md:px-0">
-          {safeProducts.length > 0 ? (
-            <div
-              ref={scrollRef}
-              className="flex gap-2.5 md:gap-3 overflow-x-auto pb-4 md:pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent scroll-smooth"
-              onWheel={handleUserInteraction}
-              onTouchStart={handleUserInteraction}
-              onMouseDown={handleUserInteraction}
-            >
-              {safeProducts.map((product, index) => (
-                <div
-                  key={product.id}
-                  className="flex-shrink-0 w-40 sm:w-48 md:w-52 lg:w-56 animate-fade-in"
-                  style={{ animationDelay: `${index * 80}ms` }}
-                >
-                  <ProductCard product={product} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-6 text-sm text-muted-foreground">
-              No products available yet.
-            </div>
-          )}
+          <div
+            ref={scrollRef}
+            className="flex gap-2.5 md:gap-3 overflow-x-auto pb-4 md:pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent scroll-smooth"
+            onWheel={handleUserInteraction}
+            onTouchStart={handleUserInteraction}
+            onMouseDown={handleUserInteraction}
+          >
+            {safeProducts.map((product, index) => (
+              <div
+                key={product.id}
+                className="flex-shrink-0 w-[22vw] min-w-[5.2rem] max-w-[6.4rem] sm:w-32 sm:min-w-32 sm:max-w-32 md:w-44 md:min-w-44 md:max-w-44 lg:w-52 lg:min-w-52 lg:max-w-52 animate-fade-in"
+                style={{ animationDelay: `${index * 80}ms` }}
+              >
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

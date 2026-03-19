@@ -35,6 +35,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
     : 0;
 
   const images = Array.isArray(product?.images) ? product.images : [];
+  const getOptimizedCardImageUrl = (url?: string, width: number = 420, quality: number = 75) => {
+    if (!url) return "/whitelight_logo.jpeg";
+    if (url.includes("digitaloceanspaces.com")) {
+      return `${url}?w=${width}&q=${quality}&f=webp&auto=compress&dpr=1`;
+    }
+    return url;
+  };
+
   const variants = Array.isArray(product?.variants) ? product.variants : [];
   const availableSizes = variants.filter((v) => Boolean(v?.inStock ?? (v as any)?.in_stock));
 
@@ -71,13 +79,19 @@ export function ProductCard({ product, className }: ProductCardProps) {
     <div ref={ref} className={cn("group block product-card", className)}>
       <Link to={`/product/${slug}`}>
         {/* Image container with green border */}
-        <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-primary bg-white mb-3">
+        <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-primary bg-white mb-2">
           {isVisible ? (
             <img
-              src={images[0]?.url ?? "/whitelight_logo.jpeg"}
-              alt={images[0]?.alt ?? name}
+              src={getOptimizedCardImageUrl(images[0]?.url)}
+              alt={
+                product.alt_text_main ||
+                images[0]?.alt ||
+                `${brand} ${name} ${category} — available in Kenya`
+              }
               className="h-full w-full transition-transform duration-500 group-hover:scale-105 object-cover"
               loading="lazy"
+              decoding="async"
+              fetchPriority="low"
               onError={(e) => {
                 e.currentTarget.src = "/whitelight_logo.jpeg";
               }}
@@ -87,14 +101,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
           )}
           
           {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1">
+          <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
             {product?.isNew && (
-              <Badge className="bg-primary text-primary-foreground text-xs px-2 py-0.5">
+              <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">
                 NEW
               </Badge>
             )}
             {hasDiscount && (
-              <Badge variant="destructive" className="text-xs px-2 py-0.5">
+              <Badge variant="destructive" className="text-[10px] px-1.5 py-0.5 leading-none">
                 -{discountPercent}%
               </Badge>
             )}
@@ -102,8 +116,8 @@ export function ProductCard({ product, className }: ProductCardProps) {
           
           {/* Offer Badge - Top Right */}
           {product?.isOnOffer && (
-            <div className="absolute top-2 right-2">
-              <Badge className="bg-orange-500 text-white text-xs px-2 py-0.5">
+            <div className="absolute top-1.5 right-1.5">
+              <Badge className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 leading-none">
                 OFFER
               </Badge>
             </div>
@@ -112,30 +126,30 @@ export function ProductCard({ product, className }: ProductCardProps) {
       </Link>
 
       {/* Product info */}
-      <div className="space-y-2">
-        <p className="text-xs text-muted-foreground uppercase tracking-wider">
+      <div className="space-y-1.5">
+        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
           {brand}
         </p>
         <Link to={`/product/${slug}`}>
-          <h3 className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
+          <h3 className="font-medium text-[11px] sm:text-xs text-foreground group-hover:text-primary transition-colors line-clamp-1 leading-tight">
             {name}
           </h3>
         </Link>
         
         {/* Price */}
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-foreground">
+        <div className="flex items-center gap-1.5">
+          <span className="font-semibold text-[11px] sm:text-xs text-foreground">
             {formatPrice(price, siteConfig.currency)}
           </span>
           {hasDiscount && originalPrice != null && (
-            <span className="text-sm text-muted-foreground line-through">
+            <span className="text-[10px] text-muted-foreground line-through">
               {formatPrice(originalPrice, siteConfig.currency)}
             </span>
           )}
         </div>
 
         {/* Sizes */}
-        <div className="flex flex-wrap gap-1">
+        <div className="flex gap-1 overflow-x-auto whitespace-nowrap pb-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {availableSizes.slice(0, 5).map((variant) => {
             const displaySize = getDisplaySize(variant?.size ?? "", category);
             return (
@@ -146,7 +160,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
                   setSelectedSize(variant.size);
                 }}
                 className={cn(
-                  "text-xs px-2 py-1 border rounded transition-colors",
+                  "text-[10px] px-1.5 py-0.5 border rounded transition-colors flex-shrink-0",
                   selectedSize === variant.size
                     ? "border-primary bg-primary text-primary-foreground"
                     : "border-border hover:border-primary"
@@ -157,7 +171,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
             );
           })}
           {availableSizes.length > 5 && (
-            <span className="text-xs px-2 py-1 text-muted-foreground">
+            <span className="text-[10px] px-1.5 py-0.5 text-muted-foreground flex-shrink-0">
               +{availableSizes.length - 5}
             </span>
           )}
@@ -166,10 +180,10 @@ export function ProductCard({ product, className }: ProductCardProps) {
         {/* Add to Cart button */}
         <Button
           size="sm"
-          className="w-full mt-2"
+          className="w-full mt-1 h-7 text-[10px] px-2"
           onClick={handleAddToCart}
         >
-          <ShoppingCart className="h-4 w-4 mr-2" />
+          <ShoppingCart className="h-3 w-3 mr-1" />
           Add to Cart
         </Button>
       </div>

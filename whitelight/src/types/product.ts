@@ -31,6 +31,16 @@ export interface Product {
   isBestSeller?: boolean;
   isOnOffer?: boolean;
   createdAt: string;
+  // Optional SEO fields from Supabase
+  seo_title?: string | null;
+  seo_description?: string | null;
+  product_h1?: string | null;
+  product_description?: string | null;
+  url_slug?: string | null;
+  alt_text_main?: string | null;
+  seo_keywords?: string[] | null;
+  gender?: string | null;
+  structured_data?: unknown;
 }
 
 export interface ProductsResponse {

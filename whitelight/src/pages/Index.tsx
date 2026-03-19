@@ -89,6 +89,34 @@ const Index = () => {
         {/* Hero carousel: each slide talks about a different Whitelight Store category */}
         <HeroSection />
 
+        {/* Trust strip */}
+        <section className="border-b border-muted/40 bg-background/80">
+          <div className="container py-3 flex flex-row flex-wrap items-center justify-center md:justify-between gap-3 md:gap-6 text-xs md:text-sm text-muted-foreground">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-green-500" />
+              <span>Fast Nairobi delivery</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-blue-500" />
+              <span>Genuine performance brands</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              <span>Order via WhatsApp or checkout</span>
+            </div>
+          </div>
+        </section>
+
+        {/* Category CTA row */}
+        <section className="bg-background">
+          <div className="container py-6 flex flex-wrap gap-3 md:gap-4">
+            <HorizontalProductRow
+              title=""
+              products={[]}
+            />
+          </div>
+        </section>
+
         {/* New Arrivals - latest products first, horizontal scroll */}
         <HorizontalProductRow
           title="New In"
@@ -147,6 +175,22 @@ const Index = () => {
           products={uniqueBasketball}
           viewAllHref="/category/basketball"
         />
+
+        {/* SEO footer paragraph */}
+        <section className="border-t border-muted mt-8">
+          <div className="container py-8">
+            <p className="text-xs md:text-sm text-muted-foreground leading-relaxed max-w-4xl">
+              White Light Store is Nairobi&apos;s specialist for{" "}
+              <strong>running shoes Nairobi</strong>,{" "}
+              <strong>trail shoes Kenya</strong>,{" "}
+              <strong>basketball shoes Nairobi</strong> and{" "}
+              <strong>gym shoes Kenya</strong>. We stock performance models from Nike, Adidas, HOKA,
+              ASICS, New Balance and more, fitted for Kenyan runners and athletes. Order your next
+              pair online or via WhatsApp for fast delivery across Nairobi and shipping to the rest
+              of Kenya.
+            </p>
+          </div>
+        </section>
       </main>
 
       <Footer />

@@ -11,21 +11,27 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { seoConfig } from "@/config/seo";
 
 const categoryTitles: Record<ProductCategory, string> = {
-  running: "Running Shoes",
-  trail: "Trail Shoes",
-  gym: "Gym Shoes",
-  training: "Training Shoes",
-  basketball: "Basketball Shoes",
+  running: "Running Shoes in Nairobi — Kenya's Performance Running Store",
+  trail: "Trail Running Shoes Kenya — Built for Karura, Ngong Hills & Beyond",
+  gym: "Gym & Training Shoes in Nairobi — For Every Workout",
+  training: "Training Shoes in Nairobi",
+  basketball: "Basketball Shoes in Nairobi — Jordan, Nike & Court-Ready Kicks",
   accessories: "Accessories",
 };
 
 const categoryDescriptions: Record<ProductCategory, string> = {
-  running: "Engineered for speed and comfort on every run",
-  trail: "Built for rugged terrain and outdoor adventures",
-  gym: "Designed for training, lifting, and high-intensity workouts",
-  training: "Built for drills, conditioning, and multi-sport training",
-  basketball: "Performance footwear for the court",
-  accessories: "Complete your footwear experience with premium accessories",
+  running:
+    "Find performance running shoes in Nairobi for daily training, long runs and race day. We stock Nike, Adidas, HOKA and more for Kenyan roads.",
+  trail:
+    "Grip and protection for Kenya's trails. From Karura Forest and Ngong Hills to Kereita Forest, shop trail shoes built for real Kenyan terrain.",
+  gym:
+    "Gym and training shoes for Nairobi lifters and athletes. From women's gym shoes to CrossFit and HIIT trainers, get stable, grippy support.",
+  training:
+    "Multi-sport training shoes for drills, conditioning and speed work around Nairobi. Built for agility, comfort and all-day sessions.",
+  basketball:
+    "Court-ready basketball shoes for Nairobi players. Jordan, Nike and more with cushioning, grip and ankle support for street and indoor courts.",
+  accessories:
+    "Complete your footwear experience with premium accessories, care products and comfort upgrades for your favourite pairs.",
 };
 
 // Category-specific images from local folders
@@ -136,6 +142,209 @@ export default function CategoryPage() {
               <p className="text-white/80 text-lg mt-4">
                 Showing results for "{searchQuery}" in {title}
               </p>
+            )}
+          </div>
+        </section>
+
+        {/* SEO body copy per category */}
+        <section className="bg-background">
+          <div className="container py-10 md:py-12 max-w-4xl">
+            {validCategory === "running" && (
+              <div className="space-y-6 text-left">
+                <p className="text-sm md:text-base text-muted-foreground">
+                  White Light Store is Nairobi&apos;s performance running shoe hub for everyday runners,
+                  marathon chasers and weekend joggers. We stock Nike, Adidas, HOKA and more in the
+                  right cushioning and support for Kenyan roads and paths, so you get the comfort and
+                  confidence you need from CBD loops to long runs out of town.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Road Running Shoes
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Browse cushioned daily trainers and responsive tempo shoes built for tarmac in
+                  Nairobi. From soft long-distance models to snappy tempo pairs, we help you match
+                  shoe to pace and distance so your runs on Thika Road, Lang&apos;ata Road or the CBD stay
+                  smooth and supported.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Trail Running Shoes
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  When you move from the city to the trails, you need grip and stability. Our trail
+                  selections balance lugs, rock protection and cushioning so you can handle mud,
+                  roots and rocks on Karura Forest loops, Ngong Hills climbs and weekend trail runs
+                  outside Nairobi.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Running Shoes by Brand
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Shop Nike, Adidas, HOKA, ASICS and New Balance running shoes curated for Kenyan
+                  runners. Whether you prefer classic Nike Pegasus, HOKA max-cushion or responsive
+                  Adidas trainers, we guide you to models that match your stride, mileage and budget
+                  in Nairobi.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  How to Choose Running Shoes
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Not sure where to start? We look at your surface, distance, weekly mileage and
+                  past injuries to recommend the right running shoes. Visit our Nairobi CBD shop or
+                  chat on WhatsApp to get personalised fitting advice before you order anywhere in
+                  Kenya.
+                </p>
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  White Light Store delivers running shoes Nairobi-wide with same-day options in the
+                  CBD and quick courier shipping to the rest of Kenya. Order online or message us on
+                  WhatsApp to confirm sizes, stock and delivery times.
+                </p>
+              </div>
+            )}
+
+            {validCategory === "trail" && (
+              <div className="space-y-6 text-left">
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Trail running in Kenya demands grip, protection and confidence on mixed terrain.
+                  Our trail running shoes are chosen for Karura Forest loops, Ngong Hills climbs,
+                  Kereita Forest adventures and the red-dirt tracks outside Nairobi, with brands
+                  like Nike, HOKA and Salomon ready for real Kenyan conditions.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Trail Shoes for Kenyan Terrain
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Kenyan trails shift from dusty descents to slick mud in a single run. We focus on
+                  lug depth, outsole rubber and rock protection plates so your shoes bite into the
+                  ground on Karura, Ngong and Kereita, while still feeling comfortable on the roads
+                  back into Nairobi.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Trail Shoes by Brand
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Explore Nike, HOKA and Salomon trail running shoes designed for technical
+                  singletrack, forest loops and mountain routes. We help you pick between softer
+                  HOKA cushioning, precise Salomon fit and versatile Nike trail options depending on
+                  your weekly terrain in Kenya.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Beginner vs Advanced Trail Runners
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  New to trail? We recommend forgiving, protective models that keep you stable as
+                  you learn Karura and Ngong. More advanced runners can move into lighter, more
+                  aggressive designs for racing and vertical metres, still tuned for Kenyan rock and
+                  dust.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Nairobi Trail Guide Support
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Not sure which shoes suit Karura Forest vs Ngong Hills or Kereita Forest?
+                  Message us on WhatsApp with where you train and your weekly mileage. We&apos;ll help
+                  you match trail shoes to your favourite Nairobi and Kenyan routes before you
+                  order.
+                </p>
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  White Light Store ships trail running shoes across Kenya with same-day Nairobi
+                  delivery options. Order directly from this page or talk to our team on WhatsApp to
+                  confirm sizes and stock before your next trail session.
+                </p>
+              </div>
+            )}
+
+            {validCategory === "basketball" && (
+              <div className="space-y-6 text-left">
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Our basketball shoes are picked for Nairobi courts, outdoor tarmac and indoor
+                  leagues. From Air Jordan to Nike and Puma, you get cushioning, grip and support
+                  tuned for crossovers, landings and quick cuts on Kenyan courts.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Jordan Brand Kenya
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Explore Air Jordan models brought into Nairobi for serious hoopers and sneaker
+                  fans. Whether you want classic Jordan silhouettes or newer performance-first
+                  releases, we focus on real-court comfort and support, not just style photos.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Nike Performance Basketball
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Nike basketball shoes combine responsive Zoom cushioning, supportive uppers and
+                  sticky outsoles for Kenyan courts. We pick models that work on outdoor Nairobi
+                  tarmac as well as indoor floors so you don&apos;t have to compromise on grip.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  High Tops vs Low Tops
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Unsure between high tops and low tops? We help you decide based on ankle history,
+                  playing position and court type. Guards often lean to lighter low tops while
+                  forwards and centres may prefer more collar support around the ankle.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Nairobi Court Shoes
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Nairobi courts can be dusty and uneven, so grip and durability matter. Our court
+                  shoes are chosen to handle outdoor pickup games, league nights and training
+                  sessions while still looking sharp off-court around the city.
+                </p>
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  Order basketball shoes Nairobi-wide with same-day delivery in the CBD and quick
+                  courier options across Kenya. Chat with us on WhatsApp if you want help choosing
+                  the right pair before your next game.
+                </p>
+              </div>
+            )}
+
+            {validCategory === "gym" && (
+              <div className="space-y-6 text-left">
+                <p className="text-sm md:text-base text-muted-foreground">
+                  White Light Store fits Nairobi lifters, functional athletes and studio members
+                  with gym shoes that feel stable under the bar and secure during HIIT. We stock
+                  Nike, Adidas, Reebok and more for Kenyan gyms and training spaces.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Women&apos;s Gym Shoes Nairobi
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Women in Nairobi need gym shoes that balance support, fit and style. We curate
+                  women&apos;s gym and training shoes for classes, strength training and treadmill
+                  sessions, with options suited to narrow, regular and wider feet.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  CrossFit & Functional Training
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  For CrossFit and functional training, you need grip for burpees and box jumps but
+                  enough stability for barbell work. Our trainers blend low, firm platforms with
+                  tough uppers built to survive Kenyan gym floors and rope climbs.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Weightlifting Shoes
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Squats and Olympic lifts demand a stable base. We help Nairobi lifters choose
+                  between flat training shoes and raised-heel weightlifting models, depending on
+                  ankle mobility, squat depth and the movements you train most.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  Training Shoes by Brand
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Compare Nike, Adidas, Reebok and other gym shoe brands in one Nairobi store. We
+                  talk you through fit, cushioning and heel-to-toe drop so you get a pair that feels
+                  locked in from warm-up to last set.
+                </p>
+                <p className="text-xs md:text-sm text-muted-foreground">
+                  We deliver gym shoes Nairobi-wide with same-day options for CBD orders and fast
+                  shipping across Kenya. Message us on WhatsApp to confirm your size, training
+                  style and stock before you order.
+                </p>
+              </div>
             )}
           </div>
         </section>

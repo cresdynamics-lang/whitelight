@@ -4,8 +4,9 @@
  */
 import { useEffect } from "react";
 
-const DEFAULT_TITLE = "Whitelight Store - Premium Footwear | Nairobi Kenya";
-const DEFAULT_DESC = "Kenya's best trusted specialized seller for premium athletic footwear. Shop running, trail, gym, basketball shoes in Nairobi. Same day delivery.";
+const DEFAULT_TITLE = "Running, Trail & Basketball Shoes Nairobi | White Light Store";
+const DEFAULT_DESC =
+  "Nairobi's specialist for running, trail, basketball & gym shoes. Nike, Adidas, HOKA & more. Fast Kenya delivery. Shop now.";
 const CANONICAL = "https://whitelightstore.co.ke";
 const OG_IMAGE = "https://whitelightstore.co.ke/couresel_images/running/running2.webp";
 

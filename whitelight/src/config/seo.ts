@@ -30,33 +30,33 @@ export const seoConfig = {
   
   pages: {
     home: {
-      title: "🔥 Whitelight Store Kenya - Best Trusted Specialized Seller | Premium Athletic Footwear Nairobi CBD",
-      description: "Kenya's #1 trusted specialized seller for premium athletic footwear! Shop authentic running shoes, trail shoes, gym shoes & basketball shoes in Nairobi CBD. Same day delivery • 4.9★ rating • Free socks with purchase • Visit Rware Building, Luthuli Avenue, Shop 410",
-      keywords: "best trusted shoe seller Kenya, specialized footwear seller Nairobi, premium shoes Kenya, running shoes Nairobi, trail shoes Kenya, gym shoes Nairobi, basketball shoes Kenya, authentic athletic footwear Kenya, trusted shoe store Nairobi CBD, same day delivery Nairobi"
+      title: "Running, Trail & Basketball Shoes Nairobi | White Light Store",
+      description: "Nairobi's specialist for running, trail, basketball & gym shoes. Nike, Adidas, HOKA & more. Fast Kenya delivery. Shop now.",
+      keywords: "running shoes Nairobi, trail shoes Kenya, basketball shoes Nairobi, gym shoes Kenya, Nike running shoes Kenya, Adidas trail shoes Nairobi, HOKA Kenya, performance footwear Nairobi, White Light Store, same day delivery Nairobi"
     },
     
     running: {
-      title: "🏃 Best Running Shoes Kenya | Trusted Specialized Seller | Premium Marathon & Training Footwear Nairobi",
-      description: "🔥 Kenya's best trusted specialized seller for premium running shoes! Authentic marathon shoes, jogging shoes & training footwear in Nairobi CBD. Same day delivery • Expert fitting • 4.9★ rating • Visit Whitelight Store at Rware Building, Luthuli Avenue, Shop 410",
-      keywords: "best running shoes Kenya, trusted running shoe seller Nairobi, marathon shoes Kenya, jogging shoes Nairobi, training footwear Kenya, authentic running shoes Nairobi, premium athletic shoes Kenya, running shoe specialists Nairobi CBD"
+      title: "Running Shoes Nairobi — Nike, Adidas & HOKA | White Light Store",
+      description: "Shop running shoes in Nairobi. Nike, Adidas, HOKA & more for road and trail. Fast delivery across Kenya. Order now from White Light Store.",
+      keywords: "running shoes Nairobi, running shoes Kenya, buy running shoes Nairobi, Nike running shoes Kenya, Adidas running shoes Nairobi, HOKA running Kenya, marathon shoes Nairobi, daily trainer shoes Kenya"
     },
     
     trail: {
-      title: "🥾 Best Trail Running Shoes Kenya | Trusted Specialized Seller | Outdoor Adventure Footwear Nairobi",
-      description: "🔥 Kenya's best trusted specialized seller for premium trail running shoes! Perfect for hiking, off-road running & outdoor adventures. Durable, waterproof & high-traction designs. Same day delivery in Nairobi CBD • Expert advice • Visit Rware Building, Luthuli Avenue, Shop 410",
-      keywords: "best trail shoes Kenya, trusted trail shoe seller Nairobi, hiking shoes Kenya, outdoor footwear Nairobi, adventure shoes Kenya, off-road running shoes Nairobi, waterproof trail shoes Kenya, mountain running footwear Nairobi CBD"
+      title: "Trail Running Shoes Kenya — Grip for Every Terrain | White Light Store",
+      description: "Trail running shoes for Karura Forest, Ngong Hills & beyond. Nike, HOKA, Salomon in Kenya. Fast Nairobi delivery from White Light Store.",
+      keywords: "trail shoes Kenya, trail running shoes Nairobi, Nike trail shoes Kenya, HOKA trail Kenya, Salomon Kenya, Karura Forest trail shoes, Ngong Hills running shoes"
     },
     
     gym: {
-      title: "💪 Best Gym Training Shoes Kenya | Trusted Specialized Seller | CrossFit & Workout Footwear Nairobi",
-      description: "🔥 Kenya's best trusted specialized seller for premium gym shoes! Professional training footwear for weightlifting, CrossFit & HIIT workouts. Superior grip & stability. Same day delivery in Nairobi CBD • Expert fitting • Visit Whitelight Store at Rware Building, Luthuli Avenue, Shop 410",
-      keywords: "best gym shoes Kenya, trusted training shoe seller Nairobi, CrossFit shoes Kenya, workout footwear Nairobi, weightlifting shoes Kenya, HIIT training shoes Nairobi, professional gym footwear Kenya, training shoe specialists Nairobi CBD"
+      title: "Gym Shoes Nairobi — Training & CrossFit Shoes Kenya | White Light Store",
+      description: "Gym & training shoes for Nairobi. Women's gym shoes, CrossFit, HIIT & lifting from Nike, Adidas, Reebok & more. Order now with fast Kenya delivery.",
+      keywords: "gym shoes Nairobi, gym shoes Kenya, training shoes Kenya, ladies gym shoes Kenya, women's training shoes Nairobi, CrossFit shoes Kenya, lifting shoes Nairobi, HIIT training shoes Kenya"
     },
     
     basketball: {
-      title: "🏀 Best Basketball Shoes Kenya | Trusted Specialized Seller | Court Performance Footwear Nairobi",
-      description: "🔥 Kenya's best trusted specialized seller for premium basketball shoes! High-performance court shoes for streetball & professional play. Superior grip, cushioning & ankle support. Same day delivery in Nairobi CBD • Expert selection • Visit Rware Building, Luthuli Avenue, Shop 410",
-      keywords: "best basketball shoes Kenya, trusted basketball shoe seller Nairobi, court shoes Kenya, streetball footwear Nairobi, basketball sneakers Kenya, performance basketball shoes Nairobi, professional court footwear Kenya, basketball shoe specialists Nairobi CBD"
+      title: "Basketball Shoes Nairobi — Jordan, Nike & More | White Light Store",
+      description: "Basketball shoes in Nairobi. Air Jordan, Nike, Puma and more — court-ready and delivered same day in Nairobi. Shop now at White Light Store.",
+      keywords: "basketball shoes Nairobi, basketball shoes Kenya, Jordan shoes Nairobi, Air Jordan Kenya, Nike basketball Kenya, court shoes Nairobi, streetball shoes Kenya"
     },
     training: {
       title: "👟 Best Training Shoes Kenya | Trusted Specialized Seller | Drills & Conditioning Footwear Nairobi",

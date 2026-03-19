@@ -31,6 +31,16 @@ function normalizeProduct(p: any): any {
     isNew: Boolean(p.isNew ?? p.is_new),
     isBestSeller: Boolean(p.isBestSeller ?? p.is_best_seller),
     isOnOffer: Boolean(p.isOnOffer ?? p.is_on_offer),
+    // Optional SEO fields (from new Supabase columns)
+    seo_title: p.seo_title ?? null,
+    seo_description: p.seo_description ?? null,
+    product_h1: p.product_h1 ?? null,
+    product_description: p.product_description ?? null,
+    url_slug: p.url_slug ?? null,
+    alt_text_main: p.alt_text_main ?? null,
+    seo_keywords: Array.isArray(p.seo_keywords) ? p.seo_keywords : null,
+    gender: p.gender ?? null,
+    structured_data: p.structured_data ?? null,
     createdAt: p.createdAt ?? p.created_at ?? "",
   };
 }

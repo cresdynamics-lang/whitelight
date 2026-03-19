@@ -41,32 +41,32 @@ const localImages: BannerImage[] = [
 
 const categoryContent: CategoryContent[] = [
   {
-    title: "WHITELIGHT RUNNING",
+    title: "Nairobi Running Ready",
     description:
-      "Premium running shoes for Nairobi runners – from easy jogs on Thika Road to full marathon days on Ngong Road.",
+      "Performance running shoes for Nairobi roads and paths – from CBD evening jogs to long runs on Ngong Road and beyond.",
     link: "/category/running",
-    ctaText: "Shop Running Shoes",
+    ctaText: "Explore running shoes",
   },
   {
-    title: "WHITELIGHT GYM",
+    title: "Grip for Every Trail",
     description:
-      "Serious gym and training shoes for Nairobi lifters – lock in stability for squats, deadlifts & HIIT sessions.",
-    link: "/category/gym",
-    ctaText: "Shop Gym Shoes",
+      "Trail shoes tuned for Karura Forest, Ngong Hills and Kenyan red dirt – trusted grip, protection and stability.",
+    link: "/category/trail",
+    ctaText: "Explore trail shoes",
   },
   {
-    title: "WHITELIGHT TRAINING",
+    title: "Court & Gym Power",
     description:
-      "Multi-sport training shoes for drills, conditioning and speed work – trusted by Nairobi’s most active athletes.",
-    link: "/category/training",
-    ctaText: "Shop Training Shoes",
+      "Basketball and gym shoes for Nairobi players and lifters – cushioning for the court, stability for squats and HIIT.",
+    link: "/category/basketball",
+    ctaText: "Explore court & gym",
   },
   {
-    title: "ABOUT WHITELIGHT STORE",
+    title: "Your Nairobi Shoe Partner",
     description:
-      "Visit us in Nairobi CBD – Rware Building, Luthuli Avenue, Shop 410. Try on authentic footwear with real sizing help.",
-    link: "/about",
-    ctaText: "Discover Our Story",
+      "White Light Store fits Nairobi with authentic Nike, Adidas, HOKA and more – same-day delivery and WhatsApp sizing help.",
+    link: "/contact",
+    ctaText: "Chat sizing on WhatsApp",
   },
 ];
 

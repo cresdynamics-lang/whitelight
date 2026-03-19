@@ -82,11 +82,18 @@ const ProductDetail = () => {
     return categoryMap[category] || category;
   };
 
-  // Generate SEO-friendly title and description
-  const seoTitle = `${product.name} - ${product.brand} ${getCategoryDisplayName(product.category)} | Buy in Nairobi Kenya`;
-  const seoDescription = `Buy ${product.name} by ${product.brand} in Nairobi. ${product.description.substring(0, 120)}... Available sizes: ${product.variants.filter(v => v.inStock).map(v => v.size).join(', ')}. Same day delivery in Nairobi CBD.`;
-  const seoKeywords = `${product.name}, ${product.brand} ${product.category} shoes, ${product.category} shoes Kenya, ${product.category} shoes Nairobi, buy ${product.name} Kenya, ${product.brand} shoes Nairobi`;
-  const productImage = product.images[0]?.url || "/whitelight_logo.jpeg";
+  // Prefer Supabase SEO fields when present, with safe fallbacks
+  const computedCategoryName = getCategoryDisplayName(product.category);
+  const fallbackSeoTitle = `${product.name} - ${product.brand} ${computedCategoryName} | Buy in Nairobi Kenya`;
+  const fallbackSeoDescription = `Buy ${product.name} by ${product.brand} in Nairobi. ${product.description.substring(0, 120)}... Available sizes: ${product.variants.filter(v => v.inStock).map(v => v.size).join(', ')}. Same day delivery in Nairobi CBD.`;
+  const fallbackSeoKeywords = `${product.name}, ${product.brand} ${product.category} shoes, ${product.category} shoes Kenya, ${product.category} shoes Nairobi, buy ${product.name} Kenya, ${product.brand} shoes Nairobi`;
+
+  const seoTitle = product.seo_title || fallbackSeoTitle;
+  const seoDescription = product.seo_description || fallbackSeoDescription;
+  const seoKeywords = product.seo_keywords?.join(", ") || fallbackSeoKeywords;
+
+  const mainImageUrl = product.images[0]?.url || "/whitelight_logo.jpeg";
+  const mainAltText = product.alt_text_main || product.images[0]?.alt || `${product.brand} ${product.name} ${computedCategoryName.toLowerCase()} — available in Kenya`;
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
 
@@ -140,20 +147,20 @@ const ProductDetail = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-x-hidden">
       <SEOHead
         title={seoTitle}
         description={seoDescription}
         keywords={seoKeywords}
-        canonical={`https://whitelightstore.co.ke/product/${product.slug}`}
-        ogImage={productImage}
+        canonical={product.url_slug ? `https://whitelightstore.co.ke${product.url_slug}` : `https://whitelightstore.co.ke/product/${product.slug}`}
+        ogImage={mainImageUrl}
         ogType="product"
         product={product}
         category={product.category}
       />
       <Header />
       
-      <main className="flex-1">
+      <main className="flex-1 overflow-x-hidden">
         <div className="container py-8">
           {/* Breadcrumb */}
           <Link
@@ -164,14 +171,18 @@ const ProductDetail = () => {
             Back to Shop
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
             {/* Images with multiple angles */}
-            <div className="space-y-4">
-              <div className="relative aspect-[4/3] lg:aspect-[4/3] overflow-hidden rounded-lg bg-secondary group">
+            <div className="space-y-4 min-w-0 lg:sticky lg:top-24 self-start">
+              <div className="relative w-full max-w-full aspect-[4/3] lg:aspect-[4/3] overflow-hidden rounded-lg bg-secondary group">
                 <OptimizedImage
                   src={product.images[selectedImageIndex]?.url || product.images[0]?.url}
-                  alt={product.images[selectedImageIndex]?.alt || product.name}
-                  className="h-full w-full cursor-pointer hover:scale-105 transition-transform duration-300"
+                  alt={
+                    selectedImageIndex === 0
+                      ? mainAltText
+                      : product.images[selectedImageIndex]?.alt || `${product.name} angle ${selectedImageIndex + 1}`
+                  }
+                  className="h-full w-full max-w-full cursor-pointer hover:scale-105 transition-transform duration-300"
                   loading="eager"
                   fetchPriority="high"
                   preload={selectedImageIndex === 0}
@@ -207,7 +218,7 @@ const ProductDetail = () => {
               
               {/* Image thumbnails - show below on mobile, hidden on desktop */}
               {product.images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto lg:hidden">
+                <div className="flex gap-2 overflow-x-auto max-w-full lg:hidden">
                   {product.images.map((image, index) => (
                     <button
                       key={index}
@@ -224,7 +235,7 @@ const ProductDetail = () => {
                     >
                       <OptimizedImage
                         src={image.url}
-                        alt={image.alt || `${product.name} angle ${index + 1}`}
+                        alt={index === 0 ? mainAltText : image.alt || `${product.name} angle ${index + 1}`}
                         className="w-full h-full"
                         loading="lazy"
                         sizes="80px"
@@ -236,7 +247,7 @@ const ProductDetail = () => {
               
               {/* Desktop thumbnail strip - show on desktop */}
               {product.images.length > 1 && (
-                <div className="hidden lg:flex gap-2 overflow-x-auto">
+                <div className="hidden lg:flex gap-2 overflow-x-auto max-w-full">
                   {product.images.map((image, index) => (
                     <button
                       key={index}
@@ -250,7 +261,7 @@ const ProductDetail = () => {
                     >
                       <OptimizedImage
                         src={image.url}
-                        alt={image.alt || `${product.name} angle ${index + 1}`}
+                        alt={index === 0 ? mainAltText : image.alt || `${product.name} angle ${index + 1}`}
                         className="w-full h-full"
                         loading="lazy"
                         sizes="80px"
@@ -262,7 +273,7 @@ const ProductDetail = () => {
             </div>
 
             {/* Details */}
-            <div className="lg:py-0">
+            <div className="lg:py-0 min-w-0">
               <div className="flex items-center gap-2 mb-2">
                 <p className="text-sm text-muted-foreground uppercase tracking-wider">
                   {product.brand}
