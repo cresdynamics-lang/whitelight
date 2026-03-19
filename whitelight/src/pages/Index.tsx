@@ -123,6 +123,7 @@ const Index = () => {
           products={uniqueNewArrivals}
           className="bg-secondary/30"
           viewAllHref="/new-arrivals"
+          initialDirection="left"
         />
 
         {/* Brand story carousel using public images */}
@@ -135,6 +136,7 @@ const Index = () => {
           // Best sellers span all categories; for now, send users to New Arrivals
           // page which highlights the latest catalog across the store.
           viewAllHref="/new-arrivals"
+          initialDirection="right"
         />
 
         {/* Scrolling Category Cards */}
@@ -145,6 +147,7 @@ const Index = () => {
           title="Running"
           products={uniqueRunning}
           viewAllHref="/category/running"
+          initialDirection="left"
         />
 
         {/* Trail Shoes Section */}
@@ -152,6 +155,7 @@ const Index = () => {
           title="Trail"
           products={uniqueTrail}
           viewAllHref="/category/trail"
+          initialDirection="right"
         />
 
         {/* Gym Shoes Section */}
@@ -160,6 +164,7 @@ const Index = () => {
           products={uniqueGym}
           className="bg-secondary/30"
           viewAllHref="/category/gym"
+          initialDirection="left"
         />
 
         {/* Accessories Section */}
@@ -167,6 +172,7 @@ const Index = () => {
           title="Accessories"
           products={uniqueAccessories}
           viewAllHref="/category/accessories"
+          initialDirection="right"
         />
 
         {/* Basketball Shoes Section */}
@@ -174,6 +180,7 @@ const Index = () => {
           title="Basketball"
           products={uniqueBasketball}
           viewAllHref="/category/basketball"
+          initialDirection="left"
         />
 
         {/* SEO footer paragraph */}

@@ -9,21 +9,30 @@ interface HorizontalProductRowProps {
   products: Product[];
   className?: string;
   viewAllHref?: string;
+  initialDirection?: "left" | "right";
 }
 
-export function HorizontalProductRow({ title, products, className, viewAllHref }: HorizontalProductRowProps) {
+export function HorizontalProductRow({
+  title,
+  products,
+  className,
+  viewAllHref,
+  initialDirection = "right",
+}: HorizontalProductRowProps) {
   const safeProducts = Array.isArray(products)
     ? products.filter((p) => p != null && p.id)
     : [];
 
   const scrollRef = useRef<HTMLDivElement | null>(null);
-  const autoScrollDirectionRef = useRef<1 | -1>(1);
+  const autoScrollDirectionRef = useRef<1 | -1>(initialDirection === "left" ? -1 : 1);
   const pauseUntilRef = useRef(0);
 
   // Continuous auto-scroll (left <-> right) to keep rows active.
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
+
+    autoScrollDirectionRef.current = initialDirection === "left" ? -1 : 1;
 
     const hasOverflow = container.scrollWidth > container.clientWidth + 8;
     if (!hasOverflow) return;
@@ -64,7 +73,7 @@ export function HorizontalProductRow({ title, products, className, viewAllHref }
     return () => {
       window.cancelAnimationFrame(frameId);
     };
-  }, [safeProducts.length]);
+  }, [safeProducts.length, initialDirection]);
 
   const handleUserInteraction = () => {
     pauseUntilRef.current = Date.now() + 2500;
