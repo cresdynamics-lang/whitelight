@@ -46,8 +46,16 @@ export function SEOHead({
       <meta name="revisit-after" content="7 days" />
       <meta name="distribution" content="global" />
       <meta name="rating" content="general" />
-      {noindex && <meta name="robots" content="noindex, nofollow" />}
-      {!noindex && <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />}
+      {/* Single robots tag so SPA navigations never leave a stale noindex behind */}
+      <meta
+        key="whitelight-robots"
+        name="robots"
+        content={
+          noindex
+            ? "noindex, nofollow"
+            : "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+        }
+      />
       <link rel="canonical" href={canonicalUrl} />
       
       {/* Additional SEO Meta Tags */}

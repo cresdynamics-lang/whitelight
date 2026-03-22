@@ -9,10 +9,20 @@ const DEFAULT_DESC =
   "Nairobi's specialist for running, trail, basketball & gym shoes. Nike, Adidas, HOKA & more. Fast Kenya delivery. Shop now.";
 const CANONICAL = "https://whitelightstore.co.ke";
 const OG_IMAGE = "https://whitelightstore.co.ke/couresel_images/running/running2.webp";
+const ROBOTS_INDEX =
+  "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1";
 
 export function HomePageHead() {
   useEffect(() => {
     document.title = DEFAULT_TITLE;
+    const robots = document.querySelector('meta[name="robots"]');
+    if (robots) robots.setAttribute("content", ROBOTS_INDEX);
+    else {
+      const m = document.createElement("meta");
+      m.name = "robots";
+      m.content = ROBOTS_INDEX;
+      document.head.appendChild(m);
+    }
     const desc = document.querySelector('meta[name="description"]');
     if (desc) desc.setAttribute("content", DEFAULT_DESC);
     else {
