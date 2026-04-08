@@ -30,6 +30,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { apiService } from "@/services/apiService";
+import { openWhatsAppCartOrderMessage } from "@/lib/whatsapp";
 
 interface CheckoutFormProps {
   onBack: () => void;
@@ -99,57 +100,56 @@ export function CheckoutForm({ onBack }: CheckoutFormProps) {
         }))
       };
 
-      console.log('Sending order data:', orderData);
-      const response = await apiService.createOrder(orderData);
-      
-      if (response.success) {
-        toast.success("Order placed successfully!", {
-          description: `Order #${response.data.order.orderNumber} has been created.`
-        });
-        
-        // Prepare WhatsApp message with order details
-        const orderNumber = response.data.order.orderNumber;
-        const total = getTotal();
-        
-        let message = `NEW ORDER #${orderNumber}\n\n`;
-        message += `CUSTOMER DETAILS:\n`;
-        message += `Name: ${formData.name}\n`;
-        message += `Phone: ${cleanPhone}\n`;
-        if (formData.email) message += `Email: ${formData.email}\n`;
-        if (formData.address) message += `Address: ${formData.address}\n`;
-        
-        message += `\nORDER ITEMS:\n`;
-        items.forEach((item, index) => {
-          const productImage = item.product.images && item.product.images.length > 0 ? item.product.images[0].url : null;
-          message += `${index + 1}. ${item.product.name}\n`;
-          message += `   Size: ${getDisplaySize(item.size, item.product.category)} | Qty: ${item.quantity} | ${formatPrice(item.product.price * item.quantity, siteConfig.currency)}\n`;
-          if (productImage) {
-            message += `   Image: ${productImage}\n`;
-          }
-        });
-        
-        message += `\nTOTAL: ${formatPrice(total, siteConfig.currency)}\n`;
-        
-        if (formData.notes) {
-          message += `\nNOTES: ${formData.notes}\n`;
+      const total = getTotal();
+
+      // Try backend order creation (optional). If it fails, still proceed to WhatsApp.
+      let orderNumber: string | undefined;
+      try {
+        console.log('Sending order data:', orderData);
+        const response = await apiService.createOrder(orderData);
+        if (response?.success && (response as any)?.data?.order?.orderNumber) {
+          orderNumber = (response as any).data.order.orderNumber as string;
+          toast.success("Order placed successfully!", {
+            description: `Order #${orderNumber} has been created.`
+          });
+        } else {
+          toast.message("Proceeding to WhatsApp", {
+            description: "Could not create backend order number, but your order will still be sent on WhatsApp."
+          });
         }
-        
-        // Encode message for URL
-        const encodedMessage = encodeURIComponent(message);
-        const whatsappNumber = siteConfig.contact.whatsapp.replace(/[^\d]/g, '');
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-        
-        // Open WhatsApp in new window
-        window.open(whatsappUrl, '_blank');
-        
-        clearCart();
-        setIsOpen(false);
-      } else {
-        throw new Error(response.message || 'Failed to place order');
+      } catch (apiError) {
+        console.error('Backend order create failed:', apiError);
+        toast.message("Proceeding to WhatsApp", {
+          description: "Backend is unreachable right now, but your order will still be sent on WhatsApp."
+        });
       }
+
+      openWhatsAppCartOrderMessage({
+        customer: {
+          name: formData.name,
+          phone: cleanPhone,
+          email: formData.email || undefined,
+          address: formData.address || undefined,
+          notes: formData.notes || undefined,
+          orderNumber,
+        },
+        items: items.map((item) => ({
+          name: item.product.name,
+          unitPrice: item.product.price,
+          quantity: item.quantity,
+          sizeLabel: getDisplaySize(item.size, item.product.category),
+          referenceLink: item.referenceLink,
+          imageUrl: item.product.images?.[0]?.url,
+        })),
+        currency: siteConfig.currency,
+        total,
+      });
+
+      clearCart();
+      setIsOpen(false);
     } catch (error) {
       console.error('Order submission error:', error);
-      toast.error("Failed to place order. Please try again.");
+      toast.error("Failed to prepare WhatsApp order. Please try again.");
     } finally {
       setIsSubmitting(false);
     }

@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
 import { useLazyLoading } from "@/hooks/useLazyLoading";
+import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
 
 interface ProductCardProps {
   product: Product;
@@ -72,6 +73,21 @@ export function ProductCard({ product, className }: ProductCardProps) {
     toast.success(`${name} added to cart`);
   };
 
+  const handleOrderViaWhatsApp = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const imageUrl = images[0]?.url || "";
+    const productUrl = `${window.location.origin}/product/${slug}`;
+    openWhatsAppOrderMessage({
+      productName: name,
+      productPrice: price,
+      imageUrl: imageUrl,
+      productUrl,
+      currency: siteConfig.currency,
+    });
+  };
+
   // Skip rendering if product has no id (should not happen if list is filtered)
   if (!id) return null;
 
@@ -114,14 +130,24 @@ export function ProductCard({ product, className }: ProductCardProps) {
             )}
           </div>
           
-          {/* Offer Badge - Top Right */}
-          {product?.isOnOffer && (
-            <div className="absolute top-1.5 right-1.5">
+          {/* Top-right actions/badges */}
+          <div className="absolute top-1.5 right-1.5 flex flex-col items-end gap-1">
+            <button
+              type="button"
+              onClick={handleAddToCart}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white/95 text-foreground shadow-sm ring-1 ring-border transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              aria-label="Add to cart"
+              title="Add to cart"
+            >
+              <ShoppingCart className="h-4 w-4" />
+            </button>
+
+            {product?.isOnOffer && (
               <Badge className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 leading-none">
                 OFFER
               </Badge>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </Link>
 
@@ -177,15 +203,17 @@ export function ProductCard({ product, className }: ProductCardProps) {
           )}
         </div>
 
-        {/* Add to Cart button */}
-        <Button
-          size="sm"
-          className="w-full mt-1 h-7 text-[10px] px-2"
-          onClick={handleAddToCart}
-        >
-          <ShoppingCart className="h-3 w-3 mr-1" />
-          Add to Cart
-        </Button>
+        {/* Order via WhatsApp button */}
+        <div className="mt-1">
+          <Button
+            size="sm"
+            className="w-full h-7 text-[10px] leading-none px-1.5 bg-green-600 hover:bg-green-700 text-white whitespace-nowrap"
+            onClick={handleOrderViaWhatsApp}
+            title="Order on WhatsApp"
+          >
+            Order on WhatsApp
+          </Button>
+        </div>
       </div>
     </div>
   );
