@@ -13,7 +13,8 @@ begin
     'gym',
     'basketball',
     'accessories',
-    'training'
+    'training',
+    'tennis'
   );
 exception
   when duplicate_object then null;

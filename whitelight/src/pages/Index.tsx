@@ -21,6 +21,7 @@ const Index = () => {
   const { data: gymShoes = [], error: gymError } = useProductsByCategory("gym");
   const { data: accessories = [], error: accessoriesError } = useProductsByCategory("accessories");
   const { data: basketballShoes = [], error: basketballError } = useProductsByCategory("basketball");
+  const { data: tennisShoes = [] } = useProductsByCategory("tennis");
 
   // Update rotation key every 5 minutes so "New In" reshuffles dynamically
   useEffect(() => {
@@ -40,6 +41,7 @@ const Index = () => {
     uniqueGym,
     uniqueAccessories,
     uniqueBasketball,
+    uniqueTennis,
   } = useMemo(() => {
     const usedIds = new Set<string>();
 
@@ -68,6 +70,7 @@ const Index = () => {
     const uniqueGym = takeUnique(gymShoes, 12);
     const uniqueAccessories = takeUnique(accessories, 12);
     const uniqueBasketball = takeUnique(basketballShoes, 12);
+    const uniqueTennis = takeUnique(tennisShoes, 12);
 
     return {
       uniqueNewArrivals,
@@ -77,8 +80,9 @@ const Index = () => {
       uniqueGym,
       uniqueAccessories,
       uniqueBasketball,
+      uniqueTennis,
     };
-  }, [newArrivals, bestSellers, runningShoes, trailShoes, gymShoes, accessories, basketballShoes, rotationKey]);
+  }, [newArrivals, bestSellers, runningShoes, trailShoes, gymShoes, accessories, basketballShoes, tennisShoes, rotationKey]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -183,6 +187,15 @@ const Index = () => {
           initialDirection="left"
         />
 
+        {/* Tennis Shoes Section */}
+        <HorizontalProductRow
+          title="Tennis"
+          products={uniqueTennis}
+          className="bg-secondary/30"
+          viewAllHref="/category/tennis"
+          initialDirection="right"
+        />
+
         {/* SEO footer paragraph */}
         <section className="border-t border-muted mt-8">
           <div className="container py-8">
@@ -190,7 +203,8 @@ const Index = () => {
               White Light Store is Nairobi&apos;s specialist for{" "}
               <strong>running shoes Nairobi</strong>,{" "}
               <strong>trail shoes Kenya</strong>,{" "}
-              <strong>basketball shoes Nairobi</strong> and{" "}
+              <strong>basketball shoes Nairobi</strong>,{" "}
+              <strong>tennis shoes Kenya</strong> and{" "}
               <strong>gym shoes Kenya</strong>. We stock performance models from Nike, Adidas, HOKA,
               ASICS, New Balance and more, fitted for Kenyan runners and athletes. Order your next
               pair online or via WhatsApp for fast delivery across Nairobi and shipping to the rest

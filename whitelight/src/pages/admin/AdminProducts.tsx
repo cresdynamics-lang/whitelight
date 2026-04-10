@@ -78,7 +78,9 @@ const AdminProducts = () => {
       running: "bg-blue-500/10 text-blue-500",
       trail: "bg-green-500/10 text-green-500",
       gym: "bg-orange-500/10 text-orange-500",
+      training: "bg-cyan-500/10 text-cyan-600",
       basketball: "bg-purple-500/10 text-purple-500",
+      tennis: "bg-lime-500/10 text-lime-700",
       accessories: "bg-pink-500/10 text-pink-500",
     };
     return colors[category] || "bg-muted text-muted-foreground";

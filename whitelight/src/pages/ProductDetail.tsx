@@ -77,6 +77,7 @@ const ProductDetail = () => {
       gym: "Gym Shoes",
       training: "Training Shoes",
       basketball: "Basketball Shoes",
+      tennis: "Tennis Shoes",
       accessories: "Accessories",
     };
     return categoryMap[category] || category;

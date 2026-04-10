@@ -16,6 +16,7 @@ const categoryTitles: Record<ProductCategory, string> = {
   gym: "Gym & Training Shoes in Nairobi — For Every Workout",
   training: "Training Shoes in Nairobi",
   basketball: "Basketball Shoes in Nairobi — Jordan, Nike & Court-Ready Kicks",
+  tennis: "Tennis Shoes in Nairobi — Court-Ready Performance",
   accessories: "Accessories",
 };
 
@@ -30,6 +31,8 @@ const categoryDescriptions: Record<ProductCategory, string> = {
     "Multi-sport training shoes for drills, conditioning and speed work around Nairobi. Built for agility, comfort and all-day sessions.",
   basketball:
     "Court-ready basketball shoes for Nairobi players. Jordan, Nike and more with cushioning, grip and ankle support for street and indoor courts.",
+  tennis:
+    "Tennis shoes built for lateral cuts, quick stops and all-surface play. Shop court-ready models with grip and support for Nairobi clubs and outdoor courts.",
   accessories:
     "Complete your footwear experience with premium accessories, care products and comfort upgrades for your favourite pairs.",
 };
@@ -62,6 +65,12 @@ const categoryImages: Record<ProductCategory, string[]> = {
     "/couresel_images/basketball/bk2.png",
     "/couresel_images/basketball/bk3.jpg",
     "/couresel_images/basketball/bk5.jpg",
+  ],
+  tennis: [
+    "/couresel_images/basketball/bk2.png",
+    "/couresel_images/basketball/bk3.jpg",
+    "/couresel_images/gym/gym.png",
+    "/couresel_images/running/running2.png",
   ],
   training: [
     "/couresel_images/gym/gym.png",
@@ -296,6 +305,24 @@ export default function CategoryPage() {
                   Order basketball shoes Nairobi-wide with same-day delivery in the CBD and quick
                   courier options across Kenya. Chat with us on WhatsApp if you want help choosing
                   the right pair before your next game.
+                </p>
+              </div>
+            )}
+
+            {validCategory === "tennis" && (
+              <div className="space-y-6 text-left">
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Tennis in Kenya means hard courts, hot afternoons and quick direction changes.
+                  Our tennis shoes focus on lateral support, durable outsoles and breathable uppers
+                  so you can train and compete with confidence in Nairobi and beyond.
+                </p>
+                <h2 className="font-heading text-xl md:text-2xl font-bold">
+                  All-court & club-ready
+                </h2>
+                <p className="text-sm md:text-base text-muted-foreground">
+                  Whether you play social doubles or weekly league, we help you pick shoes with the
+                  right grip and stability. Message us on WhatsApp to confirm sizes and stock before
+                  you order.
                 </p>
               </div>
             )}

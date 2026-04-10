@@ -35,6 +35,7 @@ export const siteConfig = {
     { label: "Gym", href: "/category/gym" },
     { label: "Training", href: "/category/training" },
     { label: "Basketball", href: "/category/basketball" },
+    { label: "Tennis", href: "/category/tennis" },
     { label: "Accessories", href: "/category/accessories" },
     { label: "Buying Guide", href: "/buying-guide" },
     { label: "About", href: "/about" },
@@ -46,6 +47,7 @@ export const siteConfig = {
     { id: "gym", label: "Gym Shoes", href: "/category/gym" },
     { id: "training", label: "Training Shoes", href: "/category/training" },
     { id: "basketball", label: "Basketball Shoes", href: "/category/basketball" },
+    { id: "tennis", label: "Tennis Shoes", href: "/category/tennis" },
     { id: "accessories", label: "Accessories", href: "/category/accessories" },
   ],
   services: {

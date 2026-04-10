@@ -28,6 +28,7 @@ const CATEGORIES: { value: ProductCategory; label: string }[] = [
   { value: "gym", label: "Gym" },
   { value: "training", label: "Training" },
   { value: "basketball", label: "Basketball" },
+  { value: "tennis", label: "Tennis" },
   { value: "accessories", label: "Accessories" },
 ];
 
@@ -61,8 +62,8 @@ const AdminProductForm = () => {
     isOnOffer: false,
   });
 
-  // Available shoe sizes (36-45)
-  const AVAILABLE_SIZES = [36, 37, 38, 39, 40, 41, 42, 43, 44, 45];
+  // Available shoe sizes (36-47)
+  const AVAILABLE_SIZES = [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47];
   
   // Track which sizes are selected (checked = available/in stock)
   const [selectedSizes, setSelectedSizes] = useState<Set<number>>(new Set());

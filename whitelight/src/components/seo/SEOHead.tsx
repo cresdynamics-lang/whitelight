@@ -394,6 +394,7 @@ function getCategoryName(category: string): string {
     gym: "Gym Training Shoes",
     training: "Training Shoes",
     basketball: "Basketball Shoes",
+    tennis: "Tennis Shoes",
     accessories: "Shoe Accessories",
   };
   return categoryMap[category] || category;

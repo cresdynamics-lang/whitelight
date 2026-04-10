@@ -1,10 +1,15 @@
 // API Service - Backend integration
-// In production use same-origin /api so the app works regardless of build-time env
+// Dev: use same-origin `/api` so Vite can proxy to the backend (no CORS).
+// Prod: same-origin `/api` behind your host.
+// Override anytime with VITE_API_BASE_URL (full URL including /api).
 function getApiBaseUrl(): string {
-  if (import.meta.env.PROD && typeof window !== "undefined" && window.location?.origin) {
+  const envUrl = import.meta.env.VITE_API_BASE_URL as string | undefined;
+  if (envUrl) return envUrl.replace(/\/$/, "");
+  if (import.meta.env.DEV) return "/api";
+  if (typeof window !== "undefined" && window.location?.origin) {
     return `${window.location.origin}/api`;
   }
-  return import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/api";
+  return "http://localhost:5000/api";
 }
 const API_BASE_URL = getApiBaseUrl();
 

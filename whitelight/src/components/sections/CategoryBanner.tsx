@@ -14,6 +14,7 @@ const categoryLabels: Record<string, string> = {
   gym: "Gym Shoes",
   training: "Training Shoes",
   basketball: "Basketball Shoes",
+  tennis: "Tennis Shoes",
   orthopedic: "Orthopedic Shoes",
 };
 
@@ -23,6 +24,7 @@ const categoryTaglines: Record<string, string> = {
   gym: "Lock in your lifts and HIIT sessions.\nSupport where Nairobi lifters need it most.",
   training: "Built for drills, sprints and conditioning.\nOne shoe for your whole training week.",
   basketball: "Explosive take-off, safe landings.\nCourt-ready for Nairobi’s best hoopers.",
+  tennis: "Lateral support and grip for every rally.\nBuilt for Kenyan courts and club play.",
   orthopedic: "Comfort for long Nairobi days.\nSupport that’s kind on busy feet.",
 };
 
@@ -47,6 +49,11 @@ const localCategories: CategoryImage[] = [
     category: "basketball",
     url: "/couresel_images/basketball/bk1.png",
     alt_text: "Basketball Shoes"
+  },
+  {
+    category: "tennis",
+    url: "/couresel_images/basketball/bk2.png",
+    alt_text: "Tennis Shoes"
   },
   {
     category: "training",

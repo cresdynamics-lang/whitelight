@@ -58,6 +58,11 @@ export const seoConfig = {
       description: "Basketball shoes in Nairobi. Air Jordan, Nike, Puma and more — court-ready and delivered same day in Nairobi. Shop now at White Light Store.",
       keywords: "basketball shoes Nairobi, basketball shoes Kenya, Jordan shoes Nairobi, Air Jordan Kenya, Nike basketball Kenya, court shoes Nairobi, streetball shoes Kenya"
     },
+    tennis: {
+      title: "Tennis Shoes Nairobi — Court & All-Surface Footwear Kenya | White Light Store",
+      description: "Tennis shoes in Nairobi for hard court, clay-style play and club sessions. Grip, lateral support and durable outsoles — fast Kenya delivery from White Light Store.",
+      keywords: "tennis shoes Nairobi, tennis shoes Kenya, court tennis shoes Kenya, Nike tennis Kenya, Adidas tennis Nairobi, all-court tennis shoes Kenya"
+    },
     training: {
       title: "👟 Best Training Shoes Kenya | Trusted Specialized Seller | Drills & Conditioning Footwear Nairobi",
       description: "🔥 Kenya's best trusted specialized seller for premium training shoes! Built for drills, conditioning & multi-sport training. Lightweight, supportive & durable. Same day delivery in Nairobi CBD • Expert fitting • Visit Whitelight Store at Rware Building, Luthuli Avenue, Shop 410",
