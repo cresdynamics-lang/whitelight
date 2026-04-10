@@ -196,7 +196,7 @@ const AdminProductForm = () => {
             duration: 2000
           });
         } else {
-          throw new Error(response.message || 'Failed to upload image');
+          throw new Error("Failed to upload image");
         }
       } catch (error) {
         console.error(`Image ${i + 1} upload error:`, error);
