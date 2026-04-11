@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
+import { formatSupabaseProductError } from "@/lib/adminProductSave";
 import type { Product } from "@/types/product";
 
 type NewProduct = Omit<Product, "id" | "createdAt">;
@@ -64,7 +65,7 @@ async function getAll(): Promise<Product[]> {
 
   if (error) {
     console.error("Error fetching admin products from Supabase:", error);
-    throw new Error(error.message || "Failed to fetch products");
+    throw new Error(formatSupabaseProductError(error) || "Failed to fetch products");
   }
 
   return (data || []).map(normalizeProductRow);
@@ -87,7 +88,7 @@ async function getById(id: string): Promise<Product | null> {
 
   if (error) {
     console.error("Error fetching admin product by id from Supabase:", error);
-    throw new Error(error.message || "Failed to fetch product");
+    throw new Error(formatSupabaseProductError(error) || "Failed to fetch product");
   }
 
   if (!data) return null;
@@ -120,7 +121,7 @@ async function create(product: NewProduct): Promise<Product> {
 
   if (error || !created) {
     console.error("Error creating product in Supabase:", error);
-    throw new Error(error?.message || "Failed to create product");
+    throw new Error(formatSupabaseProductError(error) || "Failed to create product");
   }
 
   const productId = created.id as number;
@@ -140,7 +141,7 @@ async function create(product: NewProduct): Promise<Product> {
 
     if (imageError) {
       console.error("Error inserting product images in Supabase:", imageError);
-      throw new Error(imageError.message || "Failed to save product images");
+      throw new Error(formatSupabaseProductError(imageError) || "Failed to save product images");
     }
   }
 
@@ -160,7 +161,7 @@ async function create(product: NewProduct): Promise<Product> {
 
     if (variantError) {
       console.error("Error inserting product variants in Supabase:", variantError);
-      throw new Error(variantError.message || "Failed to save product variants");
+      throw new Error(formatSupabaseProductError(variantError) || "Failed to save product variants");
     }
   }
 
@@ -206,7 +207,7 @@ async function update(
 
     if (error) {
       console.error("Error updating product in Supabase:", error);
-      throw new Error(error.message || "Failed to update product");
+      throw new Error(formatSupabaseProductError(error) || "Failed to update product");
     }
   }
 
@@ -220,7 +221,7 @@ async function update(
       .eq("product_id", productId);
     if (delError) {
       console.error("Error deleting old product images in Supabase:", delError);
-      throw new Error(delError.message || "Failed to update product images");
+      throw new Error(formatSupabaseProductError(delError) || "Failed to update product images");
     }
 
     if (updates.images.length > 0) {
@@ -235,7 +236,7 @@ async function update(
         .insert(imageRows);
       if (insError) {
         console.error("Error inserting updated product images in Supabase:", insError);
-        throw new Error(insError.message || "Failed to save product images");
+        throw new Error(formatSupabaseProductError(insError) || "Failed to save product images");
       }
     }
   }
@@ -248,7 +249,7 @@ async function update(
       .eq("product_id", productId);
     if (delVarError) {
       console.error("Error deleting old product variants in Supabase:", delVarError);
-      throw new Error(delVarError.message || "Failed to update product variants");
+      throw new Error(formatSupabaseProductError(delVarError) || "Failed to update product variants");
     }
 
     if (updates.variants.length > 0) {
@@ -264,7 +265,7 @@ async function update(
         .insert(variantRows);
       if (insVarError) {
         console.error("Error inserting updated product variants in Supabase:", insVarError);
-        throw new Error(insVarError.message || "Failed to save product variants");
+        throw new Error(formatSupabaseProductError(insVarError) || "Failed to save product variants");
       }
     }
   }
@@ -282,7 +283,7 @@ async function remove(id: string): Promise<boolean> {
 
   if (error) {
     console.error("Error deleting product in Supabase:", error);
-    throw new Error(error.message || "Failed to delete product");
+    throw new Error(formatSupabaseProductError(error) || "Failed to delete product");
   }
 
   return true;

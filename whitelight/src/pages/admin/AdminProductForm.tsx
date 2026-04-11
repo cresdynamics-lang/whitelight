@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { adminProductsService } from "@/services/adminSupabaseProducts";
 import { uploadProductImage } from "@/services/adminSupabaseStorage";
+import { sanitizeProductSlug } from "@/lib/adminProductSave";
 import { Product, ProductCategory } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -81,7 +82,10 @@ const AdminProductForm = () => {
     { label: 'S', value: 9 }
   ];
   
-  const isAccessoryCategory = formData.category === 'accessories';
+  // Use selected checkboxes as source of truth (avoids mismatch when only Tennis etc. is selected)
+  const isAccessoryCategory =
+    formData.categories.length > 0 &&
+    formData.categories.every((c) => c === "accessories");
 
   useEffect(() => {
     if (isEditing) {
@@ -289,12 +293,14 @@ const AdminProductForm = () => {
       allImageUrls.push(formData.imageUrl);
     }
 
+    const primaryCategory = formData.categories[0] ?? formData.category;
+
     const productData: Omit<Product, "id" | "createdAt"> = {
       name: formData.name,
-      slug: formData.name.toLowerCase().replace(/\s+/g, "-"),
+      slug: sanitizeProductSlug(formData.name),
       brand: formData.brand,
-      category: formData.categories[0] || formData.category, // Primary category (first selected)
-      categories: formData.categories, // Multiple categories
+      category: primaryCategory,
+      categories: formData.categories,
       price: Number(formData.price),
       originalPrice: formData.originalPrice ? Number(formData.originalPrice) : undefined,
       description: formData.description,

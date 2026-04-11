@@ -15,7 +15,8 @@
     "check:seo": "node scripts/check-seo.mjs",
     "test:supabase": "node scripts/test-supabase.mjs",
     "seed:supabase-test-product": "node scripts/seed-supabase-test-product.mjs",
-    "test:supabase-admin": "node scripts/test-supabase-admin.mjs"
+    "test:supabase-admin": "node scripts/test-supabase-admin.mjs",
+    "test:admin-tennis-save": "node scripts/test-admin-product-tennis.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
