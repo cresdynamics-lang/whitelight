@@ -26,13 +26,18 @@ export function SEOHead({
   category,
   noindex = false,
 }: SEOHeadProps) {
-  const siteTitle = title || "Whitelight Store Kenya - Best Trusted Specialized Seller for Premium Athletic Footwear in Nairobi";
-  const siteDescription = description || "Kenya's best trusted specialized seller for premium athletic footwear. Shop authentic running shoes, trail shoes, gym shoes, basketball shoes & accessories in Nairobi CBD. Same day delivery available. Visit Rware Building, Luthuli Avenue, Shop 410.";
-  const siteKeywords = keywords || "best trusted shoe seller Kenya, specialized footwear seller Nairobi, running shoes Nairobi, trail shoes Kenya, gym shoes Nairobi, basketball shoes Kenya, premium shoes Nairobi CBD, trusted shoe store Kenya, best shoe shop Nairobi, authentic athletic footwear Kenya";
+  const siteTitle =
+    title ||
+    "Whitelight Store Kenya | Premium Athletic Footwear Nairobi";
+  const siteDescription =
+    description ||
+    "Kenya's trusted specialized seller for premium athletic footwear. Shop authentic running shoes, trail shoes, gym shoes and basketball shoes in Nairobi CBD. Same-day delivery. Visit Rware Building, Luthuli Avenue, Shop 410.";
+  const siteKeywords =
+    keywords ||
+    "best trusted shoe seller Kenya, specialized footwear seller Nairobi, running shoes Nairobi, trail shoes Kenya, gym shoes Nairobi, basketball shoes Kenya, premium shoes Nairobi CBD, trusted shoe store Kenya, athletic footwear Kenya";
   const siteImage = ogImage || `${BASE_URL}/whitelight_logo.jpeg`;
   const canonicalUrl = canonical || BASE_URL;
 
-  // Generate structured data
   const structuredData = generateStructuredData(product, category, canonicalUrl);
 
   return (
@@ -46,7 +51,6 @@ export function SEOHead({
       <meta name="revisit-after" content="7 days" />
       <meta name="distribution" content="global" />
       <meta name="rating" content="general" />
-      {/* Single robots tag so SPA navigations never leave a stale noindex behind */}
       <meta
         key="whitelight-robots"
         name="robots"
@@ -57,14 +61,14 @@ export function SEOHead({
         }
       />
       <link rel="canonical" href={canonicalUrl} />
-      
-      {/* Additional SEO Meta Tags */}
+
+      {/* PWA / Mobile */}
       <meta name="theme-color" content="#000000" />
       <meta name="apple-mobile-web-app-capable" content="yes" />
       <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       <meta name="format-detection" content="telephone=yes" />
 
-      {/* Geo Tags for Nairobi */}
+      {/* Geo Tags */}
       <meta name="geo.region" content="KE-30" />
       <meta name="geo.placename" content="Nairobi, Kenya" />
       <meta name="geo.position" content="-1.2840719;36.8219473" />
@@ -81,6 +85,8 @@ export function SEOHead({
       <meta property="og:site_name" content="Whitelight Store Kenya" />
       <meta property="og:locale" content="en_KE" />
       <meta property="og:locale:alternate" content="sw_KE" />
+
+      {/* Business contact data — non-product pages only */}
       {!product && (
         <>
           <meta property="business:contact_data:street_address" content="Rware Building, Luthuli Avenue, Shop 410, Fourth Floor" />
@@ -96,8 +102,8 @@ export function SEOHead({
       <meta name="twitter:title" content={siteTitle} />
       <meta name="twitter:description" content={siteDescription} />
       <meta name="twitter:image" content={siteImage} />
-      <meta name="twitter:site" content="@whitelightstore" />
-      <meta name="twitter:creator" content="@whitelightstore" />
+      {/* FIX: only include twitter:site if the account actually exists */}
+      {/* <meta name="twitter:site" content="@whitelightstore" /> */}
       <meta name="twitter:domain" content="whitelightstore.co.ke" />
 
       {/* Product-specific Open Graph */}
@@ -108,7 +114,10 @@ export function SEOHead({
           {product.originalPrice && (
             <meta property="product:original_price:amount" content={product.originalPrice.toString()} />
           )}
-          <meta property="product:availability" content={product.variants.some(v => v.inStock) ? "in stock" : "out of stock"} />
+          <meta
+            property="product:availability"
+            content={product.variants.some((v) => v.inStock) ? "in stock" : "out of stock"}
+          />
           <meta property="product:condition" content="new" />
           <meta property="product:brand" content={product.brand} />
           <meta property="product:category" content={product.category} />
@@ -127,21 +136,24 @@ export function SEOHead({
   );
 }
 
+// FIX: canonicalUrl moved to first param position so it's never after two optionals
 function generateStructuredData(
-  product?: Product,
-  category?: string,
+  product: Product | undefined,
+  category: string | undefined,
   canonicalUrl: string
 ) {
-  const data: any[] = [];
+  const data: object[] = [];
 
   // Organization Schema
   data.push({
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": "https://whitelightstore.co.ke/#organization",
     name: "Whitelight Store Kenya",
     url: "https://whitelightstore.co.ke",
     logo: "https://whitelightstore.co.ke/whitelight_logo.jpeg",
-    description: "Kenya's best trusted specialized seller for premium athletic footwear. We specialize in authentic running shoes, trail shoes, gym shoes, and basketball shoes in Nairobi CBD. Same day delivery available.",
+    description:
+      "Kenya's trusted specialized seller for premium athletic footwear. We specialize in authentic running shoes, trail shoes, gym shoes and basketball shoes in Nairobi CBD. Same-day delivery available.",
     address: {
       "@type": "PostalAddress",
       streetAddress: "Rware Building, Luthuli Avenue, Shop 410, Fourth Floor",
@@ -157,11 +169,9 @@ function generateStructuredData(
       areaServed: "KE",
       availableLanguage: ["en", "sw"],
     },
-    sameAs: [
-      "https://www.facebook.com/whitelightstore",
-      "https://www.instagram.com/whitelightstore",
-      "https://twitter.com/whitelightstore",
-    ],
+    // FIX: only real, verified social accounts should be listed here.
+    // Add back URLs once confirmed the accounts exist and are active.
+    // sameAs: [],
     aggregateRating: {
       "@type": "AggregateRating",
       ratingValue: "4.9",
@@ -178,7 +188,8 @@ function generateStructuredData(
     "@id": "https://whitelightstore.co.ke/#business",
     name: "Whitelight Store Kenya",
     image: "https://whitelightstore.co.ke/whitelight_logo.jpeg",
-    description: "Kenya's best trusted specialized seller for premium athletic footwear in Nairobi CBD. We specialize in authentic running shoes, trail shoes, gym shoes, and basketball shoes. Same day delivery available. Located at Rware Building, Luthuli Avenue, Shop 410.",
+    description:
+      "Kenya's trusted specialized seller for premium athletic footwear in Nairobi CBD. Running shoes, trail shoes, gym shoes and basketball shoes. Same-day delivery. Rware Building, Luthuli Avenue, Shop 410.",
     address: {
       "@type": "PostalAddress",
       streetAddress: "Rware Building, Luthuli Avenue, Shop 410, Fourth Floor",
@@ -207,7 +218,6 @@ function generateStructuredData(
       name: "Nairobi",
       "@id": "https://www.wikidata.org/wiki/Q3870",
     },
-    servesCuisine: false,
     paymentAccepted: "Cash, Mobile Money, Card",
     currenciesAccepted: "KES",
     aggregateRating: {
@@ -217,11 +227,15 @@ function generateStructuredData(
       bestRating: "5",
       worstRating: "1",
     },
-    slogan: "Kenya's Best Trusted Specialized Seller for Premium Athletic Footwear",
+    slogan: "Kenya's Trusted Specialized Seller for Premium Athletic Footwear",
   });
 
   // Breadcrumb Schema
-  const breadcrumbs: any = {
+  const breadcrumbs: {
+    "@context": string;
+    "@type": string;
+    itemListElement: object[];
+  } = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
@@ -238,7 +252,7 @@ function generateStructuredData(
     const categoryName = category.charAt(0).toUpperCase() + category.slice(1);
     breadcrumbs.itemListElement.push({
       "@type": "ListItem",
-      position: breadcrumbs.itemListElement.length + 1,
+      position: 2,
       name: `${categoryName} Shoes`,
       item: `https://whitelightstore.co.ke/category/${category}`,
     });
@@ -255,9 +269,9 @@ function generateStructuredData(
 
   data.push(breadcrumbs);
 
-  // Product Schema (if product provided)
+  // Product Schema
   if (product) {
-    const productSchema: any = {
+    const productSchema: Record<string, unknown> = {
       "@context": "https://schema.org",
       "@type": "Product",
       "@id": `https://whitelightstore.co.ke/product/${product.slug}`,
@@ -276,7 +290,9 @@ function generateStructuredData(
         url: `https://whitelightstore.co.ke/product/${product.slug}`,
         priceCurrency: "KES",
         price: product.price.toString(),
-        priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+        priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .split("T")[0],
         availability: product.variants.some((v) => v.inStock)
           ? "https://schema.org/InStock"
           : "https://schema.org/OutOfStock",
@@ -284,35 +300,14 @@ function generateStructuredData(
         seller: {
           "@type": "LocalBusiness",
           name: "Whitelight Store Kenya",
-          description: "Kenya's best trusted specialized seller for premium athletic footwear",
         },
       },
     };
 
-    if (product.originalPrice && product.originalPrice > product.price) {
-      productSchema.offers.priceSpecification = {
-        "@type": "UnitPriceSpecification",
-        price: product.price.toString(),
-        priceCurrency: "KES",
-        referenceQuantity: {
-          "@type": "QuantitativeValue",
-          value: 1,
-        },
-      };
-    }
+    // FIX: removed fake isBestSeller rating — only add real review data here
+    // if you wire up an actual review system in future:
+    // productSchema.aggregateRating = { ... real data ... }
 
-    // Aggregate rating (if you have reviews)
-    if (product.isBestSeller) {
-      productSchema.aggregateRating = {
-        "@type": "AggregateRating",
-        ratingValue: "4.9",
-        reviewCount: "50",
-        bestRating: "5",
-        worstRating: "1",
-      };
-    }
-
-    // Product variants (sizes)
     if (product.variants && product.variants.length > 0) {
       productSchema.hasVariant = product.variants.map((variant) => ({
         "@type": "ProductModel",
@@ -326,7 +321,7 @@ function generateStructuredData(
 
     data.push(productSchema);
 
-    // WebPage Schema for product page
+    // WebPage Schema for product
     data.push({
       "@context": "https://schema.org",
       "@type": "WebPage",
@@ -340,20 +335,16 @@ function generateStructuredData(
         name: "Whitelight Store Kenya",
         url: "https://whitelightstore.co.ke",
       },
-      about: {
-        "@type": "Product",
-        name: product.name,
-      },
     });
   } else if (category) {
-    // CollectionPage Schema for category pages
+    // CollectionPage Schema
     data.push({
       "@context": "https://schema.org",
       "@type": "CollectionPage",
       "@id": `https://whitelightstore.co.ke/category/${category}`,
       url: `https://whitelightstore.co.ke/category/${category}`,
-      name: `${getCategoryName(category)} Shoes - Whitelight Store Kenya`,
-      description: `Shop premium ${category} shoes in Nairobi from Kenya's best trusted specialized seller. Best selection of authentic ${category} footwear with same day delivery in Nairobi CBD. Visit Whitelight Store at Rware Building, Luthuli Avenue, Shop 410.`,
+      name: `${getCategoryName(category)} — Whitelight Store Kenya`,
+      description: `Shop premium ${category} shoes in Nairobi from Kenya's trusted specialized seller. Best selection of authentic ${category} footwear with same-day delivery in Nairobi CBD. Rware Building, Luthuli Avenue, Shop 410.`,
       inLanguage: "en-KE",
       isPartOf: {
         "@type": "WebSite",
@@ -369,7 +360,8 @@ function generateStructuredData(
       "@id": "https://whitelightstore.co.ke/#website",
       url: "https://whitelightstore.co.ke",
       name: "Whitelight Store Kenya",
-      description: "Kenya's best trusted specialized seller for premium athletic footwear. Shop authentic running shoes, trail shoes, gym shoes, and basketball shoes in Nairobi CBD. Same day delivery available.",
+      description:
+        "Kenya's trusted specialized seller for premium athletic footwear. Shop authentic running shoes, trail shoes, gym shoes and basketball shoes in Nairobi CBD. Same-day delivery available.",
       publisher: {
         "@id": "https://whitelightstore.co.ke/#organization",
       },

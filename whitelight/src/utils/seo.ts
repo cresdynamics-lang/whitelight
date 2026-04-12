@@ -4,11 +4,11 @@ const BASE_URL = "https://whitelightstore.co.ke";
 
 /**
  * Generate SEO-optimized title for a product
- * Format: "Product Name - Brand Category Shoes | Best Trusted Seller in Nairobi Kenya"
+ * Format: "Product Name — Brand Category | White Light Store Kenya"
  */
 export function generateProductTitle(product: Product): string {
   const categoryName = getCategoryDisplayName(product.category);
-  return `${product.name} - ${product.brand} ${categoryName} | Best Trusted Seller in Nairobi Kenya`;
+  return `${product.name} — ${product.brand} ${categoryName} | White Light Store Kenya`;
 }
 
 /**
@@ -19,21 +19,25 @@ export function generateProductDescription(product: Product): string {
     .filter((v) => v.inStock)
     .map((v) => v.size)
     .join(", ");
-  
-  const priceText = product.originalPrice && product.originalPrice > product.price
-    ? `Now KES ${product.price.toLocaleString()} (was KES ${product.originalPrice.toLocaleString()})`
-    : `KES ${product.price.toLocaleString()}`;
+
+  const priceText =
+    product.originalPrice && product.originalPrice > product.price
+      ? `Now KES ${product.price.toLocaleString()} (was KES ${product.originalPrice.toLocaleString()})`
+      : `KES ${product.price.toLocaleString()}`;
 
   const categoryName = getCategoryDisplayName(product.category);
-  
-  return `Buy ${product.name} by ${product.brand} - Kenya's best trusted specialized seller for premium ${categoryName.toLowerCase()} in Nairobi. ${product.description.substring(0, 100)}... Available sizes: ${availableSizes || "Check availability"}. ${priceText}. Same day delivery in Nairobi CBD. Visit Whitelight Store - Kenya's trusted specialized footwear retailer at Rware Building, Luthuli Avenue, Shop 410.`;
+  const shortDesc = product.description.substring(0, 100).trimEnd();
+
+  return `Buy ${product.name} by ${product.brand} in Nairobi. ${shortDesc}... Available sizes: ${availableSizes || "check availability"}. ${priceText}. Same-day delivery in Nairobi CBD. Whitelight Store — Kenya's trusted specialized footwear retailer, Rware Building, Luthuli Avenue, Shop 410.`;
 }
 
 /**
  * Generate SEO keywords for a product
+ * FIX: removed "cheap" — undermines premium brand positioning
  */
 export function generateProductKeywords(product: Product): string {
   const categoryName = getCategoryDisplayName(product.category);
+
   const keywords = [
     product.name,
     `${product.brand} ${product.category} shoes`,
@@ -42,23 +46,25 @@ export function generateProductKeywords(product: Product): string {
     `buy ${product.name} Kenya`,
     `${product.brand} shoes Nairobi`,
     `best ${product.category} shoes Nairobi`,
-    `best trusted ${product.category} shoes seller Kenya`,
-    `specialized ${product.category} shoes Nairobi`,
     `trusted ${product.category} shoes seller Nairobi`,
-    `cheap ${product.category} shoes Kenya`,
-    `affordable ${product.category} shoes Nairobi`,
+    `${categoryName.toLowerCase()} Nairobi`,
     "trusted shoe seller Nairobi",
     "best shoe store Kenya",
     "specialized footwear seller Nairobi",
     "premium shoes Nairobi CBD",
   ];
 
-  // Add brand-specific keywords
   if (product.brand.toLowerCase().includes("nike")) {
     keywords.push("Nike shoes Kenya", "Nike Nairobi", "best Nike seller Kenya");
   }
   if (product.brand.toLowerCase().includes("adidas")) {
     keywords.push("Adidas shoes Kenya", "Adidas Nairobi", "best Adidas seller Kenya");
+  }
+  if (product.brand.toLowerCase().includes("hoka")) {
+    keywords.push("HOKA shoes Kenya", "HOKA Nairobi");
+  }
+  if (product.brand.toLowerCase().includes("salomon")) {
+    keywords.push("Salomon Kenya", "Salomon trail shoes Nairobi");
   }
 
   return keywords.join(", ");
