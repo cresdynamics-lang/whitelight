@@ -8,7 +8,7 @@ const BASE_URL = "https://whitelightstore.co.ke";
  */
 export function generateProductTitle(product: Product): string {
   const categoryName = getCategoryDisplayName(product.category);
-  return `${product.name} — ${product.brand} ${categoryName} | White Light Store Kenya`;
+  return `${product.name} — ${product.brand} ${categoryName} Nairobi | Whitelight Store`;
 }
 
 /**
@@ -28,7 +28,7 @@ export function generateProductDescription(product: Product): string {
   const categoryName = getCategoryDisplayName(product.category);
   const shortDesc = product.description.substring(0, 100).trimEnd();
 
-  return `Buy ${product.name} by ${product.brand} in Nairobi. ${shortDesc}... Available sizes: ${availableSizes || "check availability"}. ${priceText}. Same-day delivery in Nairobi CBD. Whitelight Store — Kenya's trusted specialized footwear retailer, Rware Building, Luthuli Avenue, Shop 410.`;
+  return `Buy ${product.name} by ${product.brand} in Nairobi. ${shortDesc}... Sizes: ${availableSizes || "check availability"}. ${priceText}. Same-day Nairobi CBD delivery from Whitelight Store — trusted for the best ${categoryName.toLowerCase()} in Nairobi, Luthuli Avenue.`;
 }
 
 /**
@@ -40,18 +40,16 @@ export function generateProductKeywords(product: Product): string {
 
   const keywords = [
     product.name,
-    `${product.brand} ${product.category} shoes`,
-    `${product.category} shoes Kenya`,
-    `${product.category} shoes Nairobi`,
-    `buy ${product.name} Kenya`,
-    `${product.brand} shoes Nairobi`,
     `best ${product.category} shoes Nairobi`,
-    `trusted ${product.category} shoes seller Nairobi`,
-    `${categoryName.toLowerCase()} Nairobi`,
-    "trusted shoe seller Nairobi",
-    "best shoe store Kenya",
-    "specialized footwear seller Nairobi",
-    "premium shoes Nairobi CBD",
+    `${product.category} shoes Nairobi`,
+    `${product.brand} ${product.category} shoes Nairobi`,
+    `buy ${product.name} Nairobi`,
+    `${product.brand} shoes Nairobi`,
+    `trusted ${product.category} shoes Nairobi`,
+    `${categoryName.toLowerCase()} Nairobi CBD`,
+    "trusted shoe store Nairobi",
+    "best athletic shoes Nairobi",
+    "Whitelight Store Nairobi",
   ];
 
   if (product.brand.toLowerCase().includes("nike")) {

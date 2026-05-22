@@ -27,15 +27,14 @@ export function SEOHead({
   noindex = false,
 }: SEOHeadProps) {
   const siteTitle =
-    title ||
-    "Whitelight Store Kenya | Premium Athletic Footwear Nairobi";
+    title || "Best Running, Trail & Gym Shoes Nairobi | Whitelight Store";
   const siteDescription =
     description ||
-    "Kenya's trusted specialized seller for premium athletic footwear. Shop authentic running shoes, trail shoes, gym shoes and basketball shoes in Nairobi CBD. Same-day delivery. Visit Rware Building, Luthuli Avenue, Shop 410.";
+    "Nairobi's trusted specialist for the best running, trail, gym, training shoes and accessories. Authentic brands at Luthuli Avenue CBD. Same-day Nairobi delivery.";
   const siteKeywords =
     keywords ||
-    "best trusted shoe seller Kenya, specialized footwear seller Nairobi, running shoes Nairobi, trail shoes Kenya, gym shoes Nairobi, basketball shoes Kenya, premium shoes Nairobi CBD, trusted shoe store Kenya, athletic footwear Kenya";
-  const siteImage = ogImage || `${BASE_URL}/whitelight_logo.jpeg`;
+    "best running shoes Nairobi, best trail shoes Nairobi, best gym shoes Nairobi, best training shoes Nairobi, trusted shoe store Nairobi CBD, best accessories Nairobi, Whitelight Store Nairobi";
+  const siteImage = ogImage || `${BASE_URL}/whitelight_logo.webp`;
   const canonicalUrl = canonical || BASE_URL;
 
   const structuredData = generateStructuredData(product, category, canonicalUrl);

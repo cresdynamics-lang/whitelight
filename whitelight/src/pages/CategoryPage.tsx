@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductGrid } from "@/components/sections/ProductGrid";
@@ -10,33 +10,15 @@ import { useSearch } from "@/context/SearchContext";
 import type { ProductCategory } from "@/types/product";
 import { siteConfig } from "@/config/site";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { seoConfig } from "@/config/seo";
+import { seoConfig, categoryPageH1, categoryPageSubtext } from "@/config/seo";
 
-const categoryTitles: Record<ProductCategory, string> = {
-  running: "Running Shoes in Nairobi — Kenya's Performance Running Store",
-  trail: "Trail Running Shoes Kenya — Built for Karura, Ngong Hills & Beyond",
-  gym: "Gym & Training Shoes in Nairobi — For Every Workout",
-  training: "Training Shoes in Nairobi",
-  basketball: "Basketball Shoes in Nairobi — Jordan, Nike & Court-Ready Kicks",
-  tennis: "Tennis Shoes in Nairobi — Court-Ready Performance",
-  accessories: "Accessories",
-};
-
-const categoryDescriptions: Record<ProductCategory, string> = {
-  running:
-    "Find performance running shoes in Nairobi for daily training, long runs and race day. We stock Nike, Adidas, HOKA and more for Kenyan roads.",
-  trail:
-    "Grip and protection for Kenya's trails. From Karura Forest and Ngong Hills to Kereita Forest, shop trail shoes built for real Kenyan terrain.",
-  gym:
-    "Gym and training shoes for Nairobi lifters and athletes. From women's gym shoes to CrossFit and HIIT trainers, get stable, grippy support.",
-  training:
-    "Multi-sport training shoes for drills, conditioning and speed work around Nairobi. Built for agility, comfort and all-day sessions.",
-  basketball:
-    "Court-ready basketball shoes for Nairobi players. Jordan, Nike and more with cushioning, grip and ankle support for street and indoor courts.",
-  tennis:
-    "Tennis shoes built for lateral cuts, quick stops and all-surface play. Shop court-ready models with grip and support for Nairobi clubs and outdoor courts.",
-  accessories:
-    "Complete your footwear experience with premium accessories, care products and comfort upgrades for your favourite pairs.",
+const LEGACY_PATH_TO_CATEGORY: Record<string, ProductCategory> = {
+  "/running": "running",
+  "/trail": "trail",
+  "/gym": "gym",
+  "/training": "training",
+  "/basketball": "basketball",
+  "/tennis": "tennis",
 };
 
 // Category-specific images from local folders
@@ -89,7 +71,11 @@ const categoryImages: Record<ProductCategory, string[]> = {
 
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
-  const validCategory = category as ProductCategory;
+  const { pathname } = useLocation();
+  const validCategory =
+    (category as ProductCategory) ||
+    LEGACY_PATH_TO_CATEGORY[pathname] ||
+    ("running" as ProductCategory);
   const { searchQuery, filteredProducts, isSearching } = useSearch();
   
   const { data: products = [], isLoading, isError, refetch } = useCatalogByCategory(validCategory);
@@ -103,13 +89,13 @@ export default function CategoryPage() {
       )
     : products;
   
-  const title = categoryTitles[validCategory] || "Products";
-  const description = categoryDescriptions[validCategory] || "";
+  const h1Title = categoryPageH1[validCategory] || "Best Athletic Shoes in Nairobi";
+  const description = categoryPageSubtext[validCategory] || "";
   const backgroundImages = categoryImages[validCategory] || [];
   
   const carouselImages = backgroundImages.map((url, index) => ({
     url: resolveStaticImage(url),
-    alt_text: `${title} ${index + 1}`,
+    alt_text: `${h1Title} ${index + 1}`,
   }));
 
   const categorySEO = seoConfig.pages[validCategory as keyof typeof seoConfig.pages] || seoConfig.pages.running;
@@ -143,15 +129,15 @@ export default function CategoryPage() {
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 via-purple-600/20 to-pink-600/20 animate-pulse" />
           </div>
           <div className="container relative z-10 text-center">
-            <h1 className="font-heading text-5xl md:text-7xl lg:text-8xl font-black mb-6 text-white bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent drop-shadow-2xl">
-              {title.toUpperCase()}
+            <h1 className="font-heading text-4xl md:text-6xl lg:text-7xl font-black mb-6 text-white bg-gradient-to-r from-white via-blue-200 to-purple-200 bg-clip-text text-transparent drop-shadow-2xl leading-tight">
+              {h1Title}
             </h1>
-            <p className="text-white/90 font-body text-xl md:text-2xl max-w-2xl mx-auto font-semibold">
+            <p className="text-white/90 font-body text-lg md:text-xl max-w-2xl mx-auto font-semibold">
               {description}
             </p>
             {isSearching && searchQuery && (
               <p className="text-white/80 text-lg mt-4">
-                Showing results for "{searchQuery}" in {title}
+                Showing results for "{searchQuery}" in {h1Title}
               </p>
             )}
           </div>
@@ -398,7 +384,7 @@ export default function CategoryPage() {
           <ProductGrid 
             products={displayProducts} 
             columns={4} 
-            title={isSearching && searchQuery ? `Search Results in ${title}` : undefined}
+            title={isSearching && searchQuery ? `Search Results in ${h1Title}` : undefined}
           />
         )}
       </main>

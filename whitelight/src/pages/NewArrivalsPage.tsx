@@ -24,10 +24,10 @@ export default function NewArrivalsPage() {
         <section className="py-12 md:py-16 bg-secondary/30">
           <div className="container">
             <h1 className="font-heading text-3xl md:text-4xl font-bold mb-2">
-              New Arrivals
+              New Arrivals in Nairobi
             </h1>
             <p className="text-muted-foreground text-lg">
-              The latest additions to our collection
+              Latest running, trail, gym and training shoes — trusted picks at Whitelight Store Nairobi CBD
             </p>
           </div>
         </section>

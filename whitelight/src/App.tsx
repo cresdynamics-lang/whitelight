@@ -10,6 +10,7 @@ import { AdminAuthProvider } from "@/context/AdminAuthContext";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { AnalyticsScripts } from "@/components/analytics/AnalyticsScripts";
 import { CatalogPrefetch } from "@/components/CatalogPrefetch";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 import Index from "./pages/Index";
@@ -50,6 +51,7 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <BrowserRouter>
+              <ScrollToTop />
               <CatalogPrefetch />
               <AnalyticsScripts />
               <CartDrawer />
