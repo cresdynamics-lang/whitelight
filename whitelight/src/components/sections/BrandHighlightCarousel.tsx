@@ -14,15 +14,15 @@ interface BrandSlide {
 
 const brandImages: BannerImage[] = [
   {
-    url: "/whychooseus.png",
+    url: "/whychooseus.webp",
     alt_text: "Why Nairobi runners choose Whitelight Store",
   },
   {
-    url: "/gymshoes.jpg",
+    url: "/gymshoes.webp",
     alt_text: "Gym and training shoes from Whitelight Store Nairobi",
   },
   {
-    url: "/ourstoryimage.jpeg",
+    url: "/ourstoryimage.webp",
     alt_text: "Inside Whitelight Store – Nairobi CBD",
   },
   {

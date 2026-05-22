@@ -2,7 +2,8 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { Search, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useProducts } from "@/hooks/useProducts";
+import { useCatalog } from "@/hooks/useCatalog";
+import { getCardImageUrl } from "@/lib/imageUtils";
 import { useSearch } from "@/context/SearchContext";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -28,8 +29,7 @@ export function SearchBar() {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false); // controls whether the input is visible
-  const { data: productsResponse, isLoading } = useProducts();
-  const products = productsResponse?.products || [];
+  const { data: products = [] } = useCatalog();
   const { setSearchQuery, setFilteredProducts, setIsSearching } = useSearch();
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -168,12 +168,13 @@ export function SearchBar() {
               className="w-full flex items-center gap-3 p-3 hover:bg-secondary transition-colors border-b last:border-b-0 text-left"
             >
               <img
-                src={product.images[0]?.url || "/whitelight_logo.jpeg"}
+                src={getCardImageUrl(product.images[0]?.url, 80, 60)}
                 alt={product.name}
                 className="w-10 h-10 object-cover rounded"
                 loading="lazy"
+                decoding="async"
                 onError={(e) => {
-                  e.currentTarget.src = "/whitelight_logo.jpeg";
+                  e.currentTarget.src = "/whitelight_logo.webp";
                 }}
               />
               <div className="flex-1 min-w-0">

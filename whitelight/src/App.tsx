@@ -8,6 +8,8 @@ import { CartProvider } from "@/context/CartContext";
 import { SearchProvider } from "@/context/SearchContext";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { AnalyticsScripts } from "@/components/analytics/AnalyticsScripts";
+import { CatalogPrefetch } from "@/components/CatalogPrefetch";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 import Index from "./pages/Index";
@@ -31,7 +33,8 @@ const queryClient = new QueryClient({
     queries: {
       retry: 1,
       refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000, // 5 minutes
+      staleTime: 10 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
     },
   },
 });
@@ -47,6 +50,8 @@ const App = () => {
           <TooltipProvider>
             <Toaster />
             <BrowserRouter>
+              <CatalogPrefetch />
+              <AnalyticsScripts />
               <CartDrawer />
             <Routes>
               {/* Public routes */}

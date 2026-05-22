@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import { NavPrefetchLink } from "@/components/NavPrefetchLink";
 import { ShoppingCart, Menu, X } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
@@ -22,12 +23,16 @@ export function Header() {
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
       <div className="container flex h-20 items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
+        <NavPrefetchLink to="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
           <img
             src={siteConfig.logo}
             alt={siteConfig.name}
+            width={64}
+            height={64}
             className="h-12 w-12 sm:h-16 sm:w-16 rounded-full ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300 object-cover"
             loading="eager"
+            decoding="async"
+            fetchPriority="high"
           />
           <span className="font-heading text-lg sm:text-xl lg:text-2xl font-black tracking-tight bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-blue-600 group-hover:via-purple-600 group-hover:to-pink-600 transition-all duration-300 hidden md:block">
             {siteConfig.name}
@@ -37,12 +42,12 @@ export function Header() {
             <span className="text-xl leading-none mr-0.5">W</span>
             <span className="text-xs leading-none tracking-[0.12em]">hitelight</span>
           </span>
-        </Link>
+        </NavPrefetchLink>
 
         {/* Desktop Navigation */}
         <nav className="hidden lg:flex items-center gap-4 xl:gap-8">
           {siteConfig.navigation.map((item) => (
-            <Link
+            <NavPrefetchLink
               key={item.href}
               to={item.href}
               className="relative font-body text-sm xl:text-lg font-semibold text-muted-foreground transition-all duration-300 hover:text-primary hover:scale-105 pb-1 whitespace-nowrap"
@@ -51,7 +56,7 @@ export function Header() {
               {isActiveLink(item.href) && (
                 <span className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full" />
               )}
-            </Link>
+            </NavPrefetchLink>
           ))}
         </nav>
 
@@ -101,7 +106,7 @@ export function Header() {
       >
         <nav className="container py-4 space-y-1">
           {siteConfig.navigation.map((item) => (
-            <Link
+            <NavPrefetchLink
               key={item.href}
               to={item.href}
               className={cn(
@@ -113,7 +118,7 @@ export function Header() {
               onClick={() => setIsMenuOpen(false)}
             >
               {item.label}
-            </Link>
+            </NavPrefetchLink>
           ))}
         </nav>
       </div>

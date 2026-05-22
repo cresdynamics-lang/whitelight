@@ -3,7 +3,9 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductGrid } from "@/components/sections/ProductGrid";
 import { ImageCarousel } from "@/components/ui/image-carousel";
-import { useProductsByCategory } from "@/hooks/useProducts";
+import { useCatalogByCategory } from "@/hooks/useCatalog";
+import { CatalogErrorFallback } from "@/components/CatalogErrorFallback";
+import { resolveStaticImage } from "@/lib/imageUtils";
 import { useSearch } from "@/context/SearchContext";
 import type { ProductCategory } from "@/types/product";
 import { siteConfig } from "@/config/site";
@@ -40,43 +42,43 @@ const categoryDescriptions: Record<ProductCategory, string> = {
 // Category-specific images from local folders
 const categoryImages: Record<ProductCategory, string[]> = {
   running: [
-    "/couresel_images/running/running2.png",
-    "/couresel_images/running/running3.jpg",
-    "/couresel_images/running/running4.jpg",
-    "/couresel_images/running/running5.jpg",
-    "/couresel_images/running/running6.jpg",
+    "/couresel_images/running/running2.webp",
+    "/couresel_images/running/running3.webp",
+    "/couresel_images/running/running4.webp",
+    "/couresel_images/running/running5.webp",
+    "/couresel_images/running/running6.webp",
   ],
   trail: [
-    "/couresel_images/trail/trail1.png",
-    "/couresel_images/trail/trail2.png",
-    "/couresel_images/trail/trail3.png",
-    "/couresel_images/trail/trail4.png",
+    "/couresel_images/trail/trail1.webp",
+    "/couresel_images/trail/trail2.webp",
+    "/couresel_images/trail/trail3.webp",
+    "/couresel_images/trail/trail4.webp",
   ],
   gym: [
-    "/couresel_images/gym/gym.png",
-    "/couresel_images/gym/gym1.jpg",
-    "/couresel_images/gym/gym3.png",
-    "/couresel_images/gym/gym4.png",
-    "/couresel_images/gym/gym5.png",
-    "/couresel_images/gym/gym6.png",
+    "/couresel_images/gym/gym.webp",
+    "/couresel_images/gym/gym1.webp",
+    "/couresel_images/gym/gym3.webp",
+    "/couresel_images/gym/gym4.webp",
+    "/couresel_images/gym/gym5.webp",
+    "/couresel_images/gym/gym6.webp",
   ],
   basketball: [
-    "/couresel_images/basketball/bk1.png",
-    "/couresel_images/basketball/bk2.png",
-    "/couresel_images/basketball/bk3.jpg",
-    "/couresel_images/basketball/bk5.jpg",
+    "/couresel_images/basketball/bk1.webp",
+    "/couresel_images/basketball/bk2.webp",
+    "/couresel_images/basketball/bk3.webp",
+    "/couresel_images/basketball/bk5.webp",
   ],
   tennis: [
-    "/couresel_images/basketball/bk2.png",
-    "/couresel_images/basketball/bk3.jpg",
-    "/couresel_images/gym/gym.png",
-    "/couresel_images/running/running2.png",
+    "/couresel_images/basketball/bk2.webp",
+    "/couresel_images/basketball/bk3.webp",
+    "/couresel_images/gym/gym.webp",
+    "/couresel_images/running/running2.webp",
   ],
   training: [
-    "/couresel_images/gym/gym.png",
-    "/couresel_images/gym/gym1.jpg",
-    "/couresel_images/gym/gym3.png",
-    "/couresel_images/gym/gym4.png",
+    "/couresel_images/gym/gym.webp",
+    "/couresel_images/gym/gym1.webp",
+    "/couresel_images/gym/gym3.webp",
+    "/couresel_images/gym/gym4.webp",
   ],
   accessories: [
     "https://images.unsplash.com/photo-1556906781-9a412961c28c?w=800",
@@ -90,7 +92,7 @@ export default function CategoryPage() {
   const validCategory = category as ProductCategory;
   const { searchQuery, filteredProducts, isSearching } = useSearch();
   
-  const { data: products = [], isLoading } = useProductsByCategory(validCategory);
+  const { data: products = [], isLoading, isError, refetch } = useCatalogByCategory(validCategory);
   
   // Use filtered products if searching, otherwise use category products
   const displayProducts = isSearching && searchQuery
@@ -106,8 +108,8 @@ export default function CategoryPage() {
   const backgroundImages = categoryImages[validCategory] || [];
   
   const carouselImages = backgroundImages.map((url, index) => ({
-    url,
-    alt_text: `${title} ${index + 1}`
+    url: resolveStaticImage(url),
+    alt_text: `${title} ${index + 1}`,
   }));
 
   const categorySEO = seoConfig.pages[validCategory as keyof typeof seoConfig.pages] || seoConfig.pages.running;
@@ -390,6 +392,8 @@ export default function CategoryPage() {
               ))}
             </div>
           </div>
+        ) : isError ? (
+          <CatalogErrorFallback onRetry={() => refetch()} />
         ) : (
           <ProductGrid 
             products={displayProducts} 

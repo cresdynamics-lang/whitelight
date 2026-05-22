@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import type { Product, CartItem } from "@/types/product";
+import { trackAddToCart } from "@/lib/analytics/events";
 
 interface CartContextType {
   items: CartItem[];
@@ -65,14 +66,24 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return updated;
       }
 
+      const cartProduct = {
+        id: item.id,
+        name: item.name,
+        price: item.price,
+        slug: item.id,
+        brand: "",
+        category: (item.category || "running") as Product["category"],
+        images: [{ id: item.id, url: item.image, alt: item.name }],
+        variants: [],
+        description: "",
+        tags: [],
+        createdAt: "",
+      } as Product;
+
+      trackAddToCart(cartProduct, item.quantity, item.size);
+
       return [...currentItems, {
-        product: {
-          id: item.id,
-          name: item.name,
-          price: item.price,
-          category: item.category || 'shoes',
-          images: [{ url: item.image, alt: item.name }]
-        } as Product,
+        product: cartProduct,
         size: item.size,
         selectedSizes: item.selectedSizes,
         referenceLink: item.referenceLink,
@@ -94,6 +105,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return updated;
       }
 
+      trackAddToCart(product, quantity, size);
       return [...currentItems, { product, size, quantity }];
     });
     setIsOpen(true);

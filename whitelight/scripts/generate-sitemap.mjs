@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { fetchCatalogProducts } from "./lib/catalog-feed.mjs";
 import productsData from "../src/data/products.json" with { type: "json" };
 
 const BASE_URL = "https://whitelightstore.co.ke";
@@ -13,6 +14,7 @@ const staticUrls = [
   { loc: "/category/gym", changefreq: "weekly", priority: "0.9" },
   { loc: "/category/basketball", changefreq: "weekly", priority: "0.9" },
   { loc: "/category/training", changefreq: "weekly", priority: "0.8" },
+  { loc: "/category/tennis", changefreq: "weekly", priority: "0.8" },
   { loc: "/category/accessories", changefreq: "weekly", priority: "0.8" },
   { loc: "/new-arrivals", changefreq: "weekly", priority: "0.8" },
   { loc: "/buying-guide", changefreq: "monthly", priority: "0.7" },
@@ -39,8 +41,21 @@ function buildUrlNode({ loc, changefreq, priority }) {
   ].join("\n");
 }
 
-function main() {
-  const products = Array.isArray(productsData.products) ? productsData.products : [];
+async function loadProducts() {
+  try {
+    const fromDb = await fetchCatalogProducts();
+    if (fromDb.length > 0) {
+      console.log(`Sitemap: ${fromDb.length} products from Supabase`);
+      return fromDb;
+    }
+  } catch (err) {
+    console.warn("Sitemap: Supabase unavailable, using products.json —", err.message);
+  }
+  return Array.isArray(productsData.products) ? productsData.products : [];
+}
+
+async function main() {
+  const products = await loadProducts();
 
   const productUrls = products
     .filter((p) => p?.slug)
@@ -65,5 +80,7 @@ function main() {
   console.log(`Total URLs: ${allUrls.length}`);
 }
 
-main();
-
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

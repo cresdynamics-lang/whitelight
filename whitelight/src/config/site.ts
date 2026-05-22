@@ -3,7 +3,7 @@
 
 export const siteConfig = {
   name: "WHITELIGHT STORE",
-  logo: "/whitelight_logo.jpeg",
+  logo: "/whitelight_logo.webp",
   tagline: "Step Into Style",
   description: "Premium footwear for every occasion",
   currency: "KSh",

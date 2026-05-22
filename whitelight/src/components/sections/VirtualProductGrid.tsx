@@ -1,48 +1,28 @@
-import { useMemo, useState, useEffect } from 'react';
 import type { Product } from '@/types/product';
 import { ProductCard } from '@/components/ProductCard';
 import { cn } from '@/lib/utils';
-import { useLazyLoading } from '@/hooks/useLazyLoading';
 
 interface VirtualProductGridProps {
   title?: string;
   products: Product[];
   columns?: 2 | 3 | 4;
   className?: string;
-  itemsPerPage?: number;
 }
 
+/** Renders the full product grid at once — no staggered / incremental reveal */
 export function VirtualProductGrid({
   title,
   products = [],
   columns = 4,
   className,
-  itemsPerPage = 12,
 }: VirtualProductGridProps) {
-  const safeProducts = Array.isArray(products) ? products : [];
-  const [visibleItems, setVisibleItems] = useState(itemsPerPage);
-  const { ref, isVisible } = useLazyLoading();
+  const safeProducts = Array.isArray(products) ? products.filter((p) => p?.id) : [];
 
   const gridCols = {
     2: 'grid-cols-1 sm:grid-cols-2',
     3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
     4: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
   };
-
-  const visibleProducts = useMemo(() =>
-    safeProducts
-      .filter((p) => p != null && p.id)
-      .slice(0, visibleItems),
-    [safeProducts, visibleItems]
-  );
-
-  const hasMore = visibleItems < safeProducts.length;
-
-  useEffect(() => {
-    if (isVisible && hasMore) {
-      setVisibleItems(prev => Math.min(prev + itemsPerPage, safeProducts.length));
-    }
-  }, [isVisible, hasMore, itemsPerPage, safeProducts.length]);
 
   return (
     <section className={cn('py-12 md:py-16', className)}>
@@ -52,19 +32,12 @@ export function VirtualProductGrid({
             {title.toUpperCase()}
           </h2>
         )}
-        
+
         <div className={cn('grid gap-6 md:gap-8', gridCols[columns])}>
-          {visibleProducts.map((product) => (
-            <ProductCard key={product.id} product={product} />
+          {safeProducts.map((product, index) => (
+            <ProductCard key={product.id} product={product} priority={index < 8} />
           ))}
         </div>
-
-        {/* Loading trigger */}
-        {hasMore && (
-          <div ref={ref} className="h-20 flex items-center justify-center mt-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-          </div>
-        )}
 
         {safeProducts.length === 0 && (
           <div className="text-center py-12">

@@ -9,20 +9,20 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
-import { useLazyLoading } from "@/hooks/useLazyLoading";
 import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
+import { FastImage } from "@/components/ui/FastImage";
 
 interface ProductCardProps {
   product: Product;
   className?: string;
+  /** Load image immediately (above-the-fold rows) */
+  priority?: boolean;
 }
 
-export function ProductCard({ product, className }: ProductCardProps) {
+export function ProductCard({ product, className, priority = false }: ProductCardProps) {
   const { addToCart } = useCart();
   const [selectedSize, setSelectedSize] = useState<number | string | null>(null);
-  const { ref, isVisible } = useLazyLoading();
 
-  // Defensive: ensure we never throw when products load (missing/null from API)
   const id = product?.id ?? "";
   const slug = product?.slug ?? product?.id ?? "";
   const name = String(product?.name ?? "Product");
@@ -36,23 +36,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
     : 0;
 
   const images = Array.isArray(product?.images) ? product.images : [];
-  const getOptimizedCardImageUrl = (url?: string, width: number = 420, quality: number = 75) => {
-    if (!url) return "/whitelight_logo.jpeg";
-    if (url.includes("digitaloceanspaces.com")) {
-      return `${url}?w=${width}&q=${quality}&f=webp&auto=compress&dpr=1`;
-    }
-    return url;
-  };
-
   const variants = Array.isArray(product?.variants) ? product.variants : [];
-  const availableSizes = variants.filter((v) => Boolean(v?.inStock ?? (v as any)?.in_stock));
+  const availableSizes = variants.filter((v) => Boolean(v?.inStock));
 
-  // Helper function to display size correctly for accessories
   const getDisplaySize = (size: number | string, cat: string) => {
     if (String(cat) === "accessories" && typeof size === "number") {
       const sizeMap: Record<number, string> = {
-        1: 'XS', 2: '2XL', 3: '3XL', 4: '4XL', 5: '5XL', 
-        6: 'L', 7: 'XL', 8: 'M', 9: 'S'
+        1: "XS", 2: "2XL", 3: "3XL", 4: "4XL", 5: "5XL",
+        6: "L", 7: "XL", 8: "M", 9: "S",
       };
       return sizeMap[size] || size.toString();
     }
@@ -69,7 +60,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
       return;
     }
 
-    addToCart(product, size, 1);
+    addToCart(product, size as number, 1);
     toast.success(`${name} added to cart`);
   };
 
@@ -82,41 +73,29 @@ export function ProductCard({ product, className }: ProductCardProps) {
     openWhatsAppOrderMessage({
       productName: name,
       productPrice: price,
-      imageUrl: imageUrl,
+      imageUrl,
       productUrl,
       currency: siteConfig.currency,
     });
   };
 
-  // Skip rendering if product has no id (should not happen if list is filtered)
   if (!id) return null;
 
   return (
-    <div ref={ref} className={cn("group block product-card", className)}>
+    <div className={cn("group block product-card", className)}>
       <Link to={`/product/${slug}`}>
-        {/* Image container with green border */}
         <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-primary bg-white mb-2">
-          {isVisible ? (
-            <img
-              src={getOptimizedCardImageUrl(images[0]?.url)}
-              alt={
-                product.alt_text_main ||
-                images[0]?.alt ||
-                `${brand} ${name} ${category} — available in Kenya`
-              }
-              className="h-full w-full transition-transform duration-500 group-hover:scale-105 object-cover"
-              loading="lazy"
-              decoding="async"
-              fetchPriority="low"
-              onError={(e) => {
-                e.currentTarget.src = "/whitelight_logo.jpeg";
-              }}
-            />
-          ) : (
-            <div className="h-full w-full bg-gray-200 animate-pulse" />
-          )}
-          
-          {/* Badges */}
+          <FastImage
+            src={images[0]?.url || "/whitelight_logo.webp"}
+            alt={
+              product.alt_text_main ||
+              images[0]?.alt ||
+              `${brand} ${name} ${category} — available in Kenya`
+            }
+            className="transition-transform duration-300 group-hover:scale-105"
+            priority={priority}
+          />
+
           <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
             {product?.isNew && (
               <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">
@@ -129,8 +108,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
               </Badge>
             )}
           </div>
-          
-          {/* Top-right actions/badges */}
+
           <div className="absolute top-1.5 right-1.5 flex flex-col items-end gap-1">
             <button
               type="button"
@@ -151,18 +129,14 @@ export function ProductCard({ product, className }: ProductCardProps) {
         </div>
       </Link>
 
-      {/* Product info */}
       <div className="space-y-1.5">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">
-          {brand}
-        </p>
+        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{brand}</p>
         <Link to={`/product/${slug}`}>
           <h3 className="font-medium text-[11px] sm:text-xs text-foreground group-hover:text-primary transition-colors line-clamp-1 leading-tight">
             {name}
           </h3>
         </Link>
-        
-        {/* Price */}
+
         <div className="flex items-center gap-1.5">
           <span className="font-semibold text-[11px] sm:text-xs text-foreground">
             {formatPrice(price, siteConfig.currency)}
@@ -174,8 +148,7 @@ export function ProductCard({ product, className }: ProductCardProps) {
           )}
         </div>
 
-        {/* Sizes */}
-        <div className="flex gap-1 overflow-x-auto whitespace-nowrap pb-1 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+        <div className="flex gap-1 overflow-x-auto whitespace-nowrap pb-1">
           {availableSizes.slice(0, 5).map((variant) => {
             const displaySize = getDisplaySize(variant?.size ?? "", category);
             return (
@@ -203,7 +176,6 @@ export function ProductCard({ product, className }: ProductCardProps) {
           )}
         </div>
 
-        {/* Order via WhatsApp button */}
         <div className="mt-1">
           <Button
             size="sm"

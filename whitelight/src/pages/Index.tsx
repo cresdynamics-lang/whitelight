@@ -5,25 +5,35 @@ import { HeroSection } from "@/components/sections/HeroSection";
 import { BrandHighlightCarousel } from "@/components/sections/BrandHighlightCarousel";
 import { CategoryBanner } from "@/components/sections/CategoryBanner";
 import { HorizontalProductRow } from "@/components/sections/HorizontalProductRow";
-import { useBestSellers, useNewArrivals, useProductsByCategory } from "@/hooks/useProducts";
+import { useCatalogPartitions } from "@/hooks/useCatalog";
 import { HomePageHead } from "@/components/seo/HomePageHead";
+import { CatalogErrorFallback } from "@/components/CatalogErrorFallback";
+import type { Product } from "@/types/product";
+
+function ProductRowsSkeleton() {
+  return (
+    <div className="container py-8 space-y-10" aria-hidden>
+      {[1, 2, 3].map((row) => (
+        <div key={row}>
+          <div className="h-8 w-40 bg-secondary rounded mb-4 animate-pulse" />
+          <div className="flex gap-3 overflow-hidden">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="flex-shrink-0 w-32 aspect-square rounded-lg bg-secondary animate-pulse"
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const Index = () => {
-  // Key that rotates every 5 minutes to reshuffle "New In"
   const [rotationKey, setRotationKey] = useState(0);
+  const { partitions, isLoading, isSuccess, isError, error, refetch } = useCatalogPartitions();
 
-  const { data: bestSellers = [], isLoading: loadingBestSellers, error: bestSellersError } = useBestSellers(12);
-  // Fetch full new-arrivals list so the homepage row can pick
-  // a changing, randomised subset each time.
-  const { data: newArrivals = [], isLoading: loadingNewArrivals, error: newArrivalsError } = useNewArrivals();
-  const { data: runningShoes = [], error: runningError } = useProductsByCategory("running");
-  const { data: trailShoes = [], error: trailError } = useProductsByCategory("trail");
-  const { data: gymShoes = [], error: gymError } = useProductsByCategory("gym");
-  const { data: accessories = [], error: accessoriesError } = useProductsByCategory("accessories");
-  const { data: basketballShoes = [], error: basketballError } = useProductsByCategory("basketball");
-  const { data: tennisShoes = [] } = useProductsByCategory("tennis");
-
-  // Update rotation key every 5 minutes so "New In" reshuffles dynamically
   useEffect(() => {
     const interval = setInterval(() => {
       setRotationKey((prev) => prev + 1);
@@ -31,24 +41,26 @@ const Index = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Ensure each product image appears only once across homepage rows,
-  // even if a product belongs to multiple categories or collections.
-  const {
-    uniqueNewArrivals,
-    uniqueBestSellers,
-    uniqueRunning,
-    uniqueTrail,
-    uniqueGym,
-    uniqueAccessories,
-    uniqueBasketball,
-    uniqueTennis,
-  } = useMemo(() => {
+  const rows = useMemo(() => {
+    if (!partitions) return null;
+
+    const {
+      newArrivals,
+      bestSellers,
+      running,
+      trail,
+      gym,
+      accessories,
+      basketball,
+      tennis,
+    } = partitions;
+
     const usedIds = new Set<string>();
 
-    const takeUnique = (products: any[], limit?: number) => {
-      const result: any[] = [];
-      for (const product of Array.isArray(products) ? products : []) {
-        if (!product || !product.id || usedIds.has(product.id)) continue;
+    const takeUnique = (products: Product[], limit?: number) => {
+      const result: Product[] = [];
+      for (const product of products) {
+        if (!product?.id || usedIds.has(product.id)) continue;
         usedIds.add(product.id);
         result.push(product);
         if (limit && result.length >= limit) break;
@@ -56,33 +68,21 @@ const Index = () => {
       return result;
     };
 
-    // Randomise the order of new arrivals so the row feels
-    // dynamic; then take a unique subset (max 10 items), and
-    // prevent those same products from appearing in later rows.
-    const shuffledNewArrivals = Array.isArray(newArrivals)
-      ? [...newArrivals].sort(() => Math.random() - 0.5)
-      : [];
-
-    const uniqueNewArrivals = takeUnique(shuffledNewArrivals, 10);
-    const uniqueBestSellers = takeUnique(bestSellers, 12);
-    const uniqueRunning = takeUnique(runningShoes, 12);
-    const uniqueTrail = takeUnique(trailShoes, 12);
-    const uniqueGym = takeUnique(gymShoes, 12);
-    const uniqueAccessories = takeUnique(accessories, 12);
-    const uniqueBasketball = takeUnique(basketballShoes, 12);
-    const uniqueTennis = takeUnique(tennisShoes, 12);
+    const shuffledNew = [...newArrivals].sort(() => Math.random() - 0.5);
 
     return {
-      uniqueNewArrivals,
-      uniqueBestSellers,
-      uniqueRunning,
-      uniqueTrail,
-      uniqueGym,
-      uniqueAccessories,
-      uniqueBasketball,
-      uniqueTennis,
+      uniqueNewArrivals: takeUnique(shuffledNew, 10),
+      uniqueBestSellers: takeUnique(bestSellers, 12),
+      uniqueRunning: takeUnique(running, 12),
+      uniqueTrail: takeUnique(trail, 12),
+      uniqueGym: takeUnique(gym, 12),
+      uniqueAccessories: takeUnique(accessories, 12),
+      uniqueBasketball: takeUnique(basketball, 12),
+      uniqueTennis: takeUnique(tennis, 12),
     };
-  }, [newArrivals, bestSellers, runningShoes, trailShoes, gymShoes, accessories, basketballShoes, tennisShoes, rotationKey]);
+  }, [partitions, rotationKey]);
+
+  const showProducts = isSuccess && rows;
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -90,10 +90,8 @@ const Index = () => {
       <Header />
 
       <main className="flex-1">
-        {/* Hero carousel: each slide talks about a different Whitelight Store category */}
         <HeroSection />
 
-        {/* Trust strip */}
         <section className="border-b border-muted/40 bg-background/80">
           <div className="container py-3 flex flex-row flex-wrap items-center justify-center md:justify-between gap-3 md:gap-6 text-xs md:text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
@@ -111,92 +109,86 @@ const Index = () => {
           </div>
         </section>
 
-        {/* Category CTA row */}
-        <section className="bg-background">
-          <div className="container py-6 flex flex-wrap gap-3 md:gap-4">
+        {isLoading && <ProductRowsSkeleton />}
+
+        {isError && !isLoading && (
+          <CatalogErrorFallback
+            onRetry={() => refetch()}
+            message={
+              error instanceof Error
+                ? `Products unavailable: ${error.message}`
+                : "Products unavailable. Please retry."
+            }
+          />
+        )}
+
+        {showProducts && (
+          <>
             <HorizontalProductRow
-              title=""
-              products={[]}
+              title="New In"
+              products={rows.uniqueNewArrivals}
+              className="bg-secondary/30"
+              viewAllHref="/new-arrivals"
+              initialDirection="left"
             />
-          </div>
-        </section>
 
-        {/* New Arrivals - latest products first, horizontal scroll */}
-        <HorizontalProductRow
-          title="New In"
-          products={uniqueNewArrivals}
-          className="bg-secondary/30"
-          viewAllHref="/new-arrivals"
-          initialDirection="left"
-        />
+            <BrandHighlightCarousel />
 
-        {/* Brand story carousel using public images */}
-        <BrandHighlightCarousel />
+            <HorizontalProductRow
+              title="Best Selling"
+              products={rows.uniqueBestSellers}
+              viewAllHref="/new-arrivals"
+              initialDirection="right"
+            />
 
-        {/* Best Sellers */}
-        <HorizontalProductRow
-          title="Best Selling"
-          products={uniqueBestSellers}
-          // Best sellers span all categories; for now, send users to New Arrivals
-          // page which highlights the latest catalog across the store.
-          viewAllHref="/new-arrivals"
-          initialDirection="right"
-        />
+            <CategoryBanner />
 
-        {/* Scrolling Category Cards */}
-        <CategoryBanner />
+            <HorizontalProductRow
+              title="Running"
+              products={rows.uniqueRunning}
+              viewAllHref="/category/running"
+              initialDirection="left"
+            />
 
-        {/* Running Shoes Section */}
-        <HorizontalProductRow
-          title="Running"
-          products={uniqueRunning}
-          viewAllHref="/category/running"
-          initialDirection="left"
-        />
+            <HorizontalProductRow
+              title="Trail"
+              products={rows.uniqueTrail}
+              viewAllHref="/category/trail"
+              initialDirection="right"
+            />
 
-        {/* Trail Shoes Section */}
-        <HorizontalProductRow
-          title="Trail"
-          products={uniqueTrail}
-          viewAllHref="/category/trail"
-          initialDirection="right"
-        />
+            <HorizontalProductRow
+              title="Gym"
+              products={rows.uniqueGym}
+              className="bg-secondary/30"
+              viewAllHref="/category/gym"
+              initialDirection="left"
+            />
 
-        {/* Gym Shoes Section */}
-        <HorizontalProductRow
-          title="Gym"
-          products={uniqueGym}
-          className="bg-secondary/30"
-          viewAllHref="/category/gym"
-          initialDirection="left"
-        />
+            <HorizontalProductRow
+              title="Accessories"
+              products={rows.uniqueAccessories}
+              viewAllHref="/category/accessories"
+              initialDirection="right"
+            />
 
-        {/* Accessories Section */}
-        <HorizontalProductRow
-          title="Accessories"
-          products={uniqueAccessories}
-          viewAllHref="/category/accessories"
-          initialDirection="right"
-        />
+            <HorizontalProductRow
+              title="Basketball"
+              products={rows.uniqueBasketball}
+              viewAllHref="/category/basketball"
+              initialDirection="left"
+            />
 
-        {/* Basketball Shoes Section */}
-        <HorizontalProductRow
-          title="Basketball"
-          products={uniqueBasketball}
-          viewAllHref="/category/basketball"
-          initialDirection="left"
-        />
+            <HorizontalProductRow
+              title="Tennis"
+              products={rows.uniqueTennis}
+              className="bg-secondary/30"
+              viewAllHref="/category/tennis"
+              initialDirection="right"
+            />
+          </>
+        )}
 
-        {/* Tennis Shoes Section */}
-        <HorizontalProductRow
-          title="Tennis"
-          products={uniqueTennis}
-          className="bg-secondary/30"
-          viewAllHref="/category/tennis"
-          initialDirection="right"
-        />
-
-        {/* SEO footer paragraph */}
         <section className="border-t border-muted mt-8">
           <div className="container py-8">
             <p className="text-xs md:text-sm text-muted-foreground leading-relaxed max-w-4xl">

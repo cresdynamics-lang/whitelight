@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { resolveStaticImage } from '@/lib/imageUtils';
 
 interface OptimizedImageProps {
   src: string;
@@ -7,16 +8,12 @@ interface OptimizedImageProps {
   className?: string;
   loading?: 'lazy' | 'eager';
   sizes?: string;
-  /** Use "high" for LCP image (e.g. first hero slide) */
   fetchPriority?: 'high' | 'low' | 'auto';
   objectFit?: 'cover' | 'contain';
-  /** Preload image for instant display */
   preload?: boolean;
-  /** Click handler */
   onClick?: () => void;
 }
 
-/** Local static path that has a generated .webp next to it */
 function getWebpPath(path: string): string | null {
   if (!path.startsWith('/')) return null;
   const match = path.match(/\.(png|jpe?g)$/i);
@@ -39,51 +36,42 @@ export function OptimizedImage({
   const [placeholderLoaded, setPlaceholderLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
 
-  const webpSrc = getWebpPath(src);
+  const resolvedSrc = src.startsWith('/') ? resolveStaticImage(src) : src;
+  const webpSrc = getWebpPath(src) ?? (src.startsWith('/') ? getWebpPath(resolvedSrc) : null);
   const isCdn = src.includes('digitaloceanspaces.com');
-  
-  // Ultra-lightweight placeholder (1x1 transparent pixel) - defined early to avoid hoisting issues
-  const placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"%3E%3C/svg%3E';
+  const placeholder =
+    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"%3E%3C/svg%3E';
 
-  // Ultra-optimized CDN URL with aggressive compression for fastest loading
   const getOptimizedUrl = (width: number, quality: number = 60) => {
     if (isCdn) {
-      // Use CDN optimization parameters for fastest loading
-      // Lower quality (60) for faster loading, WebP format, auto compression
       return `${src}?w=${width}&q=${quality}&f=webp&auto=compress&dpr=1`;
     }
-    return src;
+    return resolvedSrc;
   };
 
-  // Generate low-quality placeholder URL for blur-up effect
   const getPlaceholderUrl = () => {
     if (isCdn) {
-      // Ultra-low quality (20) tiny image for instant blur-up placeholder
       return `${src}?w=40&q=20&f=webp&blur=10`;
     }
-    return placeholder; // Use placeholder for non-CDN images
+    return placeholder;
   };
 
-  // Preload critical images
   useEffect(() => {
-    if (preload && src) {
+    if (preload && src && !hasError) {
       const link = document.createElement('link');
       link.rel = 'preload';
       link.as = 'image';
       link.href = webpSrc || getOptimizedUrl(400, 80);
-      if (webpSrc) {
-        link.type = 'image/webp';
-      }
+      if (webpSrc) link.type = 'image/webp';
       document.head.appendChild(link);
       return () => {
         document.head.removeChild(link);
       };
     }
-  }, [preload, src, webpSrc]);
+  }, [preload, src, webpSrc, hasError]);
 
-  // Intersection Observer for lazy loading optimization - start loading earlier
   useEffect(() => {
-    if (loading === 'lazy' && imgRef.current) {
+    if (loading === 'lazy' && imgRef.current && !hasError) {
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -97,21 +85,28 @@ export function OptimizedImage({
             }
           });
         },
-        { rootMargin: '200px' } // Start loading 200px before image enters viewport for faster perceived loading
+        { rootMargin: '200px' }
       );
       observer.observe(imgRef.current);
       return () => observer.disconnect();
     }
-  }, [loading]);
+  }, [loading, hasError]);
 
-  // Optimized srcset with lower quality for faster loading
+  useEffect(() => {
+    if (!hasError && isCdn && !isLoaded && !placeholderLoaded) {
+      const placeholderImg = new Image();
+      placeholderImg.src = getPlaceholderUrl();
+      placeholderImg.onload = () => setPlaceholderLoaded(true);
+    }
+  }, [src, isCdn, isLoaded, placeholderLoaded, hasError]);
+
   const cdnSrcSet = isCdn
     ? [
         `${getOptimizedUrl(200, 55)} 200w`,
         `${getOptimizedUrl(400, 60)} 400w`,
         `${getOptimizedUrl(600, 65)} 600w`,
         `${getOptimizedUrl(800, 70)} 800w`,
-        `${getOptimizedUrl(1200, 75)} 1200w`
+        `${getOptimizedUrl(1200, 75)} 1200w`,
       ].join(', ')
     : '';
 
@@ -121,130 +116,75 @@ export function OptimizedImage({
     isLoaded ? 'opacity-100' : 'opacity-0'
   );
 
-  const handleLoad = () => {
-    setIsLoaded(true);
-    // Remove placeholder immediately
-    if (imgRef.current) {
-      imgRef.current.style.backgroundColor = 'transparent';
-    }
-  };
-
-  // Determine the actual src to use
-  const getActualSrc = () => {
-    if (loading === 'eager') {
-      return isCdn ? getOptimizedUrl(600, 65) : (webpSrc || src);
-    }
-    // For lazy loading, use placeholder initially, will be replaced by IntersectionObserver
-    if (!isLoaded) {
-      return getPlaceholderUrl();
-    }
-    return isCdn ? getOptimizedUrl(600, 65) : (webpSrc || src);
-  };
+  const handleLoad = () => setIsLoaded(true);
 
   const imgProps = {
     ref: imgRef,
     alt,
-    loading: loading === 'eager' ? 'eager' : 'lazy',
+    loading: (loading === 'eager' ? 'eager' : 'lazy') as 'eager' | 'lazy',
     decoding: 'async' as const,
     className: imgClass,
     onLoad: handleLoad,
     onError: () => setHasError(true),
-    // Use lowercase attribute to avoid React warning while still hinting priority to the browser
-    ...(fetchPriority && { fetchpriority: fetchPriority }),
-    ...(loading === 'lazy' && !isLoaded && { 
-      'data-src': isCdn ? getOptimizedUrl(600, 65) : (webpSrc || src),
-      src: getPlaceholderUrl()
-    }),
+    ...(fetchPriority && { fetchPriority }),
+    ...(loading === 'lazy' &&
+      !isLoaded &&
+      !hasError && {
+        'data-src': isCdn ? getOptimizedUrl(600, 65) : (webpSrc || resolvedSrc),
+        src: getPlaceholderUrl(),
+      }),
   };
 
   if (hasError) {
     return (
       <div className={cn('bg-gray-200 flex items-center justify-center', className)}>
-        <span className="text-gray-500 text-sm">Image not available</span>
+        <img
+          src="/whitelight_logo.webp"
+          alt=""
+          className="h-1/2 w-1/2 object-contain opacity-40"
+          aria-hidden
+        />
       </div>
     );
   }
 
-  // Load blur-up placeholder immediately for CDN images
-  useEffect(() => {
-    if (isCdn && !isLoaded && !placeholderLoaded) {
-      const placeholderImg = new Image();
-      placeholderImg.src = getPlaceholderUrl();
-      placeholderImg.onload = () => {
-        setPlaceholderLoaded(true);
-      };
-    }
-  }, [src, isCdn, isLoaded, placeholderLoaded]);
-
   return (
-    <div 
+    <div
       className={cn('relative overflow-hidden', className, onClick && 'cursor-pointer')}
       onClick={onClick}
     >
-      {/* Blur-up placeholder - shows low-quality version instantly */}
       {!isLoaded && isCdn && placeholderLoaded && (
         <img
           src={getPlaceholderUrl()}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ 
-            filter: 'blur(10px)',
-            transition: 'opacity 0.3s',
-            opacity: isLoaded ? 0 : 1,
-            transform: 'scale(1.1)'
-          }}
-          aria-hidden 
+          style={{ filter: 'blur(10px)', transform: 'scale(1.1)' }}
+          aria-hidden
         />
       )}
-      {/* Fallback placeholder for non-CDN images */}
       {!isLoaded && !isCdn && (
-        <div 
-          className="absolute inset-0 bg-gray-100 animate-pulse"
-          aria-hidden 
-        />
+        <div className="absolute inset-0 bg-gray-100 animate-pulse" aria-hidden />
       )}
-      {webpSrc ? (
+      {webpSrc && !isCdn ? (
         <picture>
-          <source 
-            type="image/webp" 
-            srcSet={isCdn ? cdnSrcSet : webpSrc}
-            sizes={sizes}
-          />
-          <img 
-            src={src} 
-            srcSet={isCdn ? cdnSrcSet : undefined}
-            sizes={sizes}
-            {...imgProps}
-            style={{ 
-              ...imgProps.style,
-              contentVisibility: 'auto',
-              containIntrinsicSize: '400px 400px'
-            }}
-          />
+          <source type="image/webp" srcSet={webpSrc} sizes={sizes} />
+          <img src={resolvedSrc} sizes={sizes} {...imgProps} />
         </picture>
       ) : isCdn ? (
         <img
-          src={loading === 'eager' ? getOptimizedUrl(600, 65) : (isLoaded ? getOptimizedUrl(600, 65) : getPlaceholderUrl())}
+          src={
+            loading === 'eager'
+              ? getOptimizedUrl(600, 65)
+              : isLoaded
+                ? getOptimizedUrl(600, 65)
+                : getPlaceholderUrl()
+          }
           srcSet={cdnSrcSet}
           sizes={sizes}
           {...imgProps}
-          style={{ 
-            ...imgProps.style,
-            contentVisibility: 'auto',
-            containIntrinsicSize: '400px 400px',
-            position: 'relative',
-            zIndex: 1
-          }}
         />
       ) : (
-        <img 
-          src={src} 
-          {...imgProps}
-          style={{ 
-            ...imgProps.style,
-            contentVisibility: 'auto'
-          }}
-        />
+        <img src={resolvedSrc} {...imgProps} />
       )}
     </div>
   );

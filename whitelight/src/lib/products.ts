@@ -46,8 +46,93 @@ function normalizeProduct(p: any): any {
 }
 
 // Only include products that have at least an id (so display never crashes on missing key/data)
-function safeProductList(raw: any[]): any[] {
-  return raw.map(normalizeProduct).filter((p) => p != null && p.id);
+function safeProductList(raw: any[]): Product[] {
+  return raw.map(normalizeProduct).filter((p) => p != null && p.id) as Product[];
+}
+
+/** Lean Supabase select — one request for the whole storefront */
+const CATALOG_SELECT = `
+  id, slug, name, brand, category, categories, price, original_price,
+  description, tags, is_new, is_best_seller, is_on_offer, url_slug, alt_text_main,
+  created_at, updated_at,
+  product_images (id, url, alt_text),
+  product_variants (id, size, in_stock)
+`;
+
+function normalizeCatalogRow(row: Record<string, unknown>): Product | null {
+  const imagesRaw = Array.isArray(row.product_images) ? row.product_images : [];
+  const firstImage = imagesRaw[0];
+  const images = firstImage
+    ? [
+        {
+          id: String((firstImage as { id?: string }).id ?? ""),
+          url: String((firstImage as { url?: string }).url ?? ""),
+          alt: String(
+            (firstImage as { alt_text?: string }).alt_text ??
+              (firstImage as { alt?: string }).alt ??
+              ""
+          ),
+        },
+      ]
+    : [];
+
+  return normalizeProduct({
+    ...row,
+    images,
+    variants: row.product_variants,
+  }) as Product | null;
+}
+
+/** Single fetch for homepage, search, and category pages */
+export async function getCatalogProducts(): Promise<Product[]> {
+  try {
+    if (!supabase) throw new Error("Supabase client not initialised");
+
+    const { data, error } = await supabase
+      .from("products")
+      .select(CATALOG_SELECT)
+      .order("updated_at", { ascending: false });
+
+    if (error) throw error;
+
+    return (data || [])
+      .map((row) => normalizeCatalogRow(row as Record<string, unknown>))
+      .filter((p): p is Product => p != null && !!p.id);
+  } catch (error) {
+    console.error("Error fetching catalog from Supabase:", error);
+    if (import.meta.env.DEV) {
+      return safeProductList(productsData.products || []);
+    }
+    return [];
+  }
+}
+
+export function filterByCategory(products: Product[], category: ProductCategory): Product[] {
+  return products.filter(
+    (p) =>
+      p.category === category ||
+      (Array.isArray(p.categories) && p.categories.includes(category))
+  );
+}
+
+export function partitionCatalog(products: Product[]) {
+  const bestSellers = products.filter((p) => p.isBestSeller).slice(0, 12);
+  const newArrivals = products.filter((p) => p.isNew).length
+    ? products.filter((p) => p.isNew)
+    : products.slice(0, 24);
+
+  return {
+    all: products,
+    bestSellers,
+    newArrivals,
+    running: filterByCategory(products, "running"),
+    trail: filterByCategory(products, "trail"),
+    gym: filterByCategory(products, "gym"),
+    training: filterByCategory(products, "training"),
+    basketball: filterByCategory(products, "basketball"),
+    tennis: filterByCategory(products, "tennis"),
+    accessories: filterByCategory(products, "accessories"),
+  };
 }
 
 // Local data helper (kept for potential future use in local/dev-only tools)
@@ -213,23 +298,19 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   }
 }
 
-// Get best sellers
+// Get best sellers (uses catalog cache when available via hooks)
 export async function getBestSellers(limit?: number): Promise<Product[]> {
-  const { products } = await getProducts({ isBestSeller: true });
+  const products = (await getCatalogProducts()).filter((p) => p.isBestSeller);
   return limit ? products.slice(0, limit) : products;
 }
 
-// Get new arrivals - latest products first (Nairobi store catalog)
 export async function getNewArrivals(limit?: number): Promise<Product[]> {
-  // getProducts already returns latest updated/created first
-  const { products } = await getProducts();
+  const products = await getCatalogProducts();
   return limit ? products.slice(0, limit) : products;
 }
 
-// Get products by category
 export async function getProductsByCategory(category: ProductCategory): Promise<Product[]> {
-  const { products } = await getProducts({ category });
-  return products;
+  return filterByCategory(await getCatalogProducts(), category);
 }
 
 // Format price with currency (safe for NaN / invalid)

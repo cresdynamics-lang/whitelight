@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Header } from "@/components/layout/Header";
@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { trackViewContent } from "@/lib/analytics/events";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -27,6 +28,14 @@ const ProductDetail = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const { addItem } = useCart();
+  const trackedViewRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (product?.id && trackedViewRef.current !== product.id) {
+      trackedViewRef.current = product.id;
+      trackViewContent(product);
+    }
+  }, [product]);
 
   // Helper function to display size correctly for accessories
   const getDisplaySize = (size: number | string, category: string) => {

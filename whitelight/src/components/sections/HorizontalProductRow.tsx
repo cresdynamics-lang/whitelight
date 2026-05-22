@@ -27,36 +27,27 @@ export function HorizontalProductRow({
   const autoScrollDirectionRef = useRef<1 | -1>(initialDirection === "left" ? -1 : 1);
   const pauseUntilRef = useRef(0);
 
-  // Continuous auto-scroll (left <-> right) to keep rows active.
   useEffect(() => {
     const container = scrollRef.current;
     if (!container) return;
 
     autoScrollDirectionRef.current = initialDirection === "left" ? -1 : 1;
-
     const hasOverflow = container.scrollWidth > container.clientWidth + 8;
     if (!hasOverflow) return;
 
-    const speed = 0.6; // pixels per frame
-
+    const speed = 0.6;
     let frameId: number;
     const step = () => {
       const el = container;
       const now = Date.now();
-
-      // Briefly pause after user interaction, then continue.
       if (now < pauseUntilRef.current) {
         frameId = window.requestAnimationFrame(step);
         return;
       }
-
       const dir = autoScrollDirectionRef.current;
       const maxScroll = el.scrollWidth - el.clientWidth;
-
       if (maxScroll <= 0) return;
-
       let next = el.scrollLeft + dir * speed;
-
       if (next <= 0) {
         next = 0;
         autoScrollDirectionRef.current = 1;
@@ -64,25 +55,18 @@ export function HorizontalProductRow({
         next = maxScroll;
         autoScrollDirectionRef.current = -1;
       }
-
       el.scrollLeft = next;
       frameId = window.requestAnimationFrame(step);
     };
-
     frameId = window.requestAnimationFrame(step);
-    return () => {
-      window.cancelAnimationFrame(frameId);
-    };
+    return () => window.cancelAnimationFrame(frameId);
   }, [safeProducts.length, initialDirection]);
 
   const handleUserInteraction = () => {
     pauseUntilRef.current = Date.now() + 2500;
   };
 
-  // If there are no products for this row, skip rendering the section
-  if (safeProducts.length === 0) {
-    return null;
-  }
+  if (safeProducts.length === 0) return null;
 
   return (
     <section className={cn("py-10 md:py-14", className)}>
@@ -104,7 +88,7 @@ export function HorizontalProductRow({
         <div className="relative -mx-4 px-4 md:mx-0 md:px-0">
           <div
             ref={scrollRef}
-            className="flex gap-2.5 md:gap-3 overflow-x-auto pb-4 md:pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent scroll-smooth"
+            className="flex gap-2.5 md:gap-3 overflow-x-auto pb-4 md:pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
             onWheel={handleUserInteraction}
             onTouchStart={handleUserInteraction}
             onMouseDown={handleUserInteraction}
@@ -112,10 +96,9 @@ export function HorizontalProductRow({
             {safeProducts.map((product, index) => (
               <div
                 key={product.id}
-                className="flex-shrink-0 w-[22vw] min-w-[5.2rem] max-w-[6.4rem] sm:w-32 sm:min-w-32 sm:max-w-32 md:w-44 md:min-w-44 md:max-w-44 lg:w-52 lg:min-w-52 lg:max-w-52 animate-fade-in"
-                style={{ animationDelay: `${index * 80}ms` }}
+                className="flex-shrink-0 w-[22vw] min-w-[5.2rem] max-w-[6.4rem] sm:w-32 sm:min-w-32 sm:max-w-32 md:w-44 md:min-w-44 md:max-w-44 lg:w-52 lg:min-w-52 lg:max-w-52"
               >
-                <ProductCard product={product} />
+                <ProductCard product={product} priority={index < 4} />
               </div>
             ))}
           </div>
@@ -124,4 +107,3 @@ export function HorizontalProductRow({
     </section>
   );
 }
-

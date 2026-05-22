@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/products";
@@ -31,6 +31,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { apiService } from "@/services/apiService";
 import { openWhatsAppCartOrderMessage } from "@/lib/whatsapp";
+import { trackInitiateCheckout, trackPurchase } from "@/lib/analytics/events";
 
 interface CheckoutFormProps {
   onBack: () => void;
@@ -46,6 +47,14 @@ export function CheckoutForm({ onBack }: CheckoutFormProps) {
     address: "",
     notes: "",
   });
+
+  useEffect(() => {
+    if (items.length > 0) {
+      trackInitiateCheckout(items, getTotal());
+    }
+    // Intentionally once when checkout form opens
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -143,6 +152,14 @@ export function CheckoutForm({ onBack }: CheckoutFormProps) {
         })),
         currency: siteConfig.currency,
         total,
+      });
+
+      await trackPurchase({
+        items: [...items],
+        total,
+        orderNumber,
+        email: formData.email || undefined,
+        phone: cleanPhone,
       });
 
       clearCart();

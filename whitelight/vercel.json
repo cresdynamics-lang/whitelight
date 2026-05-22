@@ -4,6 +4,15 @@
       "source": "/(.*)",
       "destination": "/"
     }
+  ],
+  "crons": [
+    {
+      "path": "/api/feeds/google",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/feeds/meta",
+      "schedule": "30 5 * * *"
+    }
   ]
 }
-

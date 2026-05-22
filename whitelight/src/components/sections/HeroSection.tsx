@@ -22,19 +22,19 @@ interface CategoryContent {
 // Local carousel images with category content
 const localImages: BannerImage[] = [
   {
-    url: "/couresel_images/running/running2.png",
+    url: "/couresel_images/running/running2.webp",
     alt_text: "Whitelight running shoes in Nairobi CBD",
   },
   {
-    url: "/gymshoes.jpg",
+    url: "/gymshoes.webp",
     alt_text: "Whitelight gym and training shoes in Nairobi",
   },
   {
-    url: "/trainning.jpg",
+    url: "/trainning.webp",
     alt_text: "Whitelight training shoes and multi-sport footwear",
   },
   {
-    url: "/ourstoryimage.jpeg",
+    url: "/ourstoryimage.webp",
     alt_text: "Inside Whitelight Store Nairobi - our story",
   },
 ];

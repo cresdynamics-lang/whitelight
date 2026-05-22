@@ -7,45 +7,45 @@ import {
   getProductsByCategory,
 } from "@/lib/products";
 import type { ProductFilters, ProductCategory } from "@/types/product";
+import { useCatalog, useCatalogByCategory } from "@/hooks/useCatalog";
 
-// Hook for fetching all products with filters
 export function useProducts(filters?: ProductFilters) {
   return useQuery({
     queryKey: ["products", filters],
     queryFn: () => getProducts(filters),
+    enabled: !!filters && Object.keys(filters).length > 0,
   });
 }
 
-// Hook for fetching best sellers
 export function useBestSellers(limit?: number) {
-  return useQuery({
-    queryKey: ["products", "best-sellers", limit],
-    queryFn: () => getBestSellers(limit),
-  });
+  const { data = [], ...rest } = useCatalog();
+  const best = data.filter((p) => p.isBestSeller);
+  return {
+    ...rest,
+    data: limit ? best.slice(0, limit) : best,
+  };
 }
 
-// Hook for fetching new arrivals
 export function useNewArrivals(limit?: number) {
-  return useQuery({
-    queryKey: ["products", "new-arrivals", limit],
-    queryFn: () => getNewArrivals(limit),
-  });
+  const { data = [], ...rest } = useCatalog();
+  const items = data.filter((p) => p.isNew).length
+    ? data.filter((p) => p.isNew)
+    : data;
+  return {
+    ...rest,
+    data: limit ? items.slice(0, limit) : items,
+  };
 }
 
-// Hook for fetching single product by slug
 export function useProduct(slug: string) {
   return useQuery({
     queryKey: ["product", slug],
     queryFn: () => getProductBySlug(slug),
     enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
-// Hook for fetching products by category
 export function useProductsByCategory(category: ProductCategory) {
-  return useQuery({
-    queryKey: ["products", "category", category],
-    queryFn: () => getProductsByCategory(category),
-    enabled: !!category,
-  });
+  return useCatalogByCategory(category);
 }

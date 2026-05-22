@@ -21,6 +21,8 @@ export function ProductGrid({
     4: "grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
   };
 
+  const safe = products.filter((p) => p?.id);
+
   return (
     <section className={cn("py-12 md:py-16", className)}>
       <div className="container">
@@ -29,20 +31,18 @@ export function ProductGrid({
             {title.toUpperCase()}
           </h2>
         )}
-        
+
         <div className={cn("grid gap-6 md:gap-8", gridCols[columns])}>
-          {products.map((product, index) => (
-            <div
+          {safe.map((product, index) => (
+            <ProductCard
               key={product.id}
-              className="animate-fade-in"
-              style={{ animationDelay: `${index * 100}ms` }}
-            >
-              <ProductCard product={product} />
-            </div>
+              product={product}
+              priority={index < 8}
+            />
           ))}
         </div>
 
-        {products.length === 0 && (
+        {safe.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground">No products found.</p>
           </div>
