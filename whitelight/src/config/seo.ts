@@ -1,5 +1,11 @@
 // SEO — Nairobi-first. Primary market: Nairobi CBD; Kenya delivery secondary.
 
+import {
+  getCategoryMetaDescription,
+  aboutSeoContent,
+  buyingGuideSeoContent,
+} from "./categorySeoContent";
+
 export const seoConfig = {
   defaultMeta: {
     title: "Best Running, Trail & Gym Shoes Nairobi | Whitelight Store",
@@ -40,72 +46,63 @@ export const seoConfig = {
 
     running: {
       title: "Best Running Shoes Nairobi | Whitelight Store",
-      description:
-        "Buy the best running shoes in Nairobi. Trusted selection of Nike, Adidas, HOKA & more for roads, races and daily miles. Same-day Nairobi CBD delivery from Whitelight Store.",
+      description: getCategoryMetaDescription("running"),
       keywords:
         "best running shoes Nairobi, running shoes Nairobi CBD, buy running shoes Nairobi, trusted running shoe store Nairobi, Nike running Nairobi, Adidas running Nairobi, marathon shoes Nairobi",
     },
 
     trail: {
       title: "Best Trail Shoes Nairobi | Whitelight Store",
-      description:
-        "Best trail running shoes in Nairobi for Karura, Ngong Hills and Kenyan terrain. Trusted grip and protection. Shop trail shoes at Whitelight Store, Luthuli Avenue CBD.",
+      description: getCategoryMetaDescription("trail"),
       keywords:
         "best trail shoes Nairobi, trail running shoes Nairobi, trail shoes Nairobi CBD, Karura trail shoes Nairobi, Ngong Hills shoes Nairobi, trusted trail footwear Nairobi",
     },
 
     gym: {
       title: "Best Gym Shoes Nairobi | Whitelight Store",
-      description:
-        "Best gym shoes in Nairobi for lifting, HIIT and training. Trusted brands, expert advice at Nairobi CBD. Same-day delivery from Whitelight Store, Luthuli Avenue.",
+      description: getCategoryMetaDescription("gym"),
       keywords:
         "best gym shoes Nairobi, gym shoes Nairobi CBD, training shoes Nairobi, CrossFit shoes Nairobi, women's gym shoes Nairobi, trusted gym footwear Nairobi",
     },
 
     basketball: {
       title: "Best Basketball Shoes Nairobi | Whitelight Store",
-      description:
-        "Best basketball shoes in Nairobi — Jordan, Nike, Puma and court-ready models. Trusted seller in Nairobi CBD. Same-day delivery from Whitelight Store.",
+      description: getCategoryMetaDescription("basketball"),
       keywords:
         "best basketball shoes Nairobi, basketball shoes Nairobi CBD, Jordan shoes Nairobi, Nike basketball Nairobi, court shoes Nairobi, trusted basketball footwear Nairobi",
     },
 
     tennis: {
       title: "Best Tennis Shoes Nairobi | Whitelight Store",
-      description:
-        "Best tennis shoes in Nairobi for club and court play. Lateral support, grip and durability. Trusted at Whitelight Store, Luthuli Avenue Nairobi CBD.",
+      description: getCategoryMetaDescription("tennis"),
       keywords:
         "best tennis shoes Nairobi, tennis shoes Nairobi CBD, court shoes Nairobi, tennis footwear Nairobi, trusted tennis shoes Nairobi",
     },
 
     training: {
       title: "Best Training Shoes Nairobi | Whitelight Store",
-      description:
-        "Best training shoes in Nairobi for drills, conditioning and multi-sport sessions. Trusted performance footwear at Whitelight Store, Nairobi CBD.",
+      description: getCategoryMetaDescription("training"),
       keywords:
         "best training shoes Nairobi, training shoes Nairobi CBD, drills shoes Nairobi, conditioning shoes Nairobi, multi-sport training Nairobi, trusted training footwear Nairobi",
     },
 
     accessories: {
       title: "Best Shoe Accessories Nairobi | Whitelight Store",
-      description:
-        "Best shoe accessories in Nairobi — care, comfort and performance add-ons. Trusted specialist at Whitelight Store, Luthuli Avenue CBD. Same-day Nairobi delivery.",
+      description: getCategoryMetaDescription("accessories"),
       keywords:
         "best shoe accessories Nairobi, shoe care Nairobi CBD, footwear accessories Nairobi, trusted shoe accessories Nairobi, athletic accessories Nairobi",
     },
 
     buyingGuide: {
       title: "Shoe Buying Guide Nairobi | Whitelight Store",
-      description:
-        "Expert shoe buying guide from Nairobi's trusted footwear specialists. Size charts, fitting tips and category advice. Visit Whitelight Store, Luthuli Avenue CBD.",
+      description: buyingGuideSeoContent.intro,
       keywords:
         "shoe buying guide Nairobi, shoe fitting Nairobi CBD, size guide Nairobi, trusted shoe advice Nairobi, footwear guide Nairobi",
     },
 
     about: {
       title: "Trusted Shoe Store Nairobi | About Whitelight Store",
-      description:
-        "Whitelight Store — Nairobi's trusted specialist for running, trail, gym, training shoes and accessories. 4.9-rated service at Rware Building, Luthuli Avenue, Shop 410.",
+      description: aboutSeoContent.intro,
       keywords:
         "trusted shoe store Nairobi, about Whitelight Nairobi, best footwear shop Nairobi CBD, athletic shoe experts Nairobi",
     },

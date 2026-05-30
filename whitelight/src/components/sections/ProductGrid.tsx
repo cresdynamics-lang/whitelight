@@ -37,7 +37,7 @@ export function ProductGrid({
             <ProductCard
               key={product.id}
               product={product}
-              priority={index < 8}
+              priority={index < 4}
             />
           ))}
         </div>

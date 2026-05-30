@@ -116,7 +116,7 @@ export function SearchBar() {
           type="button"
           variant="ghost"
           size="icon"
-          className="relative hover:scale-110 transition-transform duration-300 border-2 border-primary/20 rounded-full hover:border-primary/40"
+          className="relative h-9 w-9 lg:h-8 lg:w-8 border-2 border-primary/20 rounded-full hover:border-primary/40"
           onClick={() => {
             setIsExpanded(true);
             // slight delay so input is mounted before focusing
@@ -125,7 +125,7 @@ export function SearchBar() {
             }, 10);
           }}
         >
-          <Search className="h-5 w-5 sm:h-6 sm:w-6" />
+          <Search className="h-4 w-4 lg:h-[1.125rem] lg:w-[1.125rem]" />
           <span className="sr-only">Search products</span>
         </Button>
       )}

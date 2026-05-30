@@ -431,6 +431,11 @@ class ApiService {
     customerPhone: string;
     customerEmail?: string;
     deliveryAddress?: string;
+    deliveryLocation?: string;
+    deliveryLocationLabel?: string;
+    deliveryFee?: number;
+    subtotal?: number;
+    totalAmount?: number;
     orderNotes?: string;
     items: Array<{
       productId: string;

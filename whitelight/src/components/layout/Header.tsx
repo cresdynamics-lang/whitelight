@@ -21,20 +21,20 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
-      <div className="container flex h-20 items-center justify-between">
+      <div className="container flex h-16 lg:h-[4.25rem] items-center justify-between gap-2 lg:gap-3">
         {/* Logo */}
-        <NavPrefetchLink to="/" className="flex items-center gap-2 sm:gap-3 group flex-shrink-0">
+        <NavPrefetchLink to="/" className="flex items-center gap-1.5 sm:gap-2 group shrink-0 min-w-0">
           <img
             src={siteConfig.logo}
             alt={siteConfig.name}
-            width={64}
-            height={64}
-            className="h-12 w-12 sm:h-16 sm:w-16 rounded-full ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300 object-cover"
+            width={48}
+            height={48}
+            className="h-10 w-10 sm:h-11 sm:w-11 rounded-full ring-2 ring-primary/20 group-hover:ring-primary/40 transition-all duration-300 object-cover"
             loading="eager"
             decoding="async"
             fetchPriority="high"
           />
-          <span className="font-heading text-lg sm:text-xl lg:text-2xl font-black tracking-tight bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-blue-600 group-hover:via-purple-600 group-hover:to-pink-600 transition-all duration-300 hidden md:block">
+          <span className="font-heading text-sm sm:text-base lg:text-lg font-black tracking-tight bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-blue-600 group-hover:via-purple-600 group-hover:to-pink-600 transition-all duration-300 hidden md:block truncate max-w-[7.5rem] lg:max-w-[9rem] xl:max-w-none">
             {siteConfig.name}
           </span>
           {/* Mobile fancy wordmark */}
@@ -45,12 +45,12 @@ export function Header() {
         </NavPrefetchLink>
 
         {/* Desktop Navigation */}
-        <nav className="hidden lg:flex items-center gap-4 xl:gap-8">
+        <nav className="hidden lg:flex flex-1 items-center justify-center gap-1 xl:gap-2 min-w-0 px-1">
           {siteConfig.navigation.map((item) => (
             <NavPrefetchLink
               key={item.href}
               to={item.href}
-              className="relative font-body text-sm xl:text-lg font-semibold text-muted-foreground transition-all duration-300 hover:text-primary hover:scale-105 pb-1 whitespace-nowrap"
+              className="relative font-body text-[11px] xl:text-xs 2xl:text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-primary pb-1 whitespace-nowrap tracking-tight"
             >
               {item.label}
               {isActiveLink(item.href) && (
@@ -61,23 +61,17 @@ export function Header() {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
-          {/* Desktop fancy wordmark on the right side */}
-          <span className="hidden md:inline-flex mr-2 items-baseline font-heading italic text-sm leading-none text-muted-foreground">
-            <span className="text-2xl leading-none mr-0.5">W</span>
-            <span className="text-xs leading-none tracking-[0.18em]">hitelight</span>
-          </span>
-
+        <div className="flex items-center gap-0.5 sm:gap-1 shrink-0">
           <SearchBar />
           <Button 
             variant="ghost" 
             size="icon" 
-            className="relative hover:scale-110 transition-transform duration-300 border-2 border-primary/20 rounded-full hover:border-primary/40 "
+            className="relative h-9 w-9 lg:h-8 lg:w-8 border-2 border-primary/20 rounded-full hover:border-primary/40"
             onClick={() => setIsOpen(true)}
           >
-            <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
+            <ShoppingCart className="h-4 w-4 lg:h-[1.125rem] lg:w-[1.125rem]" />
             {itemCount > 0 && (
-              <span className="absolute -right-1 -top-1 flex h-5 w-5 sm:h-6 sm:w-6 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-xs font-bold text-white animate-pulse">
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-[10px] font-bold text-white">
                 {itemCount}
               </span>
             )}

@@ -27,6 +27,7 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminProducts from "./pages/admin/AdminProducts";
 import AdminProductForm from "./pages/admin/AdminProductForm";
+import AdminOrders from "./pages/admin/AdminOrders";
 import AdminMessages from "./pages/admin/AdminMessages";
 
 const queryClient = new QueryClient({
@@ -113,6 +114,16 @@ const App = () => {
                   <ProtectedRoute>
                     <AdminLayout>
                       <AdminProductForm />
+                    </AdminLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/orders"
+                element={
+                  <ProtectedRoute>
+                    <AdminLayout>
+                      <AdminOrders />
                     </AdminLayout>
                   </ProtectedRoute>
                 }

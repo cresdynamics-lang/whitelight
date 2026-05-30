@@ -34,8 +34,8 @@ const localImages: BannerImage[] = [
     alt_text: "Whitelight training shoes and multi-sport footwear",
   },
   {
-    url: "/ourstoryimage.webp",
-    alt_text: "Inside Whitelight Store Nairobi - our story",
+    url: "/couresel_images/trail/trail1.webp",
+    alt_text: "Trail shoes for Karura Forest and Ngong Hills — Nairobi",
   },
 ];
 

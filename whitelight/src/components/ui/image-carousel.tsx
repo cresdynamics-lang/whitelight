@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FastImage } from "@/components/ui/FastImage";
-import { resolveStaticImage } from "@/lib/imageUtils";
 import { cn } from "@/lib/utils";
 
 interface CarouselImage {
@@ -62,11 +61,11 @@ export function ImageCarousel({
     <div className={cn("relative overflow-hidden rounded-lg h-full w-full", className)}>
       <FastImage
         key={slide.url}
-        src={resolveStaticImage(slide.url)}
+        src={slide.url}
         alt={slide.alt_text}
         className="w-full h-full min-h-[280px]"
         variant="hero"
-        priority
+        priority={currentIndex === 0}
         objectFit={objectFit}
       />
 

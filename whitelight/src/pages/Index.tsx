@@ -130,6 +130,7 @@ const Index = () => {
               className="bg-secondary/30"
               viewAllHref="/new-arrivals"
               initialDirection="left"
+              priorityCount={2}
             />
 
             <BrandHighlightCarousel />

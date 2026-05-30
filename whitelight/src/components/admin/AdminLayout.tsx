@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import {
   LayoutDashboard,
   Package,
+  ShoppingBag,
   MessageSquare,
   LogOut,
   Menu,
@@ -20,6 +21,7 @@ interface AdminLayoutProps {
 const navItems = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Products", href: "/admin/products", icon: Package },
+  { label: "Orders", href: "/admin/orders", icon: ShoppingBag },
   { label: "Messages", href: "/admin/messages", icon: MessageSquare },
 ];
 

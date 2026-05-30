@@ -12,10 +12,10 @@ import { randomBytes } from "crypto";
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = join(__dirname, "..", "public");
 
-const DEFAULT_MAX = 1400;
-const LOGO_MAX = 256;
-const WEBP_QUALITY = 78;
-const JPEG_QUALITY = 78;
+const DEFAULT_MAX = 1100;
+const LOGO_MAX = 192;
+const WEBP_QUALITY = 72;
+const JPEG_QUALITY = 74;
 
 function* walk(dir) {
   const entries = readdirSync(dir, { withFileTypes: true });
@@ -34,8 +34,11 @@ function isImage(path) {
 function maxWidthFor(filePath) {
   const rel = filePath.replace(PUBLIC_DIR, "");
   if (rel.includes("whitelight_logo")) return LOGO_MAX;
-  if (rel.includes("couresel_images") || rel.includes("guide_images")) return 1200;
-  if (rel.match(/\.(jpe?g|png)$/i) && !rel.includes("/")) return 1280;
+  if (rel.includes("ourstoryimage")) return 720;
+  if (rel.includes("whychooseus")) return 900;
+  if (rel.includes("guide_images")) return 900;
+  if (rel.includes("couresel_images")) return 960;
+  if (rel.match(/\.(jpe?g|png)$/i) && !rel.includes("/")) return 1024;
   return DEFAULT_MAX;
 }
 

@@ -15,6 +15,10 @@ export interface WhatsAppCustomerDetails {
   phone: string;
   email?: string;
   address?: string;
+  deliveryLocation?: string;
+  deliveryFee?: number;
+  paymentMethod?: string;
+  mpesaCode?: string;
   notes?: string;
   orderNumber?: string;
 }
@@ -77,9 +81,11 @@ export function generateWhatsAppCartOrderMessage(params: {
   customer: WhatsAppCustomerDetails;
   items: WhatsAppCartOrderItem[];
   currency?: string;
+  subtotal?: number;
+  deliveryFee?: number;
   total?: number;
 }): string {
-  const { customer, items, currency = siteConfig.currency, total } = params;
+  const { customer, items, currency = siteConfig.currency, subtotal, deliveryFee, total } = params;
 
   const header = customer.orderNumber
     ? `NEW ORDER #${customer.orderNumber}`
@@ -90,7 +96,10 @@ export function generateWhatsAppCartOrderMessage(params: {
     `Name: ${customer.name}`,
     `Phone: ${customer.phone}`,
     customer.email ? `Email: ${customer.email}` : null,
+    customer.deliveryLocation ? `Location: ${customer.deliveryLocation}` : null,
     customer.address ? `Address: ${customer.address}` : null,
+    customer.paymentMethod ? `Payment: ${customer.paymentMethod}` : null,
+    customer.mpesaCode ? `M-Pesa Code: ${customer.mpesaCode}` : null,
   ].filter(Boolean);
 
   const itemLines = items.flatMap((item, idx) => {
@@ -110,6 +119,14 @@ export function generateWhatsAppCartOrderMessage(params: {
     return [line1, line2, ...refs];
   });
 
+  const subtotalLine =
+    typeof subtotal === "number"
+      ? `Subtotal: ${currency} ${subtotal.toLocaleString()}`
+      : null;
+  const deliveryLine =
+    typeof deliveryFee === "number"
+      ? `Delivery: ${deliveryFee === 0 ? "Free" : `${currency} ${deliveryFee.toLocaleString()}`}`
+      : null;
   const totalLine =
     typeof total === "number" ? `TOTAL: ${currency} ${total.toLocaleString()}` : null;
 
@@ -123,6 +140,8 @@ export function generateWhatsAppCartOrderMessage(params: {
     "ORDER ITEMS:",
     ...itemLines,
     "",
+    subtotalLine,
+    deliveryLine,
     totalLine,
     "",
     notesLine,
@@ -139,6 +158,8 @@ export function openWhatsAppCartOrderMessage(params: {
   customer: WhatsAppCustomerDetails;
   items: WhatsAppCartOrderItem[];
   currency?: string;
+  subtotal?: number;
+  deliveryFee?: number;
   total?: number;
 }): void {
   const url = generateWhatsAppCartOrderMessage(params);

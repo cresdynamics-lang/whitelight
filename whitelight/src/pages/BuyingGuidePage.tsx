@@ -4,12 +4,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { CheckCircle, Ruler, Activity, MapPin, Dumbbell, Zap } from "lucide-react";
-import { useProducts } from "@/hooks/useProducts";
+import { useCatalog } from "@/hooks/useCatalog";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { SeoContentSections } from "@/components/seo/SeoContentSections";
 import { seoConfig } from "@/config/seo";
+import { buyingGuideSeoContent } from "@/config/categorySeoContent";
+import { resolveStaticImage } from "@/lib/imageUtils";
+import { ImageCarousel } from "@/components/ui/image-carousel";
+import { ProductGrid } from "@/components/sections/ProductGrid";
+
+const guideCarousel = [
+  { url: "/buyingguide.webp", alt_text: "Shoe buying guide Nairobi" },
+  { url: "/guide_images/guide1.webp", alt_text: "Proper shoe fit Nairobi" },
+  { url: "/guide_images/guide2.webp", alt_text: "Size measurement guide" },
+];
 
 const BuyingGuidePage = () => {
-  const { data: products = [], isLoading } = useProducts();
+  const { data: products = [], isLoading } = useCatalog();
   
   // Get sample products from each category with safe array check
   const getCategoryImage = (category: string) => {
@@ -97,28 +108,47 @@ const BuyingGuidePage = () => {
       <Header />
       
       <main className="flex-1">
-        {/* Hero Section */}
-        <section className="relative py-24 border-b overflow-hidden">
+        {/* Hero carousel */}
+        <section className="relative py-20 overflow-hidden min-h-[260px]">
           <div className="absolute inset-0">
-            <OptimizedImage
-              src="/buyingguide.png"
-              alt="Buying Guide"
+            <ImageCarousel
+              images={guideCarousel.map((i) => ({ ...i, url: resolveStaticImage(i.url) }))}
               className="w-full h-full"
-              loading="eager"
-              fetchPriority="high"
+              showControls={false}
+              showDots={true}
+              autoPlay={true}
+              interval={6000}
+              objectFit="cover"
             />
-            <div className="absolute inset-0 bg-black/40" />
+            <div className="absolute inset-0 bg-black/50" />
           </div>
-          <div className="px-8 relative z-10">
-            <div className="text-center">
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Shoe Buying Guide
-              </h1>
-              <p className="text-xl text-white/90 leading-relaxed max-w-3xl mx-auto">
-                Make informed decisions with our comprehensive guide. From proper sizing to performance features, 
-                find the perfect footwear for your needs.
-              </p>
-            </div>
+          <div className="container relative z-10 text-center px-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Shoe Buying Guide Nairobi
+            </h1>
+            <p className="text-lg md:text-xl text-white/90 leading-relaxed max-w-3xl mx-auto">
+              Expert sizing and category advice from Nairobi&apos;s trusted footwear specialists at Luthuli Avenue CBD.
+            </p>
+          </div>
+        </section>
+
+        {/* Featured products after carousel */}
+        {!isLoading && products.length > 0 && (
+          <ProductGrid
+            products={products.slice(0, 8)}
+            columns={4}
+            title="Popular in Nairobi"
+            className="bg-white"
+          />
+        )}
+
+        {/* Nairobi buying guide SEO sections */}
+        <section className="py-12 bg-gray-50 border-b">
+          <div className="container max-w-4xl px-4">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
+              How to Choose the Best Shoes in Nairobi
+            </h2>
+            <SeoContentSections content={buyingGuideSeoContent} />
           </div>
         </section>
 

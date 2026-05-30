@@ -37,7 +37,7 @@ export const siteConfig = {
     { label: "Basketball", href: "/category/basketball" },
     { label: "Tennis", href: "/category/tennis" },
     { label: "Accessories", href: "/category/accessories" },
-    { label: "Buying Guide", href: "/buying-guide" },
+    { label: "Guide", href: "/buying-guide" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },
   ],

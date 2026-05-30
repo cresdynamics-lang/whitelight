@@ -102,7 +102,7 @@ const ProductDetail = () => {
   const seoDescription = product.seo_description || fallbackSeoDescription;
   const seoKeywords = product.seo_keywords?.join(", ") || fallbackSeoKeywords;
 
-  const mainImageUrl = product.images[0]?.url || "/whitelight_logo.jpeg";
+  const mainImageUrl = product.images[0]?.url || "/whitelight_logo.webp";
   const mainAltText = product.alt_text_main || product.images[0]?.alt || `${product.brand} ${product.name} ${computedCategoryName.toLowerCase()} — available in Kenya`;
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;

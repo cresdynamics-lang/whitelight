@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { bannerService, CategoryImage } from "@/services/bannerService";
-import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { useState } from "react";
+import type { CategoryImage } from "@/services/bannerService";
+import { FastImage } from "@/components/ui/FastImage";
 import { cn } from "@/lib/utils";
 
 interface CategoryBannerProps {
@@ -32,37 +32,37 @@ const categoryTaglines: Record<string, string> = {
 const localCategories: CategoryImage[] = [
   {
     category: "running",
-    url: "/couresel_images/running/running2.png",
+    url: "/couresel_images/running/running2.webp",
     alt_text: "Running Shoes"
   },
   {
     category: "trail",
-    url: "/couresel_images/trail/trail1.png",
+    url: "/couresel_images/trail/trail1.webp",
     alt_text: "Trail Shoes"
   },
   {
     category: "gym",
-    url: "/couresel_images/gym/gym.png",
+    url: "/couresel_images/gym/gym.webp",
     alt_text: "Gym Shoes"
   },
   {
     category: "basketball",
-    url: "/couresel_images/basketball/bk1.png",
+    url: "/couresel_images/basketball/bk1.webp",
     alt_text: "Basketball Shoes"
   },
   {
     category: "tennis",
-    url: "/couresel_images/basketball/bk2.png",
+    url: "/couresel_images/basketball/bk2.webp",
     alt_text: "Tennis Shoes"
   },
   {
     category: "training",
-    url: "/couresel_images/gym/gym3.png",
+    url: "/couresel_images/gym/gym3.webp",
     alt_text: "Training Shoes"
   },
   {
     category: "orthopedic",
-    url: "/couresel_images/orthopedic/orth1.jpg",
+    url: "/couresel_images/orthopedic/orth1.webp",
     alt_text: "Orthopedic Shoes"
   }
 ];
@@ -89,10 +89,11 @@ export function CategoryBanner({ className }: CategoryBannerProps) {
                 to={`/category/${category.category}`}
                 className="group relative flex-shrink-0 w-52 sm:w-60 md:w-64 aspect-[4/5] overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
               >
-                <OptimizedImage
+                <FastImage
                   src={category.url}
                   alt={category.alt_text}
-                  className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 group-hover:[&_img]:scale-110"
+                  variant="hero"
+                  className="transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute inset-0 flex items-end p-4">
@@ -118,10 +119,11 @@ export function CategoryBanner({ className }: CategoryBannerProps) {
                 to={`/category/${category.category}`}
                 className="group relative flex-shrink-0 w-52 sm:w-60 md:w-64 aspect-[4/5] overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105"
               >
-                <OptimizedImage
+                <FastImage
                   src={category.url}
                   alt={category.alt_text}
-                  className="h-full w-full [&_img]:transition-transform [&_img]:duration-500 group-hover:[&_img]:scale-110"
+                  variant="hero"
+                  className="transition-transform duration-500 group-hover:scale-110"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                 <div className="absolute inset-0 flex items-end p-4">

@@ -12,9 +12,11 @@
     <link rel="apple-touch-icon" href="/whitelight_logo.webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
     <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-    <!-- LCP: hero + logo -->
-    <link rel="preload" as="image" href="/couresel_images/running/running2.webp" type="image/webp" fetchpriority="high" />
-    <link rel="preload" as="image" href="/whitelight_logo.webp" type="image/webp" />
+    <link rel="preconnect" href="https://whitelight-store.sfo3.digitaloceanspaces.com" crossorigin />
+    <link rel="dns-prefetch" href="https://whitelight-store.sfo3.digitaloceanspaces.com" />
+    <!-- LCP: first hero slide only -->
+    <link rel="preload" as="image" href="/couresel_images/running/running2.webp" type="image/webp" fetchpriority="high" imagesrcset="/couresel_images/running/running2.webp" imagesizes="100vw" />
+    <link rel="preload" as="image" href="/whitelight_logo.webp" type="image/webp" fetchpriority="low" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content="Best Running, Trail & Gym Shoes Nairobi | Whitelight Store" />
     <meta property="og:description" content="Nairobi's trusted store for running, trail, gym, training shoes and accessories." />

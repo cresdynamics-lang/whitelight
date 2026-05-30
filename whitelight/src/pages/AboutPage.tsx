@@ -3,7 +3,10 @@ import { Footer } from "@/components/layout/Footer";
 import { WhyChooseUs } from "@/components/sections/WhyChooseUs";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { SEOHead } from "@/components/seo/SEOHead";
+import { SeoContentSections } from "@/components/seo/SeoContentSections";
 import { seoConfig } from "@/config/seo";
+import { aboutSeoContent } from "@/config/categorySeoContent";
+import { resolveStaticImage } from "@/lib/imageUtils";
 import { Star, Users, Award, Zap, Shield, Flame, Heart } from "lucide-react";
 
 const testimonials = [
@@ -61,10 +64,10 @@ export default function AboutPage() {
         {/* Background carousel */}
         <div className="absolute inset-0">
           <div className="flex animate-scroll h-full">
-            <OptimizedImage src="/couresel_images/running/running2.png" alt="Running" className="h-full w-screen flex-shrink-0" loading="eager" fetchPriority="high" />
-            <OptimizedImage src="/couresel_images/trail/trail1.png" alt="Trail" className="h-full w-screen flex-shrink-0" loading="lazy" />
-            <OptimizedImage src="/couresel_images/gym/gym.png" alt="Gym" className="h-full w-screen flex-shrink-0" loading="lazy" />
-            <OptimizedImage src="/couresel_images/basketball/bk1.png" alt="Basketball" className="h-full w-screen flex-shrink-0" loading="lazy" />
+            <OptimizedImage src={resolveStaticImage("/couresel_images/running/running2.webp")} alt="Running shoes Nairobi" className="h-full w-screen flex-shrink-0" loading="eager" fetchPriority="high" />
+            <OptimizedImage src={resolveStaticImage("/couresel_images/trail/trail1.webp")} alt="Trail shoes Nairobi" className="h-full w-screen flex-shrink-0" loading="lazy" />
+            <OptimizedImage src={resolveStaticImage("/couresel_images/gym/gym.webp")} alt="Gym shoes Nairobi" className="h-full w-screen flex-shrink-0" loading="lazy" />
+            <OptimizedImage src={resolveStaticImage("/couresel_images/basketball/bk1.webp")} alt="Basketball shoes Nairobi" className="h-full w-screen flex-shrink-0" loading="lazy" />
             <OptimizedImage src="/couresel_images/orthopedic/orth1.jpg" alt="Orthopedic" className="h-full w-screen flex-shrink-0" loading="lazy" />
           </div>
         </div>
@@ -74,11 +77,11 @@ export default function AboutPage() {
         
         <div className="container relative">
           <div className="text-center max-w-4xl mx-auto">
-            <h1 className="font-heading text-6xl md:text-8xl font-black text-white mb-6">
-              ABOUT WHITELIGHT
+            <h1 className="font-heading text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
+              Nairobi&apos;s Trusted Athletic Shoe Store
             </h1>
-            <p className="font-body text-2xl text-gray-300 leading-relaxed">
-              Where performance meets style. We're not just selling shoes - we're crafting experiences that elevate your every step.
+            <p className="font-body text-xl md:text-2xl text-gray-300 leading-relaxed max-w-3xl mx-auto">
+              Best running, trail, gym, training &amp; court shoes in Nairobi CBD — authentic brands, expert fitting at Luthuli Avenue.
             </p>
           </div>
         </div>
@@ -151,8 +154,18 @@ export default function AboutPage() {
         </div>
       </section>
 
+      {/* SEO — Nairobi expertise */}
+      <section className="py-16 bg-white border-b">
+        <div className="container max-w-4xl">
+          <h2 className="font-heading text-3xl md:text-4xl font-bold text-black mb-8 text-center">
+            Why Nairobi Chooses White Light Store
+          </h2>
+          <SeoContentSections content={aboutSeoContent} />
+        </div>
+      </section>
+
       {/* Why Choose Us */}
-      <WhyChooseUs imagePath="/whychooseus.png" />
+      <WhyChooseUs imagePath="/whychooseus.webp" />
 
       {/* Moving Testimonials */}
       <section className="py-20 bg-black overflow-hidden">

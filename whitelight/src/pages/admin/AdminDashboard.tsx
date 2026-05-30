@@ -3,11 +3,14 @@ import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { adminProductsService } from "@/services/adminSupabaseProducts";
 import { contactService } from "@/services/contactService";
-import { Package, MessageSquare, TrendingUp, DollarSign } from "lucide-react";
+import { fetchOrders } from "@/services/orderService";
+import { Package, MessageSquare, ShoppingBag, TrendingUp, DollarSign } from "lucide-react";
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState({
     totalProducts: 0,
+    totalOrders: 0,
+    pendingOrders: 0,
     totalMessages: 0,
     unreadMessages: 0,
     totalValue: 0,
@@ -24,8 +27,20 @@ const AdminDashboard = () => {
           contactService.getUnreadCount(),
         ]);
 
+        let totalOrders = 0;
+        let pendingOrders = 0;
+        try {
+          const orders = await fetchOrders();
+          totalOrders = orders.length;
+          pendingOrders = orders.filter((o) => o.status === "pending").length;
+        } catch (orderErr) {
+          console.warn("Could not load order stats:", orderErr);
+        }
+
         setStats({
           totalProducts: products.length,
+          totalOrders,
+          pendingOrders,
           totalMessages: messages.length,
           unreadMessages: unreadCount,
           totalValue: products.reduce((sum, p) => sum + p.price, 0),
@@ -52,12 +67,21 @@ const AdminDashboard = () => {
       link: "/admin/products",
     },
     {
-      title: "Messages",
+      title: "Orders",
+      value: stats.totalOrders,
+      badge: stats.pendingOrders > 0 ? `${stats.pendingOrders} pending` : undefined,
+      icon: ShoppingBag,
+      color: "text-green-500",
+      bgColor: "bg-green-500/10",
+      link: "/admin/orders",
+    },
+    {
+      title: "Contact Messages",
       value: stats.totalMessages,
       badge: stats.unreadMessages > 0 ? `${stats.unreadMessages} new` : undefined,
       icon: MessageSquare,
-      color: "text-green-500",
-      bgColor: "bg-green-500/10",
+      color: "text-teal-500",
+      bgColor: "bg-teal-500/10",
       link: "/admin/messages",
     },
     {
@@ -148,11 +172,18 @@ const AdminDashboard = () => {
               <span>Manage Products</span>
             </Link>
             <Link
+              to="/admin/orders"
+              className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
+            >
+              <ShoppingBag className="h-5 w-5 text-primary" />
+              <span>View Orders</span>
+            </Link>
+            <Link
               to="/admin/messages"
               className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 hover:bg-muted transition-colors"
             >
               <MessageSquare className="h-5 w-5 text-primary" />
-              <span>View Messages</span>
+              <span>Contact Messages</span>
             </Link>
           </CardContent>
         </Card>

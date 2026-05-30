@@ -35,7 +35,7 @@ export function VirtualProductGrid({
 
         <div className={cn('grid gap-6 md:gap-8', gridCols[columns])}>
           {safeProducts.map((product, index) => (
-            <ProductCard key={product.id} product={product} priority={index < 8} />
+            <ProductCard key={product.id} product={product} priority={index < 4} />
           ))}
         </div>
 

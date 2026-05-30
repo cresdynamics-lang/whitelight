@@ -10,6 +10,8 @@ interface HorizontalProductRowProps {
   className?: string;
   viewAllHref?: string;
   initialDirection?: "left" | "right";
+  /** Eager-load first N product thumbnails (keep low — hero is LCP) */
+  priorityCount?: number;
 }
 
 export function HorizontalProductRow({
@@ -18,6 +20,7 @@ export function HorizontalProductRow({
   className,
   viewAllHref,
   initialDirection = "right",
+  priorityCount = 0,
 }: HorizontalProductRowProps) {
   const safeProducts = Array.isArray(products)
     ? products.filter((p) => p != null && p.id)
@@ -98,7 +101,7 @@ export function HorizontalProductRow({
                 key={product.id}
                 className="flex-shrink-0 w-[22vw] min-w-[5.2rem] max-w-[6.4rem] sm:w-32 sm:min-w-32 sm:max-w-32 md:w-44 md:min-w-44 md:max-w-44 lg:w-52 lg:min-w-52 lg:max-w-52"
               >
-                <ProductCard product={product} priority={index < 4} />
+                <ProductCard product={product} priority={index < priorityCount} />
               </div>
             ))}
           </div>

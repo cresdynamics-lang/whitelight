@@ -1,9 +1,11 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductGrid } from "@/components/sections/ProductGrid";
+import { ImageCarousel } from "@/components/ui/image-carousel";
 import { useNewArrivals } from "@/hooks/useProducts";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { seoConfig } from "@/config/seo";
+import { resolveStaticImage } from "@/lib/imageUtils";
 
 export default function NewArrivalsPage() {
   const { data: products = [], isLoading } = useNewArrivals();
@@ -20,19 +22,33 @@ export default function NewArrivalsPage() {
       <Header />
       
       <main className="flex-1">
-        {/* Header */}
-        <section className="py-12 md:py-16 bg-secondary/30">
-          <div className="container">
-            <h1 className="font-heading text-3xl md:text-4xl font-bold mb-2">
+        <section className="relative py-16 overflow-hidden min-h-[220px]">
+          <div className="absolute inset-0">
+            <ImageCarousel
+              images={[
+                { url: resolveStaticImage("/couresel_images/running/running2.webp"), alt_text: "New running shoes Nairobi" },
+                { url: resolveStaticImage("/couresel_images/gym/gym.webp"), alt_text: "New gym shoes Nairobi" },
+              ]}
+              className="w-full h-full"
+              showControls={false}
+              showDots={true}
+              autoPlay={true}
+              interval={5000}
+              objectFit="cover"
+            />
+            <div className="absolute inset-0 bg-black/50" />
+          </div>
+          <div className="container relative z-10 text-center">
+            <h1 className="font-heading text-3xl md:text-5xl font-bold text-white mb-3">
               New Arrivals in Nairobi
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-white/90 text-lg max-w-2xl mx-auto">
               Latest running, trail, gym and training shoes — trusted picks at Whitelight Store Nairobi CBD
             </p>
           </div>
         </section>
 
-        {/* Products */}
+        {/* Products after carousel */}
         {isLoading ? (
           <div className="container py-12">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
