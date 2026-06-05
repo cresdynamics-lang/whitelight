@@ -20,10 +20,25 @@ type Fbq = {
 
 let initialized = false;
 
+/** SPA navigation — call after route change (not first paint; index.html handles that). */
+export function trackMetaPageView(): void {
+  if (!isMetaEnabled() || typeof window === "undefined" || !window.fbq) return;
+  window.fbq("track", "PageView");
+  if (analyticsConfig.debug) {
+    console.log("[analytics] Meta PageView", window.location.pathname);
+  }
+}
+
 export function initMetaPixel(): void {
   if (!isMetaEnabled() || initialized || typeof window === "undefined") return;
 
   const pixelId = analyticsConfig.metaPixelId!;
+
+  // Already injected from index.html
+  if (window.fbq?.loaded) {
+    initialized = true;
+    return;
+  }
 
   if (!window.fbq) {
     const fbq: Fbq = function (...args: unknown[]) {
