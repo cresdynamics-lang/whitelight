@@ -28,9 +28,6 @@
     fbq('init', '1294655459040259');
     fbq('track', 'PageView');
     </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1294655459040259&ev=PageView&noscript=1"
-    /></noscript>
     <!-- End Meta Pixel Code -->
     <!-- LCP: first hero slide only -->
     <link rel="preload" as="image" href="/couresel_images/running/running2.webp" type="image/webp" fetchpriority="high" imagesrcset="/couresel_images/running/running2.webp" imagesizes="100vw" />
@@ -46,6 +43,10 @@
   </head>
 
   <body>
+    <!-- Meta Pixel noscript fallback (must be in body for Vite HTML build) -->
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1294655459040259&ev=PageView&noscript=1"
+    /></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

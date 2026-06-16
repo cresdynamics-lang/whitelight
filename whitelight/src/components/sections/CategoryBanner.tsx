@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { useState } from "react";
-import type { CategoryImage } from "@/services/bannerService";
+import { useEffect, useState } from "react";
 import { FastImage } from "@/components/ui/FastImage";
 import { cn } from "@/lib/utils";
+import { FALLBACK_MANIFEST, getImageManifest, type CategoryImage } from "@/services/imageManifestService";
 
 interface CategoryBannerProps {
   className?: string;
@@ -28,49 +28,18 @@ const categoryTaglines: Record<string, string> = {
   orthopedic: "Comfort for long Nairobi days.\nSupport that’s kind on busy feet.",
 };
 
-// Local category images from couresel_images folders
-const localCategories: CategoryImage[] = [
-  {
-    category: "running",
-    url: "/couresel_images/running/running2.webp",
-    alt_text: "Running Shoes"
-  },
-  {
-    category: "trail",
-    url: "/couresel_images/trail/trail1.webp",
-    alt_text: "Trail Shoes"
-  },
-  {
-    category: "gym",
-    url: "/couresel_images/gym/gym.webp",
-    alt_text: "Gym Shoes"
-  },
-  {
-    category: "basketball",
-    url: "/couresel_images/basketball/bk1.webp",
-    alt_text: "Basketball Shoes"
-  },
-  {
-    category: "tennis",
-    url: "/couresel_images/basketball/bk2.webp",
-    alt_text: "Tennis Shoes"
-  },
-  {
-    category: "training",
-    url: "/couresel_images/gym/gym3.webp",
-    alt_text: "Training Shoes"
-  },
-  {
-    category: "orthopedic",
-    url: "/couresel_images/orthopedic/orth1.webp",
-    alt_text: "Orthopedic Shoes"
-  }
-];
-
 export function CategoryBanner({ className }: CategoryBannerProps) {
-  const [categories] = useState<CategoryImage[]>(localCategories);
+  const [categories, setCategories] = useState<CategoryImage[]>(FALLBACK_MANIFEST.category);
 
-
+  useEffect(() => {
+    let mounted = true;
+    getImageManifest().then((manifest) => {
+      if (mounted) setCategories(manifest.category);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   return (
     <section className={cn("py-6 md:py-8 overflow-hidden", className)}>

@@ -2,8 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import { ArrowRight, ChevronDown } from "lucide-react";
-import { useState } from "react";
-import type { BannerImage } from "@/services/bannerService";
+import { useEffect, useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { siteConfig } from "@/config/site";
+import { FALLBACK_MANIFEST, getImageManifest, type BannerImage } from "@/services/imageManifestService";
 
 interface CtaBannerProps {
   title?: string;
@@ -18,21 +18,22 @@ interface CtaBannerProps {
   ctaText?: string;
 }
 
-// Local CTA images
-const localCtaImages: BannerImage[] = [
-  { url: "/couresel_images/running/running2.png", alt_text: "Running Performance" },
-  { url: "/couresel_images/gym/gym.png", alt_text: "Gym Excellence" },
-  { url: "/couresel_images/basketball/bk1.png", alt_text: "Basketball Power" },
-  { url: "/couresel_images/trail/trail1.png", alt_text: "Trail Adventures" },
-];
-
 export function CtaBanner({
   title = "TIME TO MOVE",
   subtitle = "Step into style. Elevate your game with the latest drops.",
   ctaText = "SHOP COLLECTION",
 }: CtaBannerProps) {
-  const [ctaImages] = useState<BannerImage[]>(localCtaImages);
+  const [ctaImages, setCtaImages] = useState<BannerImage[]>(FALLBACK_MANIFEST.cta);
 
+  useEffect(() => {
+    let mounted = true;
+    getImageManifest().then((manifest) => {
+      if (mounted) setCtaImages(manifest.cta);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
 
   return (

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import { Button } from "@/components/ui/button";
-import type { BannerImage } from "@/services/bannerService";
+import { FALLBACK_MANIFEST, getImageManifest, type BannerImage } from "@/services/imageManifestService";
 
 interface BrandSlide {
   title: string;
@@ -11,25 +11,6 @@ interface BrandSlide {
   link: string;
   ctaText: string;
 }
-
-const brandImages: BannerImage[] = [
-  {
-    url: "/whychooseus.webp",
-    alt_text: "Why Nairobi runners choose Whitelight Store",
-  },
-  {
-    url: "/gymshoes.webp",
-    alt_text: "Gym and training shoes from Whitelight Store Nairobi",
-  },
-  {
-    url: "/ourstoryimage.webp",
-    alt_text: "Inside Whitelight Store – Nairobi CBD",
-  },
-  {
-    url: "/whitelight_logo.webp",
-    alt_text: "Whitelight Store logo – premium footwear Nairobi",
-  },
-];
 
 const brandSlides: BrandSlide[] = [
   {
@@ -63,14 +44,26 @@ const brandSlides: BrandSlide[] = [
 ];
 
 export function BrandHighlightCarousel() {
+  const [brandImages, setBrandImages] = useState<BannerImage[]>(FALLBACK_MANIFEST.brand);
   const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
+    let mounted = true;
+    getImageManifest().then((manifest) => {
+      if (mounted) setBrandImages(manifest.brand);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!brandImages.length) return;
     const timer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % brandImages.length);
     }, 7000);
     return () => clearInterval(timer);
-  }, []);
+  }, [brandImages.length]);
 
   const slide = brandSlides[currentSlide];
 

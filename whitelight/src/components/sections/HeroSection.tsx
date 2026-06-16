@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ImageCarousel } from "@/components/ui/image-carousel";
 import { ArrowRight } from "lucide-react";
 import { useState, useEffect } from "react";
-import type { BannerImage } from "@/services/bannerService";
+import { FALLBACK_MANIFEST, getImageManifest, type BannerImage } from "@/services/imageManifestService";
 
 interface HeroSectionProps {
   title?: string;
@@ -18,26 +18,6 @@ interface CategoryContent {
   link: string;
   ctaText: string;
 }
-
-// Local carousel images with category content
-const localImages: BannerImage[] = [
-  {
-    url: "/couresel_images/running/running2.webp",
-    alt_text: "Whitelight running shoes in Nairobi CBD",
-  },
-  {
-    url: "/gymshoes.webp",
-    alt_text: "Whitelight gym and training shoes in Nairobi",
-  },
-  {
-    url: "/trainning.webp",
-    alt_text: "Whitelight training shoes and multi-sport footwear",
-  },
-  {
-    url: "/couresel_images/trail/trail1.webp",
-    alt_text: "Trail shoes for Karura Forest and Ngong Hills — Nairobi",
-  },
-];
 
 const categoryContent: CategoryContent[] = [
   {
@@ -76,16 +56,27 @@ export function HeroSection({
   ctaText,
   ctaLink,
 }: HeroSectionProps) {
-  const [heroImages] = useState<BannerImage[]>(localImages);
+  const [heroImages, setHeroImages] = useState<BannerImage[]>(FALLBACK_MANIFEST.hero);
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  useEffect(() => {
+    let mounted = true;
+    getImageManifest().then((manifest) => {
+      if (mounted) setHeroImages(manifest.hero);
+    });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   // Track carousel changes
   useEffect(() => {
+    if (!heroImages.length) return;
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % localImages.length);
+      setCurrentSlide((prev) => (prev + 1) % heroImages.length);
     }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [heroImages.length]);
 
   const currentContent = categoryContent[currentSlide];
   const displayTitle = title || currentContent.title;
