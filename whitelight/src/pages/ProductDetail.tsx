@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { FastImage } from "@/components/ui/FastImage";
-import { getDetailImageUrl, getOriginalProductUrl } from "@/lib/imageUtils";
+import { getOriginalProductUrl } from "@/lib/imageUtils";
 import { trackViewContent } from "@/lib/analytics/events";
 import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
 
@@ -77,6 +77,7 @@ const ProductDetail = () => {
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [sizeError, setSizeError] = useState(false);
   const { addItem } = useCart();
   const trackedViewRef = useRef<string | null>(null);
 
@@ -182,6 +183,7 @@ const ProductDetail = () => {
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
 
   const handleSizeToggle = (size: number | string) => {
+    setSizeError(false);
     setSelectedSizes(prev => {
       if (prev.includes(size)) {
         return prev.filter(s => s !== size);
@@ -202,10 +204,11 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     if (!selectedSize && selectedSizes.length === 0) {
-      toast.error("Please select at least one size");
+      setSizeError(true);
       return;
     }
     
+    setSizeError(false);
     const allSizes = selectedSize ? [selectedSize, ...selectedSizes.filter(s => s !== selectedSize)] : selectedSizes;
     const sizesParam = allSizes.map((s, i) => `size${i + 1}=${s}`).join('&');
     const referenceLink = `${window.location.origin}/product/${slug}?img=${selectedImageIndex}&${sizesParam}`;
@@ -241,10 +244,11 @@ const ProductDetail = () => {
 
   const handleOrderWhatsApp = () => {
     if (!hasSizeSelected) {
-      toast.error("Please select at least one size before ordering");
+      setSizeError(true);
       return;
     }
 
+    setSizeError(false);
     const allSizes = selectedSize
       ? [selectedSize, ...selectedSizes.filter((s) => s !== selectedSize)]
       : selectedSizes;
@@ -287,118 +291,144 @@ const ProductDetail = () => {
             Back to Shop
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-            {/* Images with multiple angles */}
-            <div className="space-y-4 min-w-0 lg:sticky lg:top-24 self-start">
-              <div className="relative w-full max-w-full aspect-[4/3] lg:aspect-[4/3] overflow-hidden rounded-lg bg-secondary group">
-                <FastImage
-                  key={`${selectedImageIndex}-${product.images[selectedImageIndex]?.url ?? product.images[0]?.url}`}
-                  src={product.images[selectedImageIndex]?.url || product.images[0]?.url}
-                  alt={
-                    selectedImageIndex === 0
-                      ? mainAltText
-                      : product.images[selectedImageIndex]?.alt ||
-                        `${product.name} angle ${selectedImageIndex + 1}`
-                  }
-                  variant="detail"
-                  priority
-                  objectFit="contain"
-                  className="h-full w-full cursor-pointer"
-                  onClick={() => setIsLightboxOpen(true)}
-                />
-                
-                {/* Navigation arrows - only show if multiple images */}
+          <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
+            {/* Mobile: compact image column beside details. Desktop: full gallery column */}
+            <div className="flex gap-3 min-w-0 lg:block lg:sticky lg:top-24 lg:self-start">
+              <div className="w-[38%] max-w-[9.5rem] shrink-0 space-y-2 sm:w-[42%] sm:max-w-[11rem] lg:w-full lg:max-w-none">
+                <div className="relative aspect-square overflow-hidden rounded-lg bg-secondary group lg:aspect-[4/3]">
+                  <FastImage
+                    key={`${selectedImageIndex}-${product.images[selectedImageIndex]?.url ?? product.images[0]?.url}`}
+                    src={product.images[selectedImageIndex]?.url || product.images[0]?.url}
+                    alt={
+                      selectedImageIndex === 0
+                        ? mainAltText
+                        : product.images[selectedImageIndex]?.alt ||
+                          `${product.name} angle ${selectedImageIndex + 1}`
+                    }
+                    variant="detail"
+                    priority
+                    objectFit="contain"
+                    className="h-full w-full cursor-pointer"
+                    onClick={() => setIsLightboxOpen(true)}
+                  />
+
+                  {product.images.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedImageIndex((prev) =>
+                            prev === 0 ? product.images.length - 1 : prev - 1
+                          )
+                        }
+                        className="absolute left-1 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white lg:left-2 lg:h-10 lg:w-10 lg:opacity-0 lg:group-hover:opacity-100"
+                      >
+                        <ChevronLeft className="h-4 w-4 lg:h-5 lg:w-5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSelectedImageIndex((prev) =>
+                            prev === product.images.length - 1 ? 0 : prev + 1
+                          )
+                        }
+                        className="absolute right-1 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white lg:right-2 lg:h-10 lg:w-10 lg:opacity-0 lg:group-hover:opacity-100"
+                      >
+                        <ChevronRight className="h-4 w-4 lg:h-5 lg:w-5" />
+                      </button>
+                    </>
+                  )}
+                </div>
+
                 {product.images.length > 1 && (
-                  <>
-                    <button
-                      onClick={() => setSelectedImageIndex((prev) => 
-                        prev === 0 ? product.images.length - 1 : prev - 1
-                      )}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    >
-                      <ChevronLeft className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => setSelectedImageIndex((prev) => 
-                        prev === product.images.length - 1 ? 0 : prev + 1
-                      )}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                    >
-                      <ChevronRight className="h-5 w-5" />
-                    </button>
-                  </>
+                  <div className="grid grid-cols-2 gap-1 sm:gap-1.5 lg:flex lg:gap-2 lg:overflow-x-auto">
+                    {product.images.map((image, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onClick={() => setSelectedImageIndex(index)}
+                        className={cn(
+                          "aspect-square w-full overflow-hidden rounded border transition-all lg:h-20 lg:w-20 lg:flex-shrink-0 lg:rounded-md lg:border-2",
+                          selectedImageIndex === index
+                            ? "border-primary ring-1 ring-primary/20 lg:ring-2"
+                            : "border-border hover:border-primary/50"
+                        )}
+                      >
+                        <FastImage
+                          src={image.url}
+                          alt={
+                            index === 0
+                              ? mainAltText
+                              : image.alt || `${product.name} angle ${index + 1}`
+                          }
+                          variant="thumb"
+                          priority={index < 4}
+                          className="h-full w-full"
+                        />
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
-              
-              {/* Angle thumbnails — 2 per row on mobile, strip on desktop */}
-              {product.images.length > 1 && (
-                <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:flex lg:overflow-x-auto lg:max-w-full">
-                  {product.images.map((image, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => {
-                        setSelectedImageIndex(index);
-                        if (window.matchMedia("(max-width: 1023px)").matches) {
-                          setIsLightboxOpen(true);
-                        }
-                      }}
-                      className={cn(
-                        "aspect-square w-full overflow-hidden rounded-md border-2 transition-all lg:w-20 lg:h-20 lg:flex-shrink-0",
-                        selectedImageIndex === index
-                          ? "border-primary ring-2 ring-primary/20"
-                          : "border-border hover:border-primary/50"
-                      )}
-                    >
-                      <FastImage
-                        src={image.url}
-                        alt={index === 0 ? mainAltText : image.alt || `${product.name} angle ${index + 1}`}
-                        variant="thumb"
-                        priority={index < 4}
-                        className="h-full w-full"
-                      />
-                    </button>
-                  ))}
+
+              {/* Mobile / tablet: title, price, description beside images */}
+              <div className="min-w-0 flex-1 lg:hidden">
+                <div className="flex items-center gap-2 mb-1">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground sm:text-xs">
+                    {product.brand}
+                  </p>
+                  {product.isNew && (
+                    <Badge className="bg-accent text-accent-foreground text-[10px]">NEW</Badge>
+                  )}
                 </div>
-              )}
+                <h1 className="font-heading text-base font-bold leading-snug sm:text-lg">
+                  {product.name}
+                </h1>
+                <div className="mt-1 flex items-center gap-2">
+                  <span className="text-base font-semibold sm:text-lg">
+                    {formatPrice(product.price, siteConfig.currency)}
+                  </span>
+                  {hasDiscount && (
+                    <span className="text-xs text-muted-foreground line-through sm:text-sm">
+                      {formatPrice(product.originalPrice!, siteConfig.currency)}
+                    </span>
+                  )}
+                </div>
+                <p className="mt-2 line-clamp-6 text-xs leading-relaxed text-muted-foreground sm:line-clamp-8 sm:text-sm">
+                  {product.description}
+                </p>
+              </div>
             </div>
 
-            {/* Details */}
-            <div className="lg:py-0 min-w-0">
-              <div className="flex items-center gap-2 mb-2">
-                <p className="text-sm text-muted-foreground uppercase tracking-wider">
-                  {product.brand}
-                </p>
-                {product.isNew && (
-                  <Badge className="bg-accent text-accent-foreground text-xs">
-                    NEW
-                  </Badge>
-                )}
-              </div>
-
-              <h1 className="font-heading text-2xl md:text-3xl font-bold mb-3">
-                {product.name}
-              </h1>
-
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-xl font-semibold">
-                  {formatPrice(product.price, siteConfig.currency)}
-                </span>
-                {hasDiscount && (
-                  <span className="text-base text-muted-foreground line-through">
-                    {formatPrice(product.originalPrice!, siteConfig.currency)}
+            {/* Details — full column on desktop; sizes + actions on all screens */}
+            <div className="min-w-0 lg:py-0">
+              <div className="hidden lg:block">
+                <div className="mb-2 flex items-center gap-2">
+                  <p className="text-sm uppercase tracking-wider text-muted-foreground">
+                    {product.brand}
+                  </p>
+                  {product.isNew && (
+                    <Badge className="bg-accent text-accent-foreground text-xs">NEW</Badge>
+                  )}
+                </div>
+                <h1 className="font-heading mb-3 text-2xl font-bold md:text-3xl">{product.name}</h1>
+                <div className="mb-4 flex items-center gap-3">
+                  <span className="text-xl font-semibold">
+                    {formatPrice(product.price, siteConfig.currency)}
                   </span>
-                )}
+                  {hasDiscount && (
+                    <span className="text-base text-muted-foreground line-through">
+                      {formatPrice(product.originalPrice!, siteConfig.currency)}
+                    </span>
+                  )}
+                </div>
+                <p className="mb-6 text-muted-foreground">{product.description}</p>
               </div>
-
-              <p className="text-muted-foreground mb-6">
-                {product.description}
-              </p>
 
               {/* Size selectors */}
-              <div className="mb-4">
+              <div className={cn("mb-4", sizeError && "rounded-lg ring-2 ring-red-500/40 p-2 -mx-2")}>
                 <p className="text-sm font-medium mb-2">
-                  {product.category === 'accessories' ? 'Select Size(s) - Available clothing sizes' : 'Select Size(s) - Available shoe sizes'}
+                  {product.category === 'accessories' ? 'Select Size(s)' : 'Select Size(s)'}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {product.variants.map((variant) => {
@@ -458,7 +488,6 @@ const ProductDetail = () => {
                   size="lg"
                   className="h-12 min-w-0 flex-1 px-2 text-xs sm:h-14 sm:px-4 sm:text-base"
                   onClick={handleAddToCart}
-                  disabled={!hasSizeSelected}
                 >
                   <ShoppingBag className="mr-1 h-4 w-4 shrink-0 sm:mr-2 sm:h-5 sm:w-5" />
                   <span className="truncate">Add to Cart</span>
@@ -466,17 +495,16 @@ const ProductDetail = () => {
                 <Button
                   size="lg"
                   type="button"
-                  className="h-12 min-w-0 flex-1 bg-green-600 px-2 text-xs text-white hover:bg-green-700 disabled:opacity-50 sm:h-14 sm:px-4 sm:text-base"
+                  className="h-12 min-w-0 flex-1 bg-green-600 px-2 text-xs text-white hover:bg-green-700 sm:h-14 sm:px-4 sm:text-base"
                   onClick={handleOrderWhatsApp}
-                  disabled={!hasSizeSelected}
                 >
                   <span className="truncate sm:hidden">WhatsApp</span>
                   <span className="hidden truncate sm:inline">Order on WhatsApp</span>
                 </Button>
               </div>
-              {!hasSizeSelected && (
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Select a size above to add to cart or order on WhatsApp.
+              {sizeError && (
+                <p className="mt-2 text-sm font-medium text-red-600">
+                  Please choose a size before adding to cart or ordering.
                 </p>
               )}
             </div>
