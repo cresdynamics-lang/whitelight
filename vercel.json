@@ -4,7 +4,7 @@
   "buildCommand": "npm run build --prefix whitelight",
   "outputDirectory": "whitelight/dist",
   "functions": {
-    "whitelight/api/**/*.mjs": {
+    "api/**/*.mjs": {
       "maxDuration": 30
     }
   },
