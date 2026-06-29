@@ -13,10 +13,67 @@ export function resolveStaticImage(path: string): string {
 
 /** Product card thumbnail — small file size, fast decode */
 export function getCardImageUrl(url?: string, width = 280, quality = 62): string {
+  return getOptimizedProductUrl(url ?? "", width, quality);
+}
+
+/** Build a resized product image URL (Supabase render API, DO Spaces, or static). */
+export function getOptimizedProductUrl(
+  url: string,
+  width: number,
+  quality = 70
+): string {
   if (!url) return "/whitelight_logo.webp";
+
   if (url.includes("digitaloceanspaces.com")) {
     return `${url}?w=${width}&q=${quality}&f=webp&auto=compress&dpr=1`;
   }
+
+  const supabaseObject = url.match(
+    /^(https:\/\/[^/]+\.supabase\.co)\/storage\/v1\/object\/public\/(.+)$/
+  );
+  if (supabaseObject) {
+    const [, base, path] = supabaseObject;
+    return `${base}/storage/v1/render/image/public/${path}?width=${width}&quality=${quality}&resize=contain`;
+  }
+
+  return url.startsWith("/") ? resolveStaticImage(url) : url;
+}
+
+/** Product detail main view — ~960px cap */
+export function getDetailImageUrl(url?: string): string {
+  return getOptimizedProductUrl(url ?? "", 960, 75);
+}
+
+/** Product detail thumbnail strip — 120px */
+export function getDetailThumbUrl(url?: string): string {
+  return getOptimizedProductUrl(url ?? "", 120, 62);
+}
+
+/** Responsive srcSet for product detail main image */
+export function getDetailImageSrcSet(url: string): string | undefined {
+  if (url.includes("digitaloceanspaces.com")) {
+    return [
+      `${url}?w=480&q=68&f=webp&auto=compress&dpr=1 480w`,
+      `${url}?w=720&q=72&f=webp&auto=compress&dpr=1 720w`,
+      `${url}?w=960&q=75&f=webp&auto=compress&dpr=1 960w`,
+    ].join(", ");
+  }
+
+  const supabaseObject = url.match(
+    /^(https:\/\/[^/]+\.supabase\.co)\/storage\/v1\/object\/public\/(.+)$/
+  );
+  if (supabaseObject) {
+    const [, base, path] = supabaseObject;
+    const row = (w: number, q: number) =>
+      `${base}/storage/v1/render/image/public/${path}?width=${w}&quality=${q}&resize=contain ${w}w`;
+    return [row(480, 68), row(720, 72), row(960, 75)].join(", ");
+  }
+
+  return undefined;
+}
+
+/** Original public URL when resize/render is unavailable */
+export function getOriginalProductUrl(url: string): string {
   return url.startsWith("/") ? resolveStaticImage(url) : url;
 }
 

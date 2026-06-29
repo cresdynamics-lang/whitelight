@@ -15,7 +15,8 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
-import { OptimizedImage } from "@/components/ui/OptimizedImage";
+import { FastImage } from "@/components/ui/FastImage";
+import { getDetailImageUrl } from "@/lib/imageUtils";
 import { trackViewContent } from "@/lib/analytics/events";
 import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
 
@@ -85,6 +86,26 @@ const ProductDetail = () => {
       trackViewContent(product);
     }
   }, [product]);
+
+  // Prefetch every angle so switching views is instant after first load
+  useEffect(() => {
+    if (!product?.images?.length) return;
+    const links: HTMLLinkElement[] = [];
+    product.images.forEach((image) => {
+      if (!image?.url) return;
+      const link = document.createElement("link");
+      link.rel = "prefetch";
+      link.as = "image";
+      link.href = getDetailImageUrl(image.url);
+      document.head.appendChild(link);
+      links.push(link);
+    });
+    return () => {
+      links.forEach((link) => {
+        if (link.parentNode) link.parentNode.removeChild(link);
+      });
+    };
+  }, [product?.id, product?.images]);
 
   // Helper function to display size correctly for accessories
   const getDisplaySize = (size: number | string, category: string) => {
@@ -266,23 +287,32 @@ const ProductDetail = () => {
             {/* Images with multiple angles */}
             <div className="space-y-4 min-w-0 lg:sticky lg:top-24 self-start">
               <div className="relative w-full max-w-full aspect-[4/3] lg:aspect-[4/3] overflow-hidden rounded-lg bg-secondary group">
-                <OptimizedImage
-                  src={product.images[selectedImageIndex]?.url || product.images[0]?.url}
-                  alt={
-                    selectedImageIndex === 0
-                      ? mainAltText
-                      : product.images[selectedImageIndex]?.alt || `${product.name} angle ${selectedImageIndex + 1}`
-                  }
-                  className="h-full w-full max-w-full cursor-pointer hover:scale-105 transition-transform duration-300"
-                  loading="eager"
-                  fetchPriority="high"
-                  preload={selectedImageIndex === 0}
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  onClick={() => {
-                    // Open lightbox when image is clicked
-                    setIsLightboxOpen(true);
-                  }}
-                />
+                {product.images.map((image, index) => (
+                  <div
+                    key={image.id ?? `${product.id}-angle-${index}`}
+                    className={cn(
+                      "absolute inset-0 transition-opacity duration-200",
+                      index === selectedImageIndex
+                        ? "z-[1] opacity-100"
+                        : "z-0 opacity-0 pointer-events-none"
+                    )}
+                    aria-hidden={index !== selectedImageIndex}
+                  >
+                    <FastImage
+                      src={image.url}
+                      alt={
+                        index === 0
+                          ? mainAltText
+                          : image.alt || `${product.name} angle ${index + 1}`
+                      }
+                      variant="detail"
+                      priority={index === 0 || index === 1}
+                      objectFit="contain"
+                      className="h-full w-full cursor-pointer"
+                      onClick={() => setIsLightboxOpen(true)}
+                    />
+                  </div>
+                ))}
                 
                 {/* Navigation arrows - only show if multiple images */}
                 {product.images.length > 1 && (
@@ -324,12 +354,12 @@ const ProductDetail = () => {
                           : "border-border hover:border-primary/50"
                       )}
                     >
-                      <OptimizedImage
+                      <FastImage
                         src={image.url}
                         alt={index === 0 ? mainAltText : image.alt || `${product.name} angle ${index + 1}`}
+                        variant="thumb"
+                        priority
                         className="w-full h-full"
-                        loading="lazy"
-                        sizes="80px"
                       />
                     </button>
                   ))}
@@ -350,12 +380,12 @@ const ProductDetail = () => {
                           : "border-border hover:border-primary/50"
                       )}
                     >
-                      <OptimizedImage
+                      <FastImage
                         src={image.url}
                         alt={index === 0 ? mainAltText : image.alt || `${product.name} angle ${index + 1}`}
+                        variant="thumb"
+                        priority
                         className="w-full h-full"
-                        loading="lazy"
-                        sizes="80px"
                       />
                     </button>
                   ))}
