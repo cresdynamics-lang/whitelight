@@ -18,7 +18,7 @@ interface FastImageProps {
   onClick?: () => void;
 }
 
-const CARD_SIZES = "(max-width: 640px) 26vw, (max-width: 1024px) 176px, 208px";
+const CARD_SIZES = "(max-width: 640px) 32vw, (max-width: 1024px) 176px, 208px";
 const HERO_SIZES = "100vw";
 
 /** Lightweight image — WebP for static assets, resized CDN URLs for products */

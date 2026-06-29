@@ -20,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, Loader2, Save, Upload, X } from "lucide-react";
 import { toast } from "sonner";
+import { ADMIN_BRAND_OPTIONS } from "@/config/brands";
 
 const MAX_PRODUCT_IMAGES = 10;
 
@@ -387,13 +388,45 @@ const AdminProductForm = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="brand">Brand *</Label>
+                  <Select
+                    value={
+                      ADMIN_BRAND_OPTIONS.includes(
+                        formData.brand as (typeof ADMIN_BRAND_OPTIONS)[number]
+                      )
+                        ? formData.brand
+                        : formData.brand
+                          ? "Other"
+                          : ""
+                    }
+                    onValueChange={(value) => {
+                      if (value === "Other") {
+                        setFormData({ ...formData, brand: "" });
+                      } else {
+                        setFormData({ ...formData, brand: value });
+                      }
+                    }}
+                  >
+                    <SelectTrigger id="brand-select">
+                      <SelectValue placeholder="Select brand (Nike, Adidas, Brooks…)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ADMIN_BRAND_OPTIONS.map((brand) => (
+                        <SelectItem key={brand} value={brand}>
+                          {brand}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <Input
                     id="brand"
                     value={formData.brand}
                     onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                    placeholder="Nike"
+                    placeholder="Type brand exactly as it should appear on the store"
                     required
                   />
+                  <p className="text-[10px] text-muted-foreground">
+                    Pick from the list or type a custom brand. Must match for Shop by Brand pages.
+                  </p>
                 </div>
               </div>
 
@@ -728,16 +761,27 @@ const AdminProductForm = () => {
                   className="scale-75"
                 />
               </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="isOnOffer" className="text-xs">On Offer</Label>
-                <Switch
+              <div className="flex items-start gap-3 rounded-lg border-2 border-red-200 bg-red-50/60 p-3 dark:border-red-900/40 dark:bg-red-950/20">
+                <Checkbox
                   id="isOnOffer"
                   checked={formData.isOnOffer}
                   onCheckedChange={(checked) =>
-                    setFormData({ ...formData, isOnOffer: checked })
+                    setFormData({ ...formData, isOnOffer: checked === true })
                   }
-                  className="scale-75"
+                  className="mt-0.5 border-red-400 data-[state=checked]:bg-red-600 data-[state=checked]:border-red-600"
                 />
+                <div className="space-y-1">
+                  <Label
+                    htmlFor="isOnOffer"
+                    className="cursor-pointer text-sm font-semibold text-red-700 dark:text-red-400"
+                  >
+                    Add to Sale category
+                  </Label>
+                  <p className="text-[10px] leading-snug text-muted-foreground">
+                    When checked, this product appears on the /sale page, shows a red Sale badge on
+                    the storefront, and is included in Meta &amp; Google ad catalog feeds.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>

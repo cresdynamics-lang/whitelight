@@ -68,7 +68,7 @@ const BuyingGuidePage = () => {
       description: "Engineered for road running, jogging, and daily training sessions",
       features: ["Lightweight construction", "Responsive cushioning", "Breathable mesh upper"],
       bestFor: "Daily runs, marathons, speed training",
-      image: "/couresel_images/running/running2.png"
+      image: "/couresel_images/running/running2.webp"
     },
     {
       name: "Trail Shoes",
@@ -76,7 +76,7 @@ const BuyingGuidePage = () => {
       description: "Built for off-road adventures and challenging terrain",
       features: ["Aggressive traction outsole", "Rock plate protection", "Water-resistant materials"],
       bestFor: "Hiking, trail running, outdoor adventures",
-      image: "/couresel_images/trail/trail1.png"
+      image: "/couresel_images/trail/trail1.webp"
     },
     {
       name: "Training Shoes",
@@ -84,7 +84,7 @@ const BuyingGuidePage = () => {
       description: "Versatile footwear for cross-training and gym workouts",
       features: ["Stable platform design", "Multi-directional support", "Durable construction"],
       bestFor: "CrossFit, weightlifting, HIIT workouts",
-      image: "/couresel_images/gym/gym3.png"
+      image: "/couresel_images/gym/gym3.webp"
     },
     {
       name: "Basketball Shoes",
@@ -92,7 +92,7 @@ const BuyingGuidePage = () => {
       description: "Performance footwear designed for court dominance",
       features: ["High-top ankle support", "Court-specific traction", "Impact cushioning"],
       bestFor: "Basketball, streetball, casual wear",
-      image: "/couresel_images/basketball/bk1.png"
+      image: "/couresel_images/basketball/bk1.webp"
     }
   ];
 
@@ -234,12 +234,12 @@ const BuyingGuidePage = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[
-                { src: "/guide_images/guide1.jpeg", title: "Proper Fit Check", desc: "How to check if your shoe fits correctly" },
-                { src: "/guide_images/guide2.jpeg", title: "Size Measurement", desc: "Accurate foot measurement techniques" },
-                { src: "/guide_images/guide3.jpeg", title: "Shoe Types", desc: "Different shoe types for different activities" },
-                { src: "/guide_images/guide4.jpeg", title: "Quality Check", desc: "What to look for in quality footwear" },
-                { src: "/guide_images/guide5.jpeg", title: "Care Tips", desc: "Proper shoe care and maintenance" },
-                { src: "/guide_images/guide6.jpeg", title: "Storage Guide", desc: "How to store your shoes properly" }
+                { src: "/guide_images/guide1.webp", title: "Proper Fit Check", desc: "How to check if your shoe fits correctly" },
+                { src: "/guide_images/guide2.webp", title: "Size Measurement", desc: "Accurate foot measurement techniques" },
+                { src: "/guide_images/guide3.webp", title: "Shoe Types", desc: "Different shoe types for different activities" },
+                { src: "/guide_images/guide4.webp", title: "Quality Check", desc: "What to look for in quality footwear" },
+                { src: "/guide_images/guide5.webp", title: "Care Tips", desc: "Proper shoe care and maintenance" },
+                { src: "/guide_images/guide6.webp", title: "Storage Guide", desc: "How to store your shoes properly" }
               ].map((guide, index) => (
                 <Card key={index} className="border border-gray-200 bg-white hover:shadow-lg transition-shadow duration-300">
                   <div className="aspect-[4/3] overflow-hidden rounded-t-lg">

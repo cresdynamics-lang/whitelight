@@ -37,6 +37,15 @@ export function useNewArrivals(limit?: number) {
   };
 }
 
+export function useSaleProducts(limit?: number) {
+  const { data = [], ...rest } = useCatalog();
+  const items = data.filter((p) => p.isOnOffer);
+  return {
+    ...rest,
+    data: limit ? items.slice(0, limit) : items,
+  };
+}
+
 export function useProduct(slug: string) {
   return useQuery({
     queryKey: ["product", slug],

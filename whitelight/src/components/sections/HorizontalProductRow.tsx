@@ -91,7 +91,7 @@ export function HorizontalProductRow({
         <div className="relative -mx-4 px-4 md:mx-0 md:px-0">
           <div
             ref={scrollRef}
-            className="flex gap-2.5 md:gap-3 overflow-x-auto pb-4 md:pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+            className="flex gap-3 md:gap-3 overflow-x-auto pb-4 md:pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
             onWheel={handleUserInteraction}
             onTouchStart={handleUserInteraction}
             onMouseDown={handleUserInteraction}
@@ -99,7 +99,7 @@ export function HorizontalProductRow({
             {safeProducts.map((product, index) => (
               <div
                 key={product.id}
-                className="flex-shrink-0 w-[22vw] min-w-[5.2rem] max-w-[6.4rem] sm:w-32 sm:min-w-32 sm:max-w-32 md:w-44 md:min-w-44 md:max-w-44 lg:w-52 lg:min-w-52 lg:max-w-52"
+                className="flex-shrink-0 w-[30vw] min-w-[6.75rem] max-w-[8.75rem] sm:w-36 sm:min-w-36 sm:max-w-36 md:w-44 md:min-w-44 md:max-w-44 lg:w-52 lg:min-w-52 lg:max-w-52"
               >
                 <ProductCard product={product} priority={index < priorityCount} />
               </div>

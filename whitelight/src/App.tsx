@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -14,21 +15,32 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 import Index from "./pages/Index";
-import ProductDetail from "./pages/ProductDetail";
-import CategoryPage from "./pages/CategoryPage";
-import ContactPage from "./pages/ContactPage";
-import AboutPage from "./pages/AboutPage";
-import NewArrivalsPage from "./pages/NewArrivalsPage";
-import AccessoriesPage from "./pages/AccessoriesPage";
-import BuyingGuidePage from "./pages/BuyingGuidePage";
-import TermsOfServicePage from "./pages/TermsOfServicePage";
-import NotFound from "./pages/NotFound";
-import AdminLogin from "./pages/admin/AdminLogin";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminProducts from "./pages/admin/AdminProducts";
-import AdminProductForm from "./pages/admin/AdminProductForm";
-import AdminOrders from "./pages/admin/AdminOrders";
-import AdminMessages from "./pages/admin/AdminMessages";
+
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const CategoryPage = lazy(() => import("./pages/CategoryPage"));
+const BrandPage = lazy(() => import("./pages/BrandPage"));
+const ContactPage = lazy(() => import("./pages/ContactPage"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const NewArrivalsPage = lazy(() => import("./pages/NewArrivalsPage"));
+const SalePage = lazy(() => import("./pages/SalePage"));
+const AccessoriesPage = lazy(() => import("./pages/AccessoriesPage"));
+const BuyingGuidePage = lazy(() => import("./pages/BuyingGuidePage"));
+const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
+const AdminProductForm = lazy(() => import("./pages/admin/AdminProductForm"));
+const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
+const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
+
+function PageLoader() {
+  return (
+    <div className="min-h-[40vh] flex items-center justify-center">
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-black" />
+    </div>
+  );
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,17 +68,20 @@ const App = () => {
               <CatalogPrefetch />
               <AnalyticsScripts />
               <CartDrawer />
+            <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Index />} />
               <Route path="/product/:slug" element={<ProductDetail />} />
               <Route path="/category/:category" element={<CategoryPage />} />
+              <Route path="/brand/:brand" element={<BrandPage />} />
               <Route path="/contact" element={<ContactPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/accessories" element={<AccessoriesPage />} />
               <Route path="/buying-guide" element={<BuyingGuidePage />} />
               <Route path="/terms" element={<TermsOfServicePage />} />
               <Route path="/new-arrivals" element={<NewArrivalsPage />} />
+              <Route path="/sale" element={<SalePage />} />
               
               {/* Legacy routes redirect */}
               <Route path="/running" element={<CategoryPage />} />
@@ -142,6 +157,7 @@ const App = () => {
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            </Suspense>
           </BrowserRouter>
           </TooltipProvider>
         </CartProvider>

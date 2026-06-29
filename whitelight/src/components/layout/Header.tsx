@@ -34,13 +34,13 @@ export function Header() {
             decoding="async"
             fetchPriority="high"
           />
-          <span className="font-heading text-sm sm:text-base lg:text-lg font-black tracking-tight bg-gradient-to-r from-black via-gray-800 to-black bg-clip-text text-transparent group-hover:from-blue-600 group-hover:via-purple-600 group-hover:to-pink-600 transition-all duration-300 hidden md:block truncate max-w-[7.5rem] lg:max-w-[9rem] xl:max-w-none">
+          <span className="font-heading text-sm sm:text-base lg:text-lg font-black uppercase tracking-tight text-foreground hidden lg:block truncate max-w-[7.5rem] xl:max-w-[9rem] 2xl:max-w-none">
             {siteConfig.name}
           </span>
-          {/* Mobile fancy wordmark */}
-          <span className="ml-1 inline-flex md:hidden items-baseline font-heading italic text-[0.85rem] leading-none text-muted-foreground">
-            <span className="text-xl leading-none mr-0.5">W</span>
-            <span className="text-xs leading-none tracking-[0.12em]">hitelight</span>
+          {/* Mobile & tablet wordmark */}
+          <span className="mobile-wordmark lg:hidden">
+            <span className="mobile-wordmark-light">whitelight</span>
+            <span className="mobile-wordmark-store">store</span>
           </span>
         </NavPrefetchLink>
 
@@ -50,11 +50,16 @@ export function Header() {
             <NavPrefetchLink
               key={item.href}
               to={item.href}
-              className="relative font-body text-[11px] xl:text-xs 2xl:text-sm font-medium text-muted-foreground transition-colors duration-200 hover:text-primary pb-1 whitespace-nowrap tracking-tight"
+              className={cn(
+                "relative font-body text-[11px] xl:text-xs 2xl:text-sm font-medium pb-1 whitespace-nowrap tracking-tight transition-colors duration-200",
+                item.href === "/sale"
+                  ? "font-semibold text-red-600 hover:text-red-700"
+                  : "text-muted-foreground hover:text-primary"
+              )}
             >
               {item.label}
               {isActiveLink(item.href) && (
-                <span className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full" />
+                <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground rounded-full" />
               )}
             </NavPrefetchLink>
           ))}
@@ -71,7 +76,7 @@ export function Header() {
           >
             <ShoppingCart className="h-4 w-4 lg:h-[1.125rem] lg:w-[1.125rem]" />
             {itemCount > 0 && (
-              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-[10px] font-bold text-white">
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-foreground text-[10px] font-bold text-background">
                 {itemCount}
               </span>
             )}
@@ -106,8 +111,12 @@ export function Header() {
               className={cn(
                 "block py-3 px-4 font-body text-base font-semibold rounded-lg transition-all duration-300",
                 isActiveLink(item.href)
-                  ? "text-white bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 border-l-4 border-white shadow-lg"
-                  : "text-foreground hover:bg-gradient-to-r hover:from-gray-100 hover:to-gray-200 hover:scale-105"
+                  ? item.href === "/sale"
+                    ? "text-white bg-red-600"
+                    : "text-background bg-foreground"
+                  : item.href === "/sale"
+                    ? "text-red-600 hover:bg-red-50"
+                    : "text-foreground hover:bg-muted"
               )}
               onClick={() => setIsMenuOpen(false)}
             >

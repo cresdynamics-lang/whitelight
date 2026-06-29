@@ -1,5 +1,5 @@
 import {
-  fetchCatalogProducts,
+  fetchSaleCatalogProducts,
   buildMetaCatalogJson,
 } from "../../scripts/lib/catalog-feed.mjs";
 
@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const products = await fetchCatalogProducts();
+    const products = await fetchSaleCatalogProducts();
     const payload = buildMetaCatalogJson(products);
 
     res.setHeader("Content-Type", "application/json; charset=utf-8");

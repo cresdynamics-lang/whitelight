@@ -32,7 +32,7 @@ export function ProductGrid({
           </h2>
         )}
 
-        <div className={cn("grid gap-6 md:gap-8", gridCols[columns])}>
+        <div className={cn("grid gap-3 sm:gap-4 md:gap-8", gridCols[columns])}>
           {safe.map((product, index) => (
             <ProductCard
               key={product.id}

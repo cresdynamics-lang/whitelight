@@ -1,6 +1,7 @@
 // Product data service - now uses Supabase directly so the app
 // can be hosted as a single frontend on Vercel.
 import type { Product, ProductFilters, ProductsResponse, ProductCategory } from "@/types/product";
+import { getBrandBySlug } from "@/config/brands";
 import { supabase } from "@/lib/supabaseClient";
 import productsData from "@/data/products.json";
 // Normalize a single product: safe arrays, boolean inStock, and required display fields never null/undefined
@@ -83,21 +84,45 @@ function normalizeCatalogRow(row: Record<string, unknown>): Product | null {
   }) as Product | null;
 }
 
+/** Static catalog snapshot — generated at build, served from CDN */
+export async function fetchStaticCatalog(): Promise<Product[] | null> {
+  try {
+    const base = import.meta.env.BASE_URL || "/";
+    const url = `${base}catalog.json`.replace(/\/{2,}/g, "/");
+    const res = await fetch(url, { cache: "force-cache" });
+    if (!res.ok) return null;
+    const json = await res.json();
+    const list = Array.isArray(json) ? json : json.products;
+    if (!Array.isArray(list) || list.length === 0) return null;
+    return safeProductList(list);
+  } catch {
+    return null;
+  }
+}
+
+/** Live catalog from Supabase */
+export async function fetchLiveCatalog(): Promise<Product[]> {
+  if (!supabase) throw new Error("Supabase client not initialised");
+
+  const { data, error } = await supabase
+    .from("products")
+    .select(CATALOG_SELECT)
+    .order("updated_at", { ascending: false });
+
+  if (error) throw error;
+
+  return (data || [])
+    .map((row) => normalizeCatalogRow(row as Record<string, unknown>))
+    .filter((p): p is Product => p != null && !!p.id);
+}
+
 /** Single fetch for homepage, search, and category pages */
 export async function getCatalogProducts(): Promise<Product[]> {
+  const staticCatalog = await fetchStaticCatalog();
+  if (staticCatalog?.length) return staticCatalog;
+
   try {
-    if (!supabase) throw new Error("Supabase client not initialised");
-
-    const { data, error } = await supabase
-      .from("products")
-      .select(CATALOG_SELECT)
-      .order("updated_at", { ascending: false });
-
-    if (error) throw error;
-
-    return (data || [])
-      .map((row) => normalizeCatalogRow(row as Record<string, unknown>))
-      .filter((p): p is Product => p != null && !!p.id);
+    return await fetchLiveCatalog();
   } catch (error) {
     console.error("Error fetching catalog from Supabase:", error);
     if (import.meta.env.DEV) {
@@ -113,6 +138,27 @@ export function filterByCategory(products: Product[], category: ProductCategory)
       p.category === category ||
       (Array.isArray(p.categories) && p.categories.includes(category))
   );
+}
+
+/** Products marked On Sale in admin */
+export function filterSaleProducts(products: Product[]): Product[] {
+  return products.filter((p) => Boolean(p.isOnOffer));
+}
+
+/** Match products by brand slug — works across running, gym, trail, etc. */
+export function filterByBrand(products: Product[], brandSlug: string): Product[] {
+  const brand = getBrandBySlug(brandSlug);
+  if (!brand) return [];
+
+  return products.filter((p) => {
+    const normalized = String(p.brand ?? "").toLowerCase().trim();
+    if (!normalized) return false;
+    return brand.match.some(
+      (alias) =>
+        normalized === alias.toLowerCase() ||
+        normalized.includes(alias.toLowerCase())
+    );
+  });
 }
 
 export function partitionCatalog(products: Product[]) {

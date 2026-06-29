@@ -1,4 +1,4 @@
-import { useParams, useLocation } from "react-router-dom";
+import { useParams, useLocation, useSearchParams, Link } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { ProductGrid } from "@/components/sections/ProductGrid";
@@ -12,6 +12,8 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { SeoContentSections } from "@/components/seo/SeoContentSections";
 import { seoConfig, categoryPageH1, categoryPageSubtext } from "@/config/seo";
 import { categorySeoContent, getCategoryMetaDescription } from "@/config/categorySeoContent";
+import { SHOP_BRANDS, getBrandBySlug } from "@/config/brands";
+import { filterByBrand } from "@/lib/products";
 
 const LEGACY_PATH_TO_CATEGORY: Record<string, ProductCategory> = {
   "/running": "running",
@@ -89,6 +91,9 @@ function ProductsSkeleton() {
 export default function CategoryPage() {
   const { category } = useParams<{ category: string }>();
   const { pathname } = useLocation();
+  const [searchParams] = useSearchParams();
+  const brandSlug = searchParams.get("brand") ?? "";
+  const activeBrand = brandSlug ? getBrandBySlug(brandSlug) : undefined;
   const validCategory =
     (category as ProductCategory) ||
     LEGACY_PATH_TO_CATEGORY[pathname] ||
@@ -97,14 +102,21 @@ export default function CategoryPage() {
 
   const { data: products = [], isLoading, isError, refetch } = useCatalogByCategory(validCategory);
 
-  const displayProducts =
-    isSearching && searchQuery
-      ? filteredProducts.filter(
-          (p) =>
-            p.category === validCategory ||
-            (Array.isArray(p.categories) && p.categories.includes(validCategory))
-        )
-      : products;
+  const displayProducts = (() => {
+    let list =
+      isSearching && searchQuery
+        ? filteredProducts.filter(
+            (p) =>
+              p.category === validCategory ||
+              (Array.isArray(p.categories) && p.categories.includes(validCategory))
+          )
+        : products;
+
+    if (activeBrand) {
+      list = filterByBrand(list, activeBrand.slug);
+    }
+    return list;
+  })();
 
   const h1Title = categoryPageH1[validCategory] || "Best Athletic Shoes in Nairobi";
   const heroSubtext = categoryPageSubtext[validCategory] || "";
@@ -167,12 +179,58 @@ export default function CategoryPage() {
         ) : isError ? (
           <CatalogErrorFallback onRetry={() => refetch()} />
         ) : (
-          <ProductGrid
-            products={displayProducts}
-            columns={4}
-            title={isSearching && searchQuery ? `Search in ${h1Title}` : "Shop Now"}
-            className="pt-8 pb-4"
-          />
+          <>
+            <div className="container pt-6">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  Brand
+                </span>
+                <Link
+                  to={`/category/${validCategory}`}
+                  className={
+                    !activeBrand
+                      ? "rounded-full bg-foreground px-3 py-1 text-xs font-semibold text-background"
+                      : "rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                  }
+                >
+                  All
+                </Link>
+                {SHOP_BRANDS.map((b) => (
+                  <Link
+                    key={b.slug}
+                    to={`/category/${validCategory}?brand=${b.slug}`}
+                    className={
+                      activeBrand?.slug === b.slug
+                        ? "rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground"
+                        : "rounded-full border border-border px-3 py-1 text-xs font-medium text-muted-foreground hover:border-primary/40 hover:text-foreground"
+                    }
+                  >
+                    {b.name}
+                  </Link>
+                ))}
+                {activeBrand && (
+                  <Link
+                    to={`/brand/${activeBrand.slug}`}
+                    className="ml-1 text-xs font-medium text-primary underline-offset-2 hover:underline"
+                  >
+                    View all {activeBrand.name} →
+                  </Link>
+                )}
+              </div>
+            </div>
+            <ProductGrid
+              products={displayProducts}
+              columns={4}
+              title={
+                activeBrand
+                  ? `${activeBrand.name} in ${h1Title}`
+                  : isSearching && searchQuery
+                    ? `Search in ${h1Title}`
+                    : "Shop Now"
+              }
+              className="pt-4 pb-4"
+            />
+          </>
         )}
 
         {/* SEO sections below products */}

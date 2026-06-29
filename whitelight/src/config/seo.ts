@@ -123,6 +123,14 @@ export const seoConfig = {
         "new shoes Nairobi, new running shoes Nairobi, latest gym shoes Nairobi, new arrivals Nairobi CBD, Whitelight Store new stock",
     },
 
+    sale: {
+      title: "Sale Shoes Nairobi | Discounted Athletic Footwear | Whitelight",
+      description:
+        "Sale on running, trail, gym and court shoes at Whitelight Store Nairobi CBD. Limited offers with same-day Nairobi delivery from Luthuli Avenue.",
+      keywords:
+        "sale shoes Nairobi, discounted running shoes Nairobi, shoe offers Nairobi CBD, Whitelight Store sale, athletic footwear deals Kenya",
+    },
+
     terms: {
       title: "Terms of Service | Whitelight Store Nairobi",
       description:

@@ -152,6 +152,44 @@
     );
   }
 
+  .hero-image-fade {
+    background: linear-gradient(
+      to right,
+      hsl(240 6% 10%) 0%,
+      hsl(240 6% 10% / 0.85) 18%,
+      hsl(240 6% 10% / 0.35) 55%,
+      transparent 100%
+    );
+  }
+
+  .hero-content-edge {
+    background: linear-gradient(
+      to left,
+      hsl(0 0% 100%) 0%,
+      hsl(0 0% 100% / 0.92) 35%,
+      hsl(0 0% 100% / 0.45) 70%,
+      transparent 100%
+    );
+  }
+
+  .hero-image-edge {
+    background: linear-gradient(
+      to right,
+      hsl(0 0% 100%) 0%,
+      hsl(0 0% 100% / 0.88) 30%,
+      hsl(0 0% 96% / 0.4) 65%,
+      transparent 100%
+    );
+  }
+
+  .hero-image-vignette {
+    /* ~0.1cm hairline fade on top + sides only; bottom stays clean */
+    background:
+      linear-gradient(to right, hsl(0 0% 100%) 0, transparent 0.1cm),
+      linear-gradient(to left, hsl(0 0% 98%) 0, transparent 0.1cm),
+      linear-gradient(to bottom, hsl(0 0% 98%) 0, transparent 0.1cm);
+  }
+
   /* Product card hover effect with green border */
   .product-card {
     @apply transition-all duration-300 ease-out;
@@ -164,6 +202,20 @@
 
   .product-card:hover .product-image {
     transform: scale(1.05);
+  }
+
+  .mobile-wordmark {
+    @apply ml-0.5 inline-flex items-baseline font-heading text-[0.8125rem] font-black leading-none tracking-tight sm:text-sm;
+  }
+
+  .mobile-wordmark-light {
+    @apply lowercase text-foreground;
+    letter-spacing: -0.03em;
+  }
+
+  .mobile-wordmark-store {
+    @apply lowercase text-primary;
+    letter-spacing: -0.02em;
   }
 
   /* Badge styles */

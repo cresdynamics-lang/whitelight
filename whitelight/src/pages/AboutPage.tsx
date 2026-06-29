@@ -68,7 +68,7 @@ export default function AboutPage() {
             <OptimizedImage src={resolveStaticImage("/couresel_images/trail/trail1.webp")} alt="Trail shoes Nairobi" className="h-full w-screen flex-shrink-0" loading="lazy" />
             <OptimizedImage src={resolveStaticImage("/couresel_images/gym/gym.webp")} alt="Gym shoes Nairobi" className="h-full w-screen flex-shrink-0" loading="lazy" />
             <OptimizedImage src={resolveStaticImage("/couresel_images/basketball/bk1.webp")} alt="Basketball shoes Nairobi" className="h-full w-screen flex-shrink-0" loading="lazy" />
-            <OptimizedImage src="/couresel_images/orthopedic/orth1.jpg" alt="Orthopedic" className="h-full w-screen flex-shrink-0" loading="lazy" />
+            <OptimizedImage src="/couresel_images/orthopedic/orth1.webp" alt="Orthopedic" className="h-full w-screen flex-shrink-0" loading="lazy" />
           </div>
         </div>
         
@@ -132,7 +132,7 @@ export default function AboutPage() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div className="max-h-[500px]">
               <OptimizedImage
-                src="/ourstoryimage.jpeg"
+                src="/ourstoryimage.webp"
                 alt="Our Story"
                 className="w-full h-full max-h-[500px] rounded-lg shadow-lg [&_img]:object-top"
               />

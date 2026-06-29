@@ -43,6 +43,7 @@ function normalizeProduct(row) {
     originalPrice: row.original_price != null ? Number(row.original_price) : undefined,
     description: String(row.description ?? ""),
     url_slug: row.url_slug ?? null,
+    isOnOffer: Boolean(row.is_on_offer ?? row.isOnOffer),
     images: images.map((img) => ({
       id: String(img.id ?? ""),
       url: String(img.url ?? ""),
@@ -55,6 +56,12 @@ function normalizeProduct(row) {
     })),
   };
 }
+
+const CATALOG_SELECT = `
+  *,
+  product_images (*),
+  product_variants (*)
+`;
 
 export function getProductLink(product) {
   if (product.url_slug) {
@@ -101,13 +108,20 @@ export async function fetchCatalogProducts() {
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from("products")
-    .select(
-      `
-      *,
-      product_images (*),
-      product_variants (*)
-    `
-    )
+    .select(CATALOG_SELECT)
+    .order("updated_at", { ascending: false });
+
+  if (error) throw error;
+  return (data || []).map(normalizeProduct).filter((p) => p.id && p.slug);
+}
+
+/** Products marked On Sale in admin — used for Meta/Google ad catalog feeds */
+export async function fetchSaleCatalogProducts() {
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from("products")
+    .select(CATALOG_SELECT)
+    .eq("is_on_offer", true)
     .order("updated_at", { ascending: false });
 
   if (error) throw error;
@@ -126,6 +140,13 @@ export function toFeedItems(products) {
         GOOGLE_CATEGORIES[product.category] ||
         GOOGLE_CATEGORIES.running;
 
+      const hasSalePrice =
+        product.originalPrice != null &&
+        product.originalPrice > product.price;
+
+      const listPrice = hasSalePrice ? product.originalPrice : product.price;
+      const salePrice = hasSalePrice ? product.price : undefined;
+
       return {
         id: product.id,
         title: product.name.slice(0, 150),
@@ -134,7 +155,8 @@ export function toFeedItems(products) {
         image_link: imageLink,
         availability,
         condition: "new",
-        price: formatFeedPrice(product.price),
+        price: formatFeedPrice(listPrice),
+        sale_price: salePrice != null ? formatFeedPrice(salePrice) : undefined,
         brand: product.brand || BRAND_DEFAULT,
         google_product_category: googleCategory,
         item_group_id: product.slug,
@@ -156,7 +178,7 @@ export function buildGoogleMerchantRss(products) {
       <g:link>${xmlEscape(item.link)}</g:link>
       <g:image_link>${xmlEscape(item.image_link)}</g:image_link>
       <g:availability>${xmlEscape(item.availability)}</g:availability>
-      <g:price>${xmlEscape(item.price)}</g:price>
+      <g:price>${xmlEscape(item.price)}</g:price>${item.sale_price ? `\n      <g:sale_price>${xmlEscape(item.sale_price)}</g:sale_price>` : ""}
       <g:brand>${xmlEscape(item.brand)}</g:brand>
       <g:condition>${xmlEscape(item.condition)}</g:condition>
       <g:google_product_category>${xmlEscape(item.google_product_category)}</g:google_product_category>
@@ -172,7 +194,7 @@ export function buildGoogleMerchantRss(products) {
   <channel>
     <title>${xmlEscape(BRAND_DEFAULT)} Product Feed</title>
     <link>${xmlEscape(BASE_URL)}</link>
-    <description>Premium footwear catalogue for ${xmlEscape(BRAND_DEFAULT)}</description>
+    <description>Sale catalogue for ${xmlEscape(BRAND_DEFAULT)} ad campaigns</description>
 ${itemNodes}
   </channel>
 </rss>
@@ -189,6 +211,7 @@ export function buildMetaCatalogJson(products) {
       availability: item.availability,
       condition: item.condition,
       price: item.price,
+      ...(item.sale_price ? { sale_price: item.sale_price } : {}),
       link: item.link,
       image_link: item.image_link,
       brand: item.brand,

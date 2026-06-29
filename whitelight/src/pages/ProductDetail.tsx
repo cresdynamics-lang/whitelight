@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingBag } from "lucide-react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useProduct, useBestSellers } from "@/hooks/useProducts";
+import { useProduct } from "@/hooks/useProducts";
+import { useCatalog } from "@/hooks/useCatalog";
 import { formatPrice } from "@/lib/products";
 import { siteConfig } from "@/config/site";
 import { ProductGrid } from "@/components/sections/ProductGrid";
@@ -16,11 +17,59 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { OptimizedImage } from "@/components/ui/OptimizedImage";
 import { trackViewContent } from "@/lib/analytics/events";
+import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { data: product, isLoading } = useProduct(slug || "");
-  const { data: relatedProducts = [] } = useBestSellers(4);
+  const { data: catalog = [] } = useCatalog();
+
+  const { youMayAlsoLike, mostOrdered } = useMemo(() => {
+    if (!product?.id) {
+      return { youMayAlsoLike: [] as typeof catalog, mostOrdered: [] as typeof catalog };
+    }
+
+    const exclude = new Set<string>([product.id]);
+
+    const sameCategory = catalog.filter(
+      (p) =>
+        p.id !== product.id &&
+        (p.category === product.category ||
+          (Array.isArray(p.categories) && p.categories.includes(product.category)))
+    );
+
+    const alsoLike: typeof catalog = [];
+    for (const p of sameCategory) {
+      if (alsoLike.length >= 4) break;
+      alsoLike.push(p);
+      exclude.add(p.id);
+    }
+    for (const p of catalog) {
+      if (alsoLike.length >= 4) break;
+      if (!exclude.has(p.id)) {
+        alsoLike.push(p);
+        exclude.add(p.id);
+      }
+    }
+
+    const ordered: typeof catalog = [];
+    for (const p of catalog) {
+      if (ordered.length >= 4) break;
+      if (!exclude.has(p.id) && (p.isBestSeller || p.isOnOffer)) {
+        ordered.push(p);
+        exclude.add(p.id);
+      }
+    }
+    for (const p of catalog) {
+      if (ordered.length >= 4) break;
+      if (!exclude.has(p.id)) {
+        ordered.push(p);
+        exclude.add(p.id);
+      }
+    }
+
+    return { youMayAlsoLike: alsoLike, mostOrdered: ordered };
+  }, [catalog, product]);
   
   const [selectedSize, setSelectedSize] = useState<number | string | null>(null);
   const [selectedSizes, setSelectedSizes] = useState<(number | string)[]>([]);
@@ -153,6 +202,38 @@ const ProductDetail = () => {
       `Size ${getDisplaySize(allSizes[0], product.category)}`;
     toast.success("Added to cart!", {
       description: `${product.name} - ${sizeText}`,
+    });
+  };
+
+  const getSelectedSizeLabels = () => {
+    const allSizes = selectedSize
+      ? [selectedSize, ...selectedSizes.filter((s) => s !== selectedSize)]
+      : selectedSizes;
+    return allSizes.map((s) => getDisplaySize(s, product.category)).join(", ");
+  };
+
+  const hasSizeSelected = selectedSize != null || selectedSizes.length > 0;
+
+  const handleOrderWhatsApp = () => {
+    if (!hasSizeSelected) {
+      toast.error("Please select at least one size before ordering");
+      return;
+    }
+
+    const allSizes = selectedSize
+      ? [selectedSize, ...selectedSizes.filter((s) => s !== selectedSize)]
+      : selectedSizes;
+    const sizesParam = allSizes.map((s, i) => `size${i + 1}=${s}`).join("&");
+    const productUrl = `${window.location.origin}/product/${slug}?img=${selectedImageIndex}&${sizesParam}`;
+
+    openWhatsAppOrderMessage({
+      productName: product.name,
+      productPrice: product.price,
+      imageUrl: product.images[selectedImageIndex]?.url || product.images[0]?.url,
+      productUrl,
+      currency: siteConfig.currency,
+      quantity,
+      sizeLabel: getSelectedSizeLabels(),
     });
   };
 
@@ -371,52 +452,54 @@ const ProductDetail = () => {
                 </div>
               </div>
 
-              {/* Image thumbnails - show above add to cart on desktop */}
-              {product.images.length > 1 && (
-                <div className="hidden lg:flex gap-2 overflow-x-auto mb-6">
-                  {product.images.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedImageIndex(index)}
-                      className={cn(
-                        "flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all",
-                        selectedImageIndex === index
-                          ? "border-primary ring-2 ring-primary/20"
-                          : "border-border hover:border-primary/50"
-                      )}
-                    >
-                      <OptimizedImage
-                        src={image.url}
-                        alt={image.alt || `${product.name} angle ${index + 1}`}
-                        className="w-full h-full"
-                        loading="lazy"
-                        sizes="80px"
-                      />
-                    </button>
-                  ))}
-                </div>
+              {/* Add to cart + WhatsApp — always one row */}
+              <div className="flex flex-row gap-2 sm:gap-3">
+                <Button
+                  size="lg"
+                  className="h-12 min-w-0 flex-1 px-2 text-xs sm:h-14 sm:px-4 sm:text-base"
+                  onClick={handleAddToCart}
+                  disabled={!hasSizeSelected}
+                >
+                  <ShoppingBag className="mr-1 h-4 w-4 shrink-0 sm:mr-2 sm:h-5 sm:w-5" />
+                  <span className="truncate">Add to Cart</span>
+                </Button>
+                <Button
+                  size="lg"
+                  type="button"
+                  className="h-12 min-w-0 flex-1 bg-green-600 px-2 text-xs text-white hover:bg-green-700 disabled:opacity-50 sm:h-14 sm:px-4 sm:text-base"
+                  onClick={handleOrderWhatsApp}
+                  disabled={!hasSizeSelected}
+                >
+                  <span className="truncate sm:hidden">WhatsApp</span>
+                  <span className="hidden truncate sm:inline">Order on WhatsApp</span>
+                </Button>
+              </div>
+              {!hasSizeSelected && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Select a size above to add to cart or order on WhatsApp.
+                </p>
               )}
-
-              {/* Add to cart */}
-              <Button
-                size="lg"
-                className="w-full h-14 text-base"
-                onClick={handleAddToCart}
-              >
-                <ShoppingBag className="h-5 w-5 mr-2" />
-                Add to Cart
-              </Button>
             </div>
           </div>
         </div>
 
         {/* Related Products */}
-        <ProductGrid
-          title="You May Also Like"
-          products={relatedProducts.filter(p => p.id !== product.id).slice(0, 4)}
-          columns={4}
-          className="bg-secondary/30"
-        />
+        {youMayAlsoLike.length > 0 && (
+          <ProductGrid
+            title="You May Also Like"
+            products={youMayAlsoLike}
+            columns={4}
+            className="bg-secondary/30"
+          />
+        )}
+
+        {mostOrdered.length > 0 && (
+          <ProductGrid
+            title="What Nairobi Customers Order Most"
+            products={mostOrdered}
+            columns={4}
+          />
+        )}
       </main>
 
       <Footer />

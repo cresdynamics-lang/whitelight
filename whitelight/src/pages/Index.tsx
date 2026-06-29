@@ -3,8 +3,10 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { BrandHighlightCarousel } from "@/components/sections/BrandHighlightCarousel";
+import { ShopByBrand } from "@/components/sections/ShopByBrand";
 import { CategoryBanner } from "@/components/sections/CategoryBanner";
 import { HorizontalProductRow } from "@/components/sections/HorizontalProductRow";
+import { HomeSaleSection } from "@/components/sections/HomeSaleSection";
 import { useCatalogPartitions } from "@/hooks/useCatalog";
 import { HomePageHead } from "@/components/seo/HomePageHead";
 import { CatalogErrorFallback } from "@/components/CatalogErrorFallback";
@@ -55,6 +57,9 @@ const Index = () => {
       tennis,
     } = partitions;
 
+    const sale = partitions.all.filter((p) => p.isOnOffer);
+    const homeSale = sale.filter((p) => p?.id).slice(0, 4);
+
     const usedIds = new Set<string>();
 
     const takeUnique = (products: Product[], limit?: number) => {
@@ -79,6 +84,7 @@ const Index = () => {
       uniqueAccessories: takeUnique(accessories, 12),
       uniqueBasketball: takeUnique(basketball, 12),
       uniqueTennis: takeUnique(tennis, 12),
+      homeSale,
     };
   }, [partitions, rotationKey]);
 
@@ -92,22 +98,24 @@ const Index = () => {
       <main className="flex-1">
         <HeroSection />
 
-        <section className="border-b border-muted/40 bg-background/80">
-          <div className="container py-3 flex flex-row flex-wrap items-center justify-center md:justify-between gap-3 md:gap-6 text-xs md:text-sm text-muted-foreground">
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-green-500" />
-              <span>Fast Nairobi delivery</span>
+        <section className="border-b border-border bg-muted/30">
+          <div className="container flex flex-row flex-wrap items-center justify-center gap-4 py-3.5 text-xs md:justify-between md:gap-6 md:text-sm text-muted-foreground">
+            <div className="flex items-center gap-2.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+              <span>Same-day Nairobi delivery</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-blue-500" />
-              <span>Genuine performance brands</span>
+            <div className="flex items-center gap-2.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
+              <span>Authentic performance brands</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span>Order via WhatsApp or checkout</span>
+            <div className="flex items-center gap-2.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-primary/50" />
+              <span>WhatsApp sizing & checkout</span>
             </div>
           </div>
         </section>
+
+        <ShopByBrand />
 
         {isLoading && <ProductRowsSkeleton />}
 
@@ -141,6 +149,10 @@ const Index = () => {
               viewAllHref="/new-arrivals"
               initialDirection="right"
             />
+
+            {rows.homeSale.length > 0 && (
+              <HomeSaleSection products={rows.homeSale} className="bg-red-50/40" />
+            )}
 
             <CategoryBanner />
 

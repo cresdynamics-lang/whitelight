@@ -45,6 +45,7 @@ function normalizeProductRow(row: any): Product {
     isBestSeller: Boolean(row.is_best_seller ?? row.isBestSeller),
     isOnOffer: Boolean(row.is_on_offer ?? row.isOnOffer),
     createdAt: row.created_at ?? "",
+    updatedAt: row.updated_at ?? row.updatedAt ?? "",
   };
 }
 
@@ -289,11 +290,28 @@ async function remove(id: string): Promise<boolean> {
   return true;
 }
 
+async function toggleSale(id: string, isOnOffer: boolean): Promise<boolean> {
+  ensureSupabase();
+
+  const { error } = await supabase!
+    .from("products")
+    .update({ is_on_offer: isOnOffer })
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error toggling sale status:", error);
+    throw new Error(formatSupabaseProductError(error) || "Failed to update sale status");
+  }
+
+  return true;
+}
+
 export const adminProductsService = {
   getAll,
   getById,
   create,
   update,
   delete: remove,
+  toggleSale,
 };
 

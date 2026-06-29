@@ -11,6 +11,7 @@ interface OptimizedImageProps {
   fetchPriority?: 'high' | 'low' | 'auto';
   objectFit?: 'cover' | 'contain';
   preload?: boolean;
+  instant?: boolean;
   onClick?: () => void;
 }
 
@@ -29,9 +30,11 @@ export function OptimizedImage({
   fetchPriority,
   objectFit = 'cover',
   preload = false,
+  instant = false,
   onClick,
 }: OptimizedImageProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
+  const instantDisplay = instant || loading === 'eager' || fetchPriority === 'high';
+  const [isLoaded, setIsLoaded] = useState(instantDisplay);
   const [hasError, setHasError] = useState(false);
   const [placeholderLoaded, setPlaceholderLoaded] = useState(false);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -111,9 +114,10 @@ export function OptimizedImage({
     : '';
 
   const imgClass = cn(
-    'w-full h-full transition-opacity duration-200',
+    'w-full h-full',
+    !instantDisplay && 'transition-opacity duration-200',
     objectFit === 'cover' ? 'object-cover' : 'object-contain',
-    isLoaded ? 'opacity-100' : 'opacity-0'
+    instantDisplay || isLoaded ? 'opacity-100' : 'opacity-0'
   );
 
   const handleLoad = () => setIsLoaded(true);
@@ -153,7 +157,7 @@ export function OptimizedImage({
       className={cn('relative overflow-hidden', className, onClick && 'cursor-pointer')}
       onClick={onClick}
     >
-      {!isLoaded && isCdn && placeholderLoaded && (
+      {!isLoaded && isCdn && placeholderLoaded && !instantDisplay && (
         <img
           src={getPlaceholderUrl()}
           alt=""
@@ -162,7 +166,7 @@ export function OptimizedImage({
           aria-hidden
         />
       )}
-      {!isLoaded && !isCdn && (
+      {!isLoaded && !isCdn && !instantDisplay && (
         <div className="absolute inset-0 bg-gray-100 animate-pulse" aria-hidden />
       )}
       {webpSrc && !isCdn ? (

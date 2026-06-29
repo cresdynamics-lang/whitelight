@@ -8,6 +8,7 @@ export interface WhatsAppMessageParams {
   productUrl?: string;
   currency?: string;
   quantity?: number;
+  sizeLabel?: string;
 }
 
 export interface WhatsAppCustomerDetails {
@@ -45,6 +46,7 @@ export function generateWhatsAppMessage(params: WhatsAppMessageParams): string {
     productUrl,
     currency = siteConfig.currency,
     quantity = 1,
+    sizeLabel,
   } = params;
 
   // Create message with product details
@@ -52,7 +54,7 @@ export function generateWhatsAppMessage(params: WhatsAppMessageParams): string {
 
 📦 *Product:* ${productName}
 💰 *Price:* ${currency} ${productPrice.toLocaleString()}
-📊 *Quantity:* ${quantity}
+${sizeLabel ? `👟 *Size(s):* ${sizeLabel}\n` : ""}📊 *Quantity:* ${quantity}
 ${productUrl ? `🔗 *Product Page:* ${productUrl}` : ""}
 ${imageUrl ? `🖼️ *Image Link:* ${imageUrl}` : ""}
 

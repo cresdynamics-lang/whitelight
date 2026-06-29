@@ -152,13 +152,13 @@ export default function ContactPage() {
                 <div className="relative aspect-[4/3] rounded-3xl overflow-hidden">
                   {productImages.length > 0 ? (
                     <img
-                      src={productImages[currentImageIndex]?.url || "/couresel_images/running/running2.png"}
+                      src={productImages[currentImageIndex]?.url || "/couresel_images/running/running2.webp"}
                       alt={productImages[currentImageIndex]?.alt || "Premium Footwear"}
                       className="w-full h-full object-cover transition-opacity duration-500"
                     />
                   ) : (
                     <img
-                      src="/couresel_images/running/running2.png"
+                      src="/couresel_images/running/running2.webp"
                       alt="Premium Footwear"
                       className="w-full h-full object-cover"
                     />

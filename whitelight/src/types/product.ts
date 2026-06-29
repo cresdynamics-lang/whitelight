@@ -31,6 +31,7 @@ export interface Product {
   isBestSeller?: boolean;
   isOnOffer?: boolean;
   createdAt: string;
+  updatedAt?: string;
   // Optional SEO fields from Supabase
   seo_title?: string | null;
   seo_description?: string | null;

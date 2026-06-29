@@ -96,20 +96,25 @@ export function ProductCard({ product, className, priority = false }: ProductCar
             priority={priority}
           />
 
-          <div className="absolute top-1.5 left-1.5 flex flex-col gap-1">
+          <div className="absolute top-0 left-0 z-10 flex flex-col items-start gap-1 p-1.5">
+            {product?.isOnOffer && (
+              <Badge className="rounded-sm border-0 bg-red-600 px-2 py-0.5 text-[10px] font-bold uppercase leading-none text-white shadow-sm">
+                Sale
+              </Badge>
+            )}
             {product?.isNew && (
-              <Badge className="bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 leading-none">
+              <Badge className="bg-primary px-1.5 py-0.5 text-[10px] leading-none text-primary-foreground">
                 NEW
               </Badge>
             )}
             {hasDiscount && (
-              <Badge variant="destructive" className="text-[10px] px-1.5 py-0.5 leading-none">
+              <Badge variant="destructive" className="px-1.5 py-0.5 text-[10px] leading-none">
                 -{discountPercent}%
               </Badge>
             )}
           </div>
 
-          <div className="absolute top-1.5 right-1.5 flex flex-col items-end gap-1">
+          <div className="absolute top-1.5 right-1.5 z-10">
             <button
               type="button"
               onClick={handleAddToCart}
@@ -119,12 +124,6 @@ export function ProductCard({ product, className, priority = false }: ProductCar
             >
               <ShoppingCart className="h-4 w-4" />
             </button>
-
-            {product?.isOnOffer && (
-              <Badge className="bg-orange-500 text-white text-[10px] px-1.5 py-0.5 leading-none">
-                OFFER
-              </Badge>
-            )}
           </div>
         </div>
       </Link>

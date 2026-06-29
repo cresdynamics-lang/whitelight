@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useState, useMemo } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { adminProductsService } from "@/services/adminSupabaseProducts";
 import { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -25,19 +26,30 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Pencil, Trash2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import {
+  buildBrandInventory,
+  filterProductsByBrandKey,
+  formatAdminDate,
+} from "@/lib/adminBrandInventory";
 
 const AdminProducts = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const brandFilter = searchParams.get("brand") || "all";
+  const saleOnly = searchParams.get("sale") === "1";
+
   const [products, setProducts] = useState<Product[]>([]);
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [togglingSaleId, setTogglingSaleId] = useState<string | null>(null);
+
+  const brandInventory = useMemo(() => buildBrandInventory(products), [products]);
 
   const fetchProducts = async () => {
     setIsLoading(true);
     const data = await adminProductsService.getAll();
     setProducts(data);
-    setFilteredProducts(data);
     setIsLoading(false);
   };
 
@@ -45,15 +57,22 @@ const AdminProducts = () => {
     fetchProducts();
   }, []);
 
-  useEffect(() => {
-    const filtered = products.filter(
-      (p) =>
-        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.brand.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        p.category.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredProducts(filtered);
-  }, [searchTerm, products]);
+  const filteredProducts = useMemo(() => {
+    let list = filterProductsByBrandKey(products, brandFilter);
+    if (saleOnly) {
+      list = list.filter((p) => p.isOnOffer);
+    }
+    if (searchTerm.trim()) {
+      const q = searchTerm.toLowerCase();
+      list = list.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.brand.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [products, brandFilter, saleOnly, searchTerm]);
 
   const handleDelete = async () => {
     if (!deleteId) return;
@@ -68,9 +87,33 @@ const AdminProducts = () => {
     setDeleteId(null);
   };
 
-  const handleReset = async () => {
-    toast.info("Reset to default is not available in Supabase mode. Manage products directly here or in Supabase.");
-    fetchProducts();
+  const handleToggleSale = async (product: Product, checked: boolean) => {
+    setTogglingSaleId(product.id);
+    try {
+      await adminProductsService.toggleSale(product.id, checked);
+      setProducts((prev) =>
+        prev.map((p) => (p.id === product.id ? { ...p, isOnOffer: checked } : p))
+      );
+      toast.success(checked ? "Added to Sale category" : "Removed from Sale category");
+    } catch {
+      toast.error("Failed to update sale status");
+    } finally {
+      setTogglingSaleId(null);
+    }
+  };
+
+  const setBrandFilter = (key: string) => {
+    const next = new URLSearchParams(searchParams);
+    if (key === "all") next.delete("brand");
+    else next.set("brand", key);
+    setSearchParams(next);
+  };
+
+  const setSaleFilter = (on: boolean) => {
+    const next = new URLSearchParams(searchParams);
+    if (on) next.set("sale", "1");
+    else next.delete("sale");
+    setSearchParams(next);
   };
 
   const getCategoryColor = (category: string) => {
@@ -88,59 +131,104 @@ const AdminProducts = () => {
 
   return (
     <div className="space-y-6 overflow-x-hidden">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Products</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your product inventory
+          <p className="mt-1 text-muted-foreground">
+            Filter by brand, manage Sale items, and track recent updates.
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleReset}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Reset Data
+          <Button variant="outline" size="sm" onClick={fetchProducts}>
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Refresh
           </Button>
           <Button asChild>
             <Link to="/admin/products/new">
-              <Plus className="h-4 w-4 mr-2" />
+              <Plus className="mr-2 h-4 w-4" />
               Add Product
             </Link>
           </Button>
         </div>
       </div>
 
+      {/* Brand filters */}
+      <div className="flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={() => setBrandFilter("all")}
+          className={cn(
+            "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+            brandFilter === "all"
+              ? "bg-foreground text-background"
+              : "border border-border text-muted-foreground hover:text-foreground"
+          )}
+        >
+          All ({products.length})
+        </button>
+        {brandInventory.map((group) => (
+          <button
+            key={group.key}
+            type="button"
+            onClick={() => setBrandFilter(group.key)}
+            className={cn(
+              "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+              brandFilter === group.key
+                ? "bg-primary text-primary-foreground"
+                : "border border-border text-muted-foreground hover:text-foreground"
+            )}
+          >
+            {group.label} ({group.total})
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => setSaleFilter(!saleOnly)}
+          className={cn(
+            "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+            saleOnly
+              ? "bg-red-600 text-white"
+              : "border border-red-200 text-red-600 hover:bg-red-50"
+          )}
+        >
+          Sale only ({products.filter((p) => p.isOnOffer).length})
+        </button>
+      </div>
+
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           placeholder="Search products..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 max-w-sm"
+          className="max-w-sm pl-10"
         />
       </div>
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+        <div className="flex h-64 items-center justify-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-b-2 border-primary" />
         </div>
       ) : (
-        <div className="w-full overflow-x-auto border rounded-lg">
+        <div className="w-full overflow-x-auto rounded-lg border">
           <Table className="w-full">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-16 whitespace-nowrap">Image</TableHead>
-                <TableHead className="min-w-[200px] whitespace-nowrap">Name</TableHead>
-                <TableHead className="min-w-[120px] whitespace-nowrap">Brand</TableHead>
-                <TableHead className="min-w-[120px] whitespace-nowrap">Category</TableHead>
-                <TableHead className="text-right min-w-[100px] whitespace-nowrap">Price</TableHead>
-                <TableHead className="text-center min-w-[100px] whitespace-nowrap">Status</TableHead>
-                <TableHead className="text-right w-24 whitespace-nowrap">Actions</TableHead>
+                <TableHead className="min-w-[180px] whitespace-nowrap">Name</TableHead>
+                <TableHead className="min-w-[100px] whitespace-nowrap">Brand</TableHead>
+                <TableHead className="min-w-[100px] whitespace-nowrap">Category</TableHead>
+                <TableHead className="min-w-[90px] whitespace-nowrap text-center">Sale</TableHead>
+                <TableHead className="min-w-[100px] whitespace-nowrap text-right">Price</TableHead>
+                <TableHead className="min-w-[130px] whitespace-nowrap">Updated</TableHead>
+                <TableHead className="min-w-[90px] whitespace-nowrap text-center">Status</TableHead>
+                <TableHead className="w-24 whitespace-nowrap text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {filteredProducts.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={9} className="py-8 text-center text-muted-foreground">
                     No products found
                   </TableCell>
                 </TableRow>
@@ -151,30 +239,53 @@ const AdminProducts = () => {
                       <img
                         src={product.images[0]?.url}
                         alt={product.name}
-                        className="w-12 h-12 object-cover rounded-md"
+                        className="h-12 w-12 rounded-md object-cover"
                       />
                     </TableCell>
-                    <TableCell className="font-medium whitespace-nowrap">{product.name}</TableCell>
+                    <TableCell className="max-w-[220px] truncate font-medium">
+                      {product.name}
+                    </TableCell>
                     <TableCell className="whitespace-nowrap">{product.brand}</TableCell>
                     <TableCell className="whitespace-nowrap">
                       <Badge variant="secondary" className={getCategoryColor(product.category)}>
                         {product.category}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right whitespace-nowrap">
+                    <TableCell className="text-center whitespace-nowrap">
+                      <Checkbox
+                        checked={Boolean(product.isOnOffer)}
+                        disabled={togglingSaleId === product.id}
+                        onCheckedChange={(checked) =>
+                          handleToggleSale(product, checked === true)
+                        }
+                        aria-label={`Add ${product.name} to Sale category`}
+                        className="border-red-300 data-[state=checked]:border-red-600 data-[state=checked]:bg-red-600"
+                      />
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-right">
                       KSh {product.price.toLocaleString()}
                     </TableCell>
-                    <TableCell className="text-center whitespace-nowrap">
-                      <div className="flex justify-center gap-1">
+                    <TableCell className="whitespace-nowrap text-xs text-muted-foreground">
+                      {formatAdminDate(product.updatedAt || product.createdAt)}
+                    </TableCell>
+                    <TableCell className="whitespace-nowrap text-center">
+                      <div className="flex flex-wrap justify-center gap-1">
                         {product.isNew && (
-                          <Badge variant="default" className="text-xs">New</Badge>
+                          <Badge variant="default" className="text-xs">
+                            New
+                          </Badge>
                         )}
                         {product.isBestSeller && (
-                          <Badge variant="secondary" className="text-xs">Best</Badge>
+                          <Badge variant="secondary" className="text-xs">
+                            Best
+                          </Badge>
+                        )}
+                        {product.isOnOffer && (
+                          <Badge className="bg-red-600 text-xs hover:bg-red-600">Sale</Badge>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right whitespace-nowrap">
+                    <TableCell className="whitespace-nowrap text-right">
                       <div className="flex justify-end gap-1">
                         <Button variant="ghost" size="icon" asChild>
                           <Link to={`/admin/products/edit/${product.id}`}>
@@ -209,7 +320,10 @@ const AdminProducts = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete} className="bg-destructive hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive hover:bg-destructive/90"
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>

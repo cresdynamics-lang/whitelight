@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {
-  fetchCatalogProducts,
+  fetchSaleCatalogProducts,
   buildGoogleMerchantRss,
   buildMetaCatalogJson,
 } from "./lib/catalog-feed.mjs";
@@ -10,7 +10,7 @@ const ROOT = path.resolve(process.cwd());
 const FEEDS_DIR = path.join(ROOT, "public", "feeds");
 
 async function main() {
-  const products = await fetchCatalogProducts();
+  const products = await fetchSaleCatalogProducts();
   fs.mkdirSync(FEEDS_DIR, { recursive: true });
 
   const googleXml = buildGoogleMerchantRss(products);
@@ -23,7 +23,7 @@ async function main() {
     "utf8"
   );
 
-  console.log(`Catalog feeds written to ${FEEDS_DIR}`);
+  console.log(`Sale catalog feeds written to ${FEEDS_DIR}`);
   console.log(`Products: ${products.length}`);
   console.log(`Feed items: ${metaJson.data.length}`);
 }
