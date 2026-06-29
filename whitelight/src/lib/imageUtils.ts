@@ -44,9 +44,9 @@ export function getDetailImageUrl(url?: string): string {
   return getOptimizedProductUrl(url ?? "", 960, 75);
 }
 
-/** Product detail thumbnail strip — 120px */
+/** Product detail thumbnail strip — sized for 2-column mobile grid */
 export function getDetailThumbUrl(url?: string): string {
-  return getOptimizedProductUrl(url ?? "", 120, 62);
+  return getOptimizedProductUrl(url ?? "", 240, 65);
 }
 
 /** Responsive srcSet for product detail main image */

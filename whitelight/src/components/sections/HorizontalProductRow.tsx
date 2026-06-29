@@ -89,9 +89,17 @@ export function HorizontalProductRow({
         </div>
 
         <div className="relative -mx-4 px-4 md:mx-0 md:px-0">
+          {/* Mobile — 2 per row for a clearer product view */}
+          <div className="grid grid-cols-2 gap-3 md:hidden">
+            {safeProducts.map((product, index) => (
+              <ProductCard key={product.id} product={product} priority={index < 2} />
+            ))}
+          </div>
+
+          {/* Tablet+ — horizontal scroll row */}
           <div
             ref={scrollRef}
-            className="flex gap-3 md:gap-3 overflow-x-auto pb-4 md:pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
+            className="hidden md:flex gap-3 overflow-x-auto pb-4 md:pb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent"
             onWheel={handleUserInteraction}
             onTouchStart={handleUserInteraction}
             onMouseDown={handleUserInteraction}
@@ -99,7 +107,7 @@ export function HorizontalProductRow({
             {safeProducts.map((product, index) => (
               <div
                 key={product.id}
-                className="flex-shrink-0 w-[30vw] min-w-[6.75rem] max-w-[8.75rem] sm:w-36 sm:min-w-36 sm:max-w-36 md:w-44 md:min-w-44 md:max-w-44 lg:w-52 lg:min-w-52 lg:max-w-52"
+                className="flex-shrink-0 w-44 min-w-44 max-w-44 lg:w-52 lg:min-w-52 lg:max-w-52"
               >
                 <ProductCard product={product} priority={index < priorityCount} />
               </div>

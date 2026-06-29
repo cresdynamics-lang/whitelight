@@ -337,18 +337,21 @@ const ProductDetail = () => {
                 )}
               </div>
               
-              {/* Image thumbnails - show below on mobile, hidden on desktop */}
+              {/* Angle thumbnails — 2 per row on mobile, strip on desktop */}
               {product.images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto max-w-full lg:hidden">
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:flex lg:overflow-x-auto lg:max-w-full">
                   {product.images.map((image, index) => (
                     <button
                       key={index}
+                      type="button"
                       onClick={() => {
                         setSelectedImageIndex(index);
-                        setIsLightboxOpen(true);
+                        if (window.matchMedia("(max-width: 1023px)").matches) {
+                          setIsLightboxOpen(true);
+                        }
                       }}
                       className={cn(
-                        "flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all",
+                        "aspect-square w-full overflow-hidden rounded-md border-2 transition-all lg:w-20 lg:h-20 lg:flex-shrink-0",
                         selectedImageIndex === index
                           ? "border-primary ring-2 ring-primary/20"
                           : "border-border hover:border-primary/50"
@@ -358,34 +361,8 @@ const ProductDetail = () => {
                         src={image.url}
                         alt={index === 0 ? mainAltText : image.alt || `${product.name} angle ${index + 1}`}
                         variant="thumb"
-                        priority
-                        className="w-full h-full"
-                      />
-                    </button>
-                  ))}
-                </div>
-              )}
-              
-              {/* Desktop thumbnail strip - show on desktop */}
-              {product.images.length > 1 && (
-                <div className="hidden lg:flex gap-2 overflow-x-auto max-w-full">
-                  {product.images.map((image, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setSelectedImageIndex(index)}
-                      className={cn(
-                        "flex-shrink-0 w-20 h-20 rounded-md overflow-hidden border-2 transition-all cursor-pointer",
-                        selectedImageIndex === index
-                          ? "border-primary ring-2 ring-primary/20"
-                          : "border-border hover:border-primary/50"
-                      )}
-                    >
-                      <FastImage
-                        src={image.url}
-                        alt={index === 0 ? mainAltText : image.alt || `${product.name} angle ${index + 1}`}
-                        variant="thumb"
-                        priority
-                        className="w-full h-full"
+                        priority={index < 4}
+                        className="h-full w-full"
                       />
                     </button>
                   ))}

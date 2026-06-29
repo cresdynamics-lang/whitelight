@@ -25,7 +25,7 @@ interface FastImageProps {
 const CARD_SIZES = "(max-width: 640px) 32vw, (max-width: 1024px) 176px, 208px";
 const HERO_SIZES = "100vw";
 const DETAIL_SIZES = "(max-width: 1024px) 100vw, 50vw";
-const THUMB_SIZES = "80px";
+const THUMB_SIZES = "(max-width: 1024px) 45vw, 80px";
 
 /** Lightweight image — WebP for static assets, resized CDN URLs for products */
 export function FastImage({
