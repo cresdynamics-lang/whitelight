@@ -1,0 +1,65 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "npm install --prefix whitelight",
+  "buildCommand": "npm run build --prefix whitelight",
+  "outputDirectory": "whitelight/dist",
+  "functions": {
+    "whitelight/api/**/*.mjs": {
+      "maxDuration": 30
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/((?!api/|catalog\\.json|image-manifest\\.json|sitemap\\.xml|robots\\.txt|assets/|.*\\..+$).*)",
+      "destination": "/"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/catalog.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=300, stale-while-revalidate=600"
+        }
+      ]
+    },
+    {
+      "source": "/image-manifest.json",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400, stale-while-revalidate=604800"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/(.*\\.(webp|png|jpg|jpeg|svg|woff2|ico))",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/feeds/google",
+      "schedule": "0 5 * * *"
+    },
+    {
+      "path": "/api/feeds/meta",
+      "schedule": "30 5 * * *"
+    }
+  ]
+}

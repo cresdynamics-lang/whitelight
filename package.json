@@ -1,0 +1,8 @@
+{
+  "name": "whitelight-store",
+  "private": true,
+  "scripts": {
+    "build": "npm run build --prefix whitelight",
+    "install:app": "npm install --prefix whitelight"
+  }
+}
