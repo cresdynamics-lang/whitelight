@@ -22,10 +22,11 @@ function getSupabase() {
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const key =
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_ANON_KEY;
   if (!url || !key) {
     throw new Error(
-      "Missing Supabase credentials (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY or VITE_SUPABASE_ANON_KEY)"
+      "Missing Supabase credentials. Set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in Vercel (Production build), or VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY locally."
     );
   }
   return createClient(url, key);
@@ -100,9 +101,20 @@ async function main() {
         "generate-catalog-json skipped (keeping existing catalog.json):",
         err.message
       );
+      if (process.env.VERCEL) {
+        console.warn(
+          "Vercel build: add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY under Project → Settings → Environment Variables (Production) so catalog.json is generated with real products."
+        );
+      }
       process.exit(0);
     }
     console.warn("generate-catalog-json skipped:", err.message);
+    if (process.env.VERCEL) {
+      console.error(
+        "Vercel build failed catalog generation: set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in project environment variables."
+      );
+      process.exit(1);
+    }
     writeFileSync(
       OUT,
       JSON.stringify({ generatedAt: null, count: 0, products: [] })

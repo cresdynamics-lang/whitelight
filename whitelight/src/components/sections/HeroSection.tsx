@@ -4,6 +4,7 @@ import { FastImage } from "@/components/ui/FastImage";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect, useCallback, useRef } from "react";
 import { cn } from "@/lib/utils";
+import { getHeroImageUrl } from "@/lib/imageUtils";
 import { FALLBACK_MANIFEST, getImageManifest, type BannerImage } from "@/services/imageManifestService";
 
 interface HeroSectionProps {
@@ -103,7 +104,23 @@ export function HeroSection({
     };
   }, [resetAutoplay]);
 
+  // Prefetch the next slide only — avoids loading every hero image on first paint
+  useEffect(() => {
+    if (heroImages.length <= 1) return;
+    const next = heroImages[(currentSlide + 1) % heroImages.length];
+    const href = getHeroImageUrl(next.url);
+    const link = document.createElement("link");
+    link.rel = "prefetch";
+    link.as = "image";
+    link.href = href;
+    document.head.appendChild(link);
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, [currentSlide, heroImages]);
+
   const contentIndex = slideCount ? currentSlide % categoryContent.length : 0;
+  const activeImage = heroImages[currentSlide];
 
   return (
     <section className="relative overflow-hidden border-b border-border bg-white">
@@ -207,28 +224,21 @@ export function HeroSection({
         {/* Right — expanded product image with soft edge fade */}
         <div className="relative overflow-hidden bg-neutral-50">
           <div className="relative h-full min-h-[260px] sm:min-h-[340px] md:min-h-[440px] lg:min-h-full">
-            {heroImages.map((image, index) => (
+            {activeImage && (
               <div
-                key={image.url}
-                className={cn(
-                  "absolute inset-0 flex items-center justify-center transition-all ease-in-out",
-                  index === currentSlide
-                    ? "z-[1] scale-100 opacity-100"
-                    : "z-0 scale-[1.03] opacity-0"
-                )}
-                style={{ transitionDuration: `${TRANSITION_MS}ms` }}
-                aria-hidden={index !== currentSlide}
+                key={`${currentSlide}-${activeImage.url}`}
+                className="absolute inset-0 flex animate-in fade-in-0 duration-700 items-center justify-center"
               >
                 <FastImage
-                  src={image.url}
-                  alt={image.alt_text}
+                  src={activeImage.url}
+                  alt={activeImage.alt_text}
                   variant="hero"
-                  priority={index === 0}
+                  priority
                   objectFit="contain"
                   className="h-[118%] w-[118%] max-h-none max-w-none scale-110 object-contain sm:h-[120%] sm:w-[120%] lg:scale-[1.15]"
                 />
               </div>
-            ))}
+            )}
 
             {/* Soft vignette — hides hard image edges on all sides */}
             <div className="hero-image-vignette pointer-events-none absolute inset-0 z-10" />

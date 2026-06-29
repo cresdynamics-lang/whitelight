@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FastImage } from "@/components/ui/FastImage";
 import { cn } from "@/lib/utils";
-import { resolveStaticImage } from "@/lib/imageUtils";
 import { FALLBACK_MANIFEST, getImageManifest, type CategoryImage } from "@/services/imageManifestService";
 
 interface CategoryBannerProps {
@@ -31,10 +30,10 @@ const categoryTaglines: Record<string, string> = {
 
 function CategoryCard({
   category,
-  decorative = false,
+  duplicate = false,
 }: {
   category: CategoryImage;
-  decorative?: boolean;
+  duplicate?: boolean;
 }) {
   const label = categoryLabels[category.category] || category.category;
   const tagline = categoryTaglines[category.category] || "";
@@ -48,7 +47,7 @@ function CategoryCard({
         <div className="text-center w-full space-y-2">
           <h3 className="font-heading text-xl md:text-2xl font-bold text-white mb-1">{label}</h3>
           <p className="whitespace-pre-line text-xs md:text-sm text-white/85 leading-snug">{tagline}</p>
-          {!decorative && (
+          {!duplicate && (
             <span className="inline-flex items-center gap-2 mt-2 text-white text-xs md:text-sm font-semibold group-hover:gap-3 transition-all duration-300 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
               Step inside →
             </span>
@@ -58,18 +57,20 @@ function CategoryCard({
     </>
   );
 
-  if (decorative) {
-    const bgUrl = resolveStaticImage(category.url);
+  const image = (
+    <FastImage
+      src={category.url}
+      alt={duplicate ? "" : category.alt_text}
+      variant="card"
+      priority={!duplicate}
+      className="transition-transform duration-500 group-hover:scale-110"
+    />
+  );
+
+  if (duplicate) {
     return (
-      <div
-        aria-hidden
-        className={cardClass}
-        style={{
-          backgroundImage: `url(${bgUrl})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-        }}
-      >
+      <div aria-hidden className={cn(cardClass, "pointer-events-none")}>
+        {image}
         {overlay}
       </div>
     );
@@ -77,12 +78,7 @@ function CategoryCard({
 
   return (
     <Link to={`/category/${category.category}`} className={cardClass}>
-      <FastImage
-        src={category.url}
-        alt={category.alt_text}
-        variant="card"
-        className="transition-transform duration-500 group-hover:scale-110"
-      />
+      {image}
       {overlay}
     </Link>
   );
@@ -120,11 +116,7 @@ export function CategoryBanner({ className }: CategoryBannerProps) {
               <CategoryCard key={category.category} category={category} />
             ))}
             {categories.map((category) => (
-              <CategoryCard
-                key={`dup-${category.category}`}
-                category={category}
-                decorative
-              />
+              <CategoryCard key={`dup-${category.category}`} category={category} duplicate />
             ))}
           </div>
         </div>

@@ -1,7 +1,7 @@
 {
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/((?!api/|catalog\\.json|image-manifest\\.json|sitemap\\.xml|robots\\.txt|assets/|.*\\..+$).*)",
       "destination": "/"
     }
   ],

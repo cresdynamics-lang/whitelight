@@ -91,7 +91,15 @@ export async function fetchStaticCatalog(): Promise<Product[] | null> {
     const url = `${base}catalog.json`.replace(/\/{2,}/g, "/");
     const res = await fetch(url, { cache: "force-cache" });
     if (!res.ok) return null;
-    const json = await res.json();
+
+    const contentType = res.headers.get("content-type") ?? "";
+    const raw = await res.text();
+    // SPA fallback can return index.html when static file routing fails
+    if (raw.trimStart().startsWith("<") || !contentType.includes("json")) {
+      return null;
+    }
+
+    const json = JSON.parse(raw) as { products?: unknown[] } | unknown[];
     const list = Array.isArray(json) ? json : json.products;
     if (!Array.isArray(list) || list.length === 0) return null;
     return safeProductList(list);
