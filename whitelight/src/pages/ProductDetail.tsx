@@ -266,6 +266,120 @@ const ProductDetail = () => {
     });
   };
 
+  const renderPurchaseControls = (compact: boolean) => (
+    <>
+      <div
+        className={cn(
+          compact ? "mb-2" : "mb-4",
+          sizeError && "rounded-lg ring-2 ring-red-500/40 p-2 -mx-2"
+        )}
+      >
+        <p className={cn("font-medium mb-1.5", compact ? "text-xs" : "text-sm mb-2")}>
+          Select Size(s)
+        </p>
+        <div className={cn("flex flex-wrap", compact ? "gap-1" : "gap-2")}>
+          {product.variants.map((variant) => {
+            const displaySize = getDisplaySize(variant.size, product.category);
+            const isSelected =
+              selectedSizes.includes(variant.size) || selectedSize === variant.size;
+            return (
+              <button
+                key={variant.id}
+                disabled={!variant.inStock}
+                onClick={() => handleSizeToggle(variant.size)}
+                className={cn(
+                  "rounded-md border font-medium transition-all duration-200",
+                  compact
+                    ? "h-8 min-w-[2.25rem] px-2 text-xs"
+                    : "h-12 min-w-[3rem] px-4 text-sm",
+                  isSelected
+                    ? "border-primary bg-primary text-primary-foreground shadow-md scale-105"
+                    : variant.inStock
+                      ? "border-border hover:border-primary hover:scale-105"
+                      : "border-border text-muted-foreground opacity-50 cursor-not-allowed"
+                )}
+              >
+                {displaySize}
+              </button>
+            );
+          })}
+        </div>
+        {(selectedSizes.length > 0 || selectedSize) && (
+          <p className={cn("text-muted-foreground mt-1.5", compact ? "text-[10px]" : "text-xs mt-2")}>
+            Selected:{" "}
+            {selectedSize
+              ? [
+                  getDisplaySize(selectedSize, product.category),
+                  ...selectedSizes
+                    .filter((s) => s !== selectedSize)
+                    .map((s) => getDisplaySize(s, product.category)),
+                ].join(", ")
+              : selectedSizes.map((s) => getDisplaySize(s, product.category)).join(", ")}
+          </p>
+        )}
+      </div>
+
+      <div className={compact ? "mb-2" : "mb-6"}>
+        <p className={cn("font-medium", compact ? "text-xs mb-1.5" : "text-sm mb-3")}>
+          Quantity
+        </p>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            className={cn(
+              "rounded-md border border-border flex items-center justify-center hover:bg-secondary transition-colors",
+              compact ? "h-8 w-8" : "h-10 w-10"
+            )}
+          >
+            <Minus className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
+          </button>
+          <span className={cn("text-center font-medium", compact ? "w-8 text-sm" : "w-12")}>
+            {quantity}
+          </span>
+          <button
+            onClick={() => setQuantity(quantity + 1)}
+            className={cn(
+              "rounded-md border border-border flex items-center justify-center hover:bg-secondary transition-colors",
+              compact ? "h-8 w-8" : "h-10 w-10"
+            )}
+          >
+            <Plus className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-row gap-2">
+        <Button
+          size={compact ? "sm" : "lg"}
+          className={cn(
+            "min-w-0 flex-1 px-2",
+            compact ? "h-9 text-xs" : "h-14 sm:px-4 sm:text-base"
+          )}
+          onClick={handleAddToCart}
+        >
+          <ShoppingBag className={cn("mr-1 shrink-0", compact ? "h-3.5 w-3.5" : "mr-2 h-5 w-5")} />
+          <span className="truncate">Add to Cart</span>
+        </Button>
+        <Button
+          size={compact ? "sm" : "lg"}
+          type="button"
+          className={cn(
+            "min-w-0 flex-1 bg-green-600 px-2 text-white hover:bg-green-700",
+            compact ? "h-9 text-xs" : "h-14 sm:px-4 sm:text-base"
+          )}
+          onClick={handleOrderWhatsApp}
+        >
+          <span className="truncate">{compact ? "WhatsApp" : "Order on WhatsApp"}</span>
+        </Button>
+      </div>
+      {sizeError && (
+        <p className={cn("mt-1.5 font-medium text-red-600", compact ? "text-[11px]" : "text-sm mt-2")}>
+          Please choose a size before adding to cart or ordering.
+        </p>
+      )}
+    </>
+  );
+
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden">
       <SEOHead
@@ -291,10 +405,10 @@ const ProductDetail = () => {
             Back to Shop
           </Link>
 
-          <div className="grid lg:grid-cols-2 gap-6 lg:gap-12 items-start">
-            {/* Mobile: compact image column beside details. Desktop: full gallery column */}
+          <div className="grid lg:grid-cols-2 gap-4 lg:gap-12 items-start">
+            {/* Mobile: image stack left, details right. Desktop: full gallery column */}
             <div className="flex gap-3 min-w-0 lg:block lg:sticky lg:top-24 lg:self-start">
-              <div className="w-[38%] max-w-[9.5rem] shrink-0 space-y-2 sm:w-[42%] sm:max-w-[11rem] lg:w-full lg:max-w-none">
+              <div className="w-[46%] max-w-[10.5rem] shrink-0 space-y-2 sm:w-[44%] sm:max-w-[12rem] lg:w-full lg:max-w-none">
                 <div className="relative aspect-square overflow-hidden rounded-lg bg-secondary group lg:aspect-[4/3]">
                   <FastImage
                     key={`${selectedImageIndex}-${product.images[selectedImageIndex]?.url ?? product.images[0]?.url}`}
@@ -341,14 +455,14 @@ const ProductDetail = () => {
                 </div>
 
                 {product.images.length > 1 && (
-                  <div className="grid grid-cols-2 gap-1 sm:gap-1.5 lg:flex lg:gap-2 lg:overflow-x-auto">
+                  <div className="flex gap-1.5 overflow-x-auto pb-0.5 lg:gap-2">
                     {product.images.map((image, index) => (
                       <button
                         key={index}
                         type="button"
                         onClick={() => setSelectedImageIndex(index)}
                         className={cn(
-                          "aspect-square w-full overflow-hidden rounded border transition-all lg:h-20 lg:w-20 lg:flex-shrink-0 lg:rounded-md lg:border-2",
+                          "h-10 w-10 shrink-0 overflow-hidden rounded border transition-all sm:h-11 sm:w-11 lg:h-20 lg:w-20 lg:rounded-md lg:border-2",
                           selectedImageIndex === index
                             ? "border-primary ring-1 ring-primary/20 lg:ring-2"
                             : "border-border hover:border-primary/50"
@@ -371,142 +485,63 @@ const ProductDetail = () => {
                 )}
               </div>
 
-              {/* Mobile / tablet: title, price, description beside images */}
-              <div className="min-w-0 flex-1 lg:hidden">
-                <div className="flex items-center gap-2 mb-1">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground sm:text-xs">
-                    {product.brand}
-                  </p>
-                  {product.isNew && (
-                    <Badge className="bg-accent text-accent-foreground text-[10px]">NEW</Badge>
-                  )}
-                </div>
-                <h1 className="font-heading text-base font-bold leading-snug sm:text-lg">
-                  {product.name}
-                </h1>
-                <div className="mt-1 flex items-center gap-2">
-                  <span className="text-base font-semibold sm:text-lg">
-                    {formatPrice(product.price, siteConfig.currency)}
-                  </span>
-                  {hasDiscount && (
-                    <span className="text-xs text-muted-foreground line-through sm:text-sm">
-                      {formatPrice(product.originalPrice!, siteConfig.currency)}
+              {/* Mobile: title, description, sizes, quantity, actions beside images */}
+              <div className="min-w-0 flex-1 space-y-2 lg:hidden">
+                <div>
+                  <div className="flex items-center gap-2 mb-0.5">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground sm:text-xs">
+                      {product.brand}
+                    </p>
+                    {product.isNew && (
+                      <Badge className="bg-accent text-accent-foreground text-[10px]">NEW</Badge>
+                    )}
+                  </div>
+                  <h1 className="font-heading text-sm font-bold leading-snug sm:text-base">
+                    {product.name}
+                  </h1>
+                  <div className="mt-0.5 flex items-center gap-2">
+                    <span className="text-sm font-semibold sm:text-base">
+                      {formatPrice(product.price, siteConfig.currency)}
                     </span>
-                  )}
+                    {hasDiscount && (
+                      <span className="text-[11px] text-muted-foreground line-through sm:text-xs">
+                        {formatPrice(product.originalPrice!, siteConfig.currency)}
+                      </span>
+                    )}
+                  </div>
+                  <p className="mt-1.5 line-clamp-4 text-[11px] leading-relaxed text-muted-foreground sm:line-clamp-5 sm:text-xs">
+                    {product.description}
+                  </p>
                 </div>
-                <p className="mt-2 line-clamp-6 text-xs leading-relaxed text-muted-foreground sm:line-clamp-8 sm:text-sm">
-                  {product.description}
-                </p>
+
+                {renderPurchaseControls(true)}
               </div>
             </div>
 
-            {/* Details — full column on desktop; sizes + actions on all screens */}
-            <div className="min-w-0 lg:py-0">
-              <div className="hidden lg:block">
-                <div className="mb-2 flex items-center gap-2">
-                  <p className="text-sm uppercase tracking-wider text-muted-foreground">
-                    {product.brand}
-                  </p>
-                  {product.isNew && (
-                    <Badge className="bg-accent text-accent-foreground text-xs">NEW</Badge>
-                  )}
-                </div>
-                <h1 className="font-heading mb-3 text-2xl font-bold md:text-3xl">{product.name}</h1>
-                <div className="mb-4 flex items-center gap-3">
-                  <span className="text-xl font-semibold">
-                    {formatPrice(product.price, siteConfig.currency)}
-                  </span>
-                  {hasDiscount && (
-                    <span className="text-base text-muted-foreground line-through">
-                      {formatPrice(product.originalPrice!, siteConfig.currency)}
-                    </span>
-                  )}
-                </div>
-                <p className="mb-6 text-muted-foreground">{product.description}</p>
-              </div>
-
-              {/* Size selectors */}
-              <div className={cn("mb-4", sizeError && "rounded-lg ring-2 ring-red-500/40 p-2 -mx-2")}>
-                <p className="text-sm font-medium mb-2">
-                  {product.category === 'accessories' ? 'Select Size(s)' : 'Select Size(s)'}
+            {/* Desktop details column */}
+            <div className="hidden min-w-0 lg:block lg:py-0">
+              <div className="mb-2 flex items-center gap-2">
+                <p className="text-sm uppercase tracking-wider text-muted-foreground">
+                  {product.brand}
                 </p>
-                <div className="flex flex-wrap gap-2">
-                  {product.variants.map((variant) => {
-                    const displaySize = getDisplaySize(variant.size, product.category);
-                    const isSelected = selectedSizes.includes(variant.size) || selectedSize === variant.size;
-                    return (
-                      <button
-                        key={variant.id}
-                        disabled={!variant.inStock}
-                        onClick={() => handleSizeToggle(variant.size)}
-                        className={cn(
-                          "h-12 min-w-[3rem] px-4 rounded-md border text-sm font-medium transition-all duration-200",
-                          isSelected
-                            ? "border-primary bg-primary text-primary-foreground shadow-md scale-105"
-                            : variant.inStock
-                            ? "border-border hover:border-primary hover:scale-105"
-                            : "border-border text-muted-foreground opacity-50 cursor-not-allowed"
-                        )}
-                      >
-                        {displaySize}
-                      </button>
-                    );
-                  })}
-                </div>
-                {(selectedSizes.length > 0 || selectedSize) && (
-                  <p className="text-xs text-muted-foreground mt-2">
-                    Selected: {selectedSize ? 
-                      [getDisplaySize(selectedSize, product.category), ...selectedSizes.filter(s => s !== selectedSize).map(s => getDisplaySize(s, product.category))].join(', ') : 
-                      selectedSizes.map(s => getDisplaySize(s, product.category)).join(', ')}
-                  </p>
+                {product.isNew && (
+                  <Badge className="bg-accent text-accent-foreground text-xs">NEW</Badge>
                 )}
               </div>
-
-              {/* Quantity */}
-              <div className="mb-6">
-                <p className="text-sm font-medium mb-3">Quantity</p>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="h-10 w-10 rounded-md border border-border flex items-center justify-center hover:bg-secondary transition-colors"
-                  >
-                    <Minus className="h-4 w-4" />
-                  </button>
-                  <span className="w-12 text-center font-medium">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(quantity + 1)}
-                    className="h-10 w-10 rounded-md border border-border flex items-center justify-center hover:bg-secondary transition-colors"
-                  >
-                    <Plus className="h-4 w-4" />
-                  </button>
-                </div>
+              <h1 className="font-heading mb-3 text-2xl font-bold md:text-3xl">{product.name}</h1>
+              <div className="mb-4 flex items-center gap-3">
+                <span className="text-xl font-semibold">
+                  {formatPrice(product.price, siteConfig.currency)}
+                </span>
+                {hasDiscount && (
+                  <span className="text-base text-muted-foreground line-through">
+                    {formatPrice(product.originalPrice!, siteConfig.currency)}
+                  </span>
+                )}
               </div>
+              <p className="mb-6 text-muted-foreground">{product.description}</p>
 
-              {/* Add to cart + WhatsApp — always one row */}
-              <div className="flex flex-row gap-2 sm:gap-3">
-                <Button
-                  size="lg"
-                  className="h-12 min-w-0 flex-1 px-2 text-xs sm:h-14 sm:px-4 sm:text-base"
-                  onClick={handleAddToCart}
-                >
-                  <ShoppingBag className="mr-1 h-4 w-4 shrink-0 sm:mr-2 sm:h-5 sm:w-5" />
-                  <span className="truncate">Add to Cart</span>
-                </Button>
-                <Button
-                  size="lg"
-                  type="button"
-                  className="h-12 min-w-0 flex-1 bg-green-600 px-2 text-xs text-white hover:bg-green-700 sm:h-14 sm:px-4 sm:text-base"
-                  onClick={handleOrderWhatsApp}
-                >
-                  <span className="truncate sm:hidden">WhatsApp</span>
-                  <span className="hidden truncate sm:inline">Order on WhatsApp</span>
-                </Button>
-              </div>
-              {sizeError && (
-                <p className="mt-2 text-sm font-medium text-red-600">
-                  Please choose a size before adding to cart or ordering.
-                </p>
-              )}
+              {renderPurchaseControls(false)}
             </div>
           </div>
         </div>
