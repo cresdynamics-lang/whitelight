@@ -16,7 +16,7 @@ export function getCardImageUrl(url?: string, width = 280, quality = 62): string
   return getOptimizedProductUrl(url ?? "", width, quality);
 }
 
-/** Build a resized product image URL (Supabase render API, DO Spaces, or static). */
+/** Build a resized product image URL (DO Spaces query params, or original for Supabase/static). */
 export function getOptimizedProductUrl(
   url: string,
   width: number,
@@ -28,14 +28,7 @@ export function getOptimizedProductUrl(
     return `${url}?w=${width}&q=${quality}&f=webp&auto=compress&dpr=1`;
   }
 
-  const supabaseObject = url.match(
-    /^(https:\/\/[^/]+\.supabase\.co)\/storage\/v1\/object\/public\/(.+)$/
-  );
-  if (supabaseObject) {
-    const [, base, path] = supabaseObject;
-    return `${base}/storage/v1/render/image/public/${path}?width=${width}&quality=${quality}&resize=contain`;
-  }
-
+  // Supabase public URLs — use original file (render API needs Image Transformations add-on)
   return url.startsWith("/") ? resolveStaticImage(url) : url;
 }
 
@@ -49,27 +42,15 @@ export function getDetailThumbUrl(url?: string): string {
   return getOptimizedProductUrl(url ?? "", 240, 65);
 }
 
-/** Responsive srcSet for product detail main image */
+/** Responsive srcSet for product detail main image (CDN only) */
 export function getDetailImageSrcSet(url: string): string | undefined {
-  if (url.includes("digitaloceanspaces.com")) {
-    return [
-      `${url}?w=480&q=68&f=webp&auto=compress&dpr=1 480w`,
-      `${url}?w=720&q=72&f=webp&auto=compress&dpr=1 720w`,
-      `${url}?w=960&q=75&f=webp&auto=compress&dpr=1 960w`,
-    ].join(", ");
-  }
+  if (!url.includes("digitaloceanspaces.com")) return undefined;
 
-  const supabaseObject = url.match(
-    /^(https:\/\/[^/]+\.supabase\.co)\/storage\/v1\/object\/public\/(.+)$/
-  );
-  if (supabaseObject) {
-    const [, base, path] = supabaseObject;
-    const row = (w: number, q: number) =>
-      `${base}/storage/v1/render/image/public/${path}?width=${w}&quality=${q}&resize=contain ${w}w`;
-    return [row(480, 68), row(720, 72), row(960, 75)].join(", ");
-  }
-
-  return undefined;
+  return [
+    `${url}?w=480&q=68&f=webp&auto=compress&dpr=1 480w`,
+    `${url}?w=720&q=72&f=webp&auto=compress&dpr=1 720w`,
+    `${url}?w=960&q=75&f=webp&auto=compress&dpr=1 960w`,
+  ].join(", ");
 }
 
 /** Original public URL when resize/render is unavailable */

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import {
   getCardImageSrcSet,
@@ -7,7 +7,6 @@ import {
   getDetailImageUrl,
   getDetailThumbUrl,
   getHeroImageUrl,
-  getOriginalProductUrl,
   getWebpPath,
   resolveStaticImage,
 } from "@/lib/imageUtils";
@@ -38,10 +37,12 @@ export function FastImage({
   onClick,
 }: FastImageProps) {
   const [error, setError] = useState(false);
-  const [useOriginal, setUseOriginal] = useState(false);
   const isCdn = src.includes("digitaloceanspaces.com");
-  const isSupabase = src.includes("supabase.co");
   const isStatic = src.startsWith("/");
+
+  useEffect(() => {
+    setError(false);
+  }, [src]);
 
   const resolveUrl = () => {
     if (isStatic) {
@@ -61,12 +62,11 @@ export function FastImage({
     }
   };
 
-  const resolved = useOriginal ? getOriginalProductUrl(src) : resolveUrl();
-  const displaySrc = error ? "/whitelight_logo.webp" : resolved;
+  const displaySrc = error ? "/whitelight_logo.webp" : resolveUrl();
   const webpStatic = isStatic ? getWebpPath(src) : null;
   const staticFallback = isStatic && webpStatic ? src : null;
   const srcSet =
-    variant === "detail" && (isCdn || isSupabase)
+    variant === "detail" && isCdn
       ? getDetailImageSrcSet(src)
       : variant === "card" && isCdn
         ? getCardImageSrcSet(src)
@@ -86,27 +86,19 @@ export function FastImage({
     className
   );
 
-  const handleError = () => {
-    if (!useOriginal && isSupabase) {
-      setUseOriginal(true);
-      return;
-    }
-    setError(true);
-  };
-
   const imgProps = {
     alt,
     className: imgClass,
     loading: (priority ? "eager" : "lazy") as "eager" | "lazy",
     decoding: "async" as const,
     fetchPriority: (priority ? "high" : "auto") as "high" | "auto",
-    sizes: srcSet || (isStatic ? sizes : sizes),
+    sizes: srcSet ? sizes : undefined,
     srcSet,
-    onError: handleError,
+    onError: () => setError(true),
     onClick,
   };
 
-  if (webpStatic && !isCdn && !isSupabase) {
+  if (webpStatic && !isCdn) {
     return (
       <picture className={cn("block h-full w-full", onClick && "cursor-pointer")}>
         <source type="image/webp" srcSet={displaySrc} sizes={sizes} />

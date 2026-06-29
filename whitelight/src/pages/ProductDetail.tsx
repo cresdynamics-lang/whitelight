@@ -16,7 +16,7 @@ import { cn } from "@/lib/utils";
 import { SEOHead } from "@/components/seo/SEOHead";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { FastImage } from "@/components/ui/FastImage";
-import { getDetailImageUrl } from "@/lib/imageUtils";
+import { getDetailImageUrl, getOriginalProductUrl } from "@/lib/imageUtils";
 import { trackViewContent } from "@/lib/analytics/events";
 import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
 
@@ -93,12 +93,16 @@ const ProductDetail = () => {
     const links: HTMLLinkElement[] = [];
     product.images.forEach((image) => {
       if (!image?.url) return;
+      const href = getOriginalProductUrl(image.url);
       const link = document.createElement("link");
       link.rel = "prefetch";
       link.as = "image";
-      link.href = getDetailImageUrl(image.url);
+      link.href = href;
       document.head.appendChild(link);
       links.push(link);
+      // Warm browser cache
+      const img = new Image();
+      img.src = href;
     });
     return () => {
       links.forEach((link) => {
@@ -287,32 +291,21 @@ const ProductDetail = () => {
             {/* Images with multiple angles */}
             <div className="space-y-4 min-w-0 lg:sticky lg:top-24 self-start">
               <div className="relative w-full max-w-full aspect-[4/3] lg:aspect-[4/3] overflow-hidden rounded-lg bg-secondary group">
-                {product.images.map((image, index) => (
-                  <div
-                    key={image.id ?? `${product.id}-angle-${index}`}
-                    className={cn(
-                      "absolute inset-0 transition-opacity duration-200",
-                      index === selectedImageIndex
-                        ? "z-[1] opacity-100"
-                        : "z-0 opacity-0 pointer-events-none"
-                    )}
-                    aria-hidden={index !== selectedImageIndex}
-                  >
-                    <FastImage
-                      src={image.url}
-                      alt={
-                        index === 0
-                          ? mainAltText
-                          : image.alt || `${product.name} angle ${index + 1}`
-                      }
-                      variant="detail"
-                      priority={index === 0 || index === 1}
-                      objectFit="contain"
-                      className="h-full w-full cursor-pointer"
-                      onClick={() => setIsLightboxOpen(true)}
-                    />
-                  </div>
-                ))}
+                <FastImage
+                  key={`${selectedImageIndex}-${product.images[selectedImageIndex]?.url ?? product.images[0]?.url}`}
+                  src={product.images[selectedImageIndex]?.url || product.images[0]?.url}
+                  alt={
+                    selectedImageIndex === 0
+                      ? mainAltText
+                      : product.images[selectedImageIndex]?.alt ||
+                        `${product.name} angle ${selectedImageIndex + 1}`
+                  }
+                  variant="detail"
+                  priority
+                  objectFit="contain"
+                  className="h-full w-full cursor-pointer"
+                  onClick={() => setIsLightboxOpen(true)}
+                />
                 
                 {/* Navigation arrows - only show if multiple images */}
                 {product.images.length > 1 && (
