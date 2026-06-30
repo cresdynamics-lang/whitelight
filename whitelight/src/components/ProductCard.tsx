@@ -1,15 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ShoppingCart } from "lucide-react";
 import type { Product } from "@/types/product";
 import { formatPrice } from "@/lib/products";
 import { siteConfig } from "@/config/site";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useCart } from "@/context/CartContext";
-import { toast } from "sonner";
-import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
 import { FastImage } from "@/components/ui/FastImage";
 
 interface ProductCardProps {
@@ -20,8 +14,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, className, priority = false }: ProductCardProps) {
-  const { addToCart } = useCart();
-  const [selectedSize, setSelectedSize] = useState<number | string | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const id = product?.id ?? "";
   const slug = product?.slug ?? product?.id ?? "";
@@ -31,161 +24,101 @@ export function ProductCard({ product, className, priority = false }: ProductCar
   const price = Number(product?.price) || 0;
   const originalPrice = product?.originalPrice != null ? Number(product.originalPrice) : undefined;
   const hasDiscount = originalPrice != null && originalPrice > price;
-  const discountPercent = hasDiscount && originalPrice
-    ? Math.round(((originalPrice - price) / originalPrice) * 100)
-    : 0;
 
   const images = Array.isArray(product?.images) ? product.images : [];
   const variants = Array.isArray(product?.variants) ? product.variants : [];
-  const availableSizes = variants.filter((v) => Boolean(v?.inStock));
+  const inStockVariants = variants.filter((v) => Boolean(v?.inStock));
+  const isSoldOut = variants.length > 0 && inStockVariants.length === 0;
 
-  const getDisplaySize = (size: number | string, cat: string) => {
-    if (String(cat) === "accessories" && typeof size === "number") {
-      const sizeMap: Record<number, string> = {
-        1: "XS", 2: "2XL", 3: "3XL", 4: "4XL", 5: "5XL",
-        6: "L", 7: "XL", 8: "M", 9: "S",
-      };
-      return sizeMap[size] || size.toString();
-    }
-    return size;
-  };
-
-  const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const size = selectedSize ?? availableSizes[0]?.size;
-    if (size == null || size === "") {
-      toast.error("No sizes available");
-      return;
-    }
-
-    addToCart(product, size as number, 1);
-    toast.success(`${name} added to cart`);
-  };
-
-  const handleOrderViaWhatsApp = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    const imageUrl = images[0]?.url || "";
-    const productUrl = `${window.location.origin}/product/${slug}`;
-    openWhatsAppOrderMessage({
-      productName: name,
-      productPrice: price,
-      imageUrl,
-      productUrl,
-      currency: siteConfig.currency,
-    });
-  };
+  const swatchImages = images.slice(0, 4);
+  const moreAngles = Math.max(0, images.length - swatchImages.length);
+  const activeImage = images[activeImageIndex] ?? images[0];
+  const mainAlt =
+    product.alt_text_main ||
+    activeImage?.alt ||
+    `${brand} ${name} ${category} — available in Kenya`;
 
   if (!id) return null;
 
   return (
-    <div className={cn("group block product-card", className)}>
-      <Link to={`/product/${slug}`}>
-        <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-primary bg-white mb-2">
+    <article className={cn("group product-card flex flex-col", className)}>
+      <Link to={`/product/${slug}`} className="block">
+        <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
           <FastImage
-            src={images[0]?.url || "/whitelight_logo.webp"}
-            alt={
-              product.alt_text_main ||
-              images[0]?.alt ||
-              `${brand} ${name} ${category} — available in Kenya`
-            }
-            className="transition-transform duration-300 group-hover:scale-105"
+            src={activeImage?.url || images[0]?.url || "/whitelight_logo.webp"}
+            alt={mainAlt}
+            objectFit="contain"
+            className="product-image h-full w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
             priority={priority}
           />
-
-          <div className="absolute top-0 left-0 z-10 flex flex-col items-start gap-1 p-1.5">
-            {product?.isOnOffer && (
-              <Badge className="rounded-sm border-0 bg-red-600 px-2 py-0.5 text-[10px] font-bold uppercase leading-none text-white shadow-sm">
-                Sale
-              </Badge>
-            )}
-            {product?.isNew && (
-              <Badge className="bg-primary px-1.5 py-0.5 text-[10px] leading-none text-primary-foreground">
-                NEW
-              </Badge>
-            )}
-            {hasDiscount && (
-              <Badge variant="destructive" className="px-1.5 py-0.5 text-[10px] leading-none">
-                -{discountPercent}%
-              </Badge>
-            )}
-          </div>
-
-          <div className="absolute top-1.5 right-1.5 z-10">
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-md bg-white/95 text-foreground shadow-sm ring-1 ring-border transition hover:bg-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="Add to cart"
-              title="Add to cart"
-            >
-              <ShoppingCart className="h-4 w-4" />
-            </button>
-          </div>
         </div>
       </Link>
 
-      <div className="space-y-1.5">
-        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{brand}</p>
-        <Link to={`/product/${slug}`}>
-          <h3 className="font-medium text-[11px] sm:text-xs text-foreground group-hover:text-primary transition-colors line-clamp-1 leading-tight">
+      {swatchImages.length > 1 && (
+        <div className="mt-2 flex items-center gap-1.5">
+          {swatchImages.map((image, index) => (
+            <button
+              key={image.id || `${id}-angle-${index}`}
+              type="button"
+              aria-label={`View angle ${index + 1}`}
+              onMouseEnter={() => setActiveImageIndex(index)}
+              onFocus={() => setActiveImageIndex(index)}
+              onClick={(e) => {
+                e.preventDefault();
+                setActiveImageIndex(index);
+              }}
+              className={cn(
+                "h-9 w-9 shrink-0 overflow-hidden rounded-sm border bg-white p-0 transition-colors",
+                activeImageIndex === index
+                  ? "border-foreground"
+                  : "border-neutral-200 hover:border-neutral-400"
+              )}
+            >
+              <FastImage
+                src={image.url}
+                alt={image.alt || `${name} angle ${index + 1}`}
+                variant="thumb"
+                className="h-full w-full"
+              />
+            </button>
+          ))}
+          {moreAngles > 0 && (
+            <Link
+              to={`/product/${slug}`}
+              className="text-xs text-muted-foreground hover:text-foreground whitespace-nowrap"
+            >
+              +{moreAngles} more
+            </Link>
+          )}
+        </div>
+      )}
+
+      <div className="mt-2 space-y-1">
+        <p className="text-xs font-normal text-muted-foreground">{brand}</p>
+
+        <Link to={`/product/${slug}`} className="block">
+          <h3 className="text-sm font-normal leading-snug text-foreground line-clamp-2 hover:underline underline-offset-2">
             {name}
           </h3>
         </Link>
 
-        <div className="flex items-center gap-1.5">
-          <span className="font-semibold text-[11px] sm:text-xs text-foreground">
-            {formatPrice(price, siteConfig.currency)}
-          </span>
+        <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 pt-0.5">
+          <span className="text-sm text-foreground">{formatPrice(price, siteConfig.currency)}</span>
           {hasDiscount && originalPrice != null && (
-            <span className="text-[10px] text-muted-foreground line-through">
+            <span className="text-sm text-muted-foreground line-through">
               {formatPrice(originalPrice, siteConfig.currency)}
             </span>
           )}
-        </div>
-
-        <div className="flex gap-1 overflow-x-auto whitespace-nowrap pb-1">
-          {availableSizes.slice(0, 5).map((variant) => {
-            const displaySize = getDisplaySize(variant?.size ?? "", category);
-            return (
-              <button
-                key={variant?.id ?? `${id}-${variant?.size ?? "s"}`}
-                onClick={(e) => {
-                  e.preventDefault();
-                  setSelectedSize(variant.size);
-                }}
-                className={cn(
-                  "text-[10px] px-1.5 py-0.5 border rounded transition-colors flex-shrink-0",
-                  selectedSize === variant.size
-                    ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border hover:border-primary"
-                )}
-              >
-                {displaySize}
-              </button>
-            );
-          })}
-          {availableSizes.length > 5 && (
-            <span className="text-[10px] px-1.5 py-0.5 text-muted-foreground flex-shrink-0">
-              +{availableSizes.length - 5}
-            </span>
+          {isSoldOut ? (
+            <span className="text-xs text-muted-foreground">Sold out</span>
+          ) : product.isOnOffer || hasDiscount ? (
+            <span className="text-xs text-muted-foreground">Sale</span>
+          ) : null}
+          {product.isNew && !isSoldOut && (
+            <span className="text-xs text-muted-foreground">New</span>
           )}
         </div>
-
-        <div className="mt-1">
-          <Button
-            size="sm"
-            className="w-full h-7 text-[10px] leading-none px-1.5 bg-green-600 hover:bg-green-700 text-white whitespace-nowrap"
-            onClick={handleOrderViaWhatsApp}
-            title="Order on WhatsApp"
-          >
-            Order on WhatsApp
-          </Button>
-        </div>
       </div>
-    </div>
+    </article>
   );
 }

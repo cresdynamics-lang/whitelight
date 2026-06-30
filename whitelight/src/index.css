@@ -183,25 +183,162 @@
   }
 
   .hero-image-vignette {
-    /* ~0.1cm hairline fade on top + sides only; bottom stays clean */
     background:
       linear-gradient(to right, hsl(0 0% 100%) 0, transparent 0.1cm),
       linear-gradient(to left, hsl(0 0% 98%) 0, transparent 0.1cm),
       linear-gradient(to bottom, hsl(0 0% 98%) 0, transparent 0.1cm);
   }
 
-  /* Product card hover effect with green border */
+  .hero-pearl-bg {
+    background:
+      radial-gradient(ellipse 90% 70% at 50% 40%, hsl(0 0% 100% / 0.12), transparent 60%),
+      linear-gradient(145deg, hsl(0 0% 8%) 0%, hsl(0 0% 14%) 45%, hsl(0 0% 6%) 100%);
+  }
+
+  @media (min-width: 1024px) {
+    .hero-pearl-bg {
+      background:
+        radial-gradient(ellipse 80% 60% at 60% 35%, hsl(var(--primary) / 0.07), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 20% 80%, hsl(0 0% 100% / 0.9), transparent 50%),
+        linear-gradient(135deg, hsl(0 0% 97%) 0%, hsl(0 0% 100%) 50%, hsl(0 0% 96%) 100%);
+    }
+  }
+
+  .hero-gloss-sheen {
+    background: linear-gradient(
+      125deg,
+      transparent 0%,
+      hsl(0 0% 100% / 0.03) 35%,
+      hsl(0 0% 100% / 0.14) 48%,
+      hsl(0 0% 100% / 0.04) 58%,
+      transparent 72%
+    );
+    mix-blend-mode: soft-light;
+  }
+
+  .hero-desktop-blend {
+    background: linear-gradient(
+      to right,
+      hsl(0 0% 100%) 0%,
+      hsl(0 0% 100% / 0.92) 12%,
+      hsl(0 0% 100% / 0.35) 28%,
+      transparent 42%
+    );
+  }
+
+  .hero-cta-shine {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-cta-shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 40%,
+      hsl(0 0% 100% / 0.35) 50%,
+      transparent 60%
+    );
+    transform: translateX(-120%);
+    animation: hero-cta-shine 4s ease-in-out infinite;
+  }
+
+  @keyframes hero-cta-shine {
+    0%,
+    70%,
+    100% {
+      transform: translateX(-120%);
+    }
+    85% {
+      transform: translateX(120%);
+    }
+  }
+
+  .hero-ticker-mask {
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
+
+  .hero-ticker-track {
+    animation: hero-ticker 28s linear infinite;
+  }
+
+  @keyframes hero-ticker {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .hero-fade-in {
+    animation: hero-fade-in 0.7s ease-out both;
+  }
+
+  @keyframes hero-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .hero-ken-burns {
+    animation: hero-ken-burns 16s ease-in-out infinite alternate;
+  }
+
+  @keyframes hero-ken-burns {
+    from {
+      transform: scale(1.03) translateY(0);
+    }
+    to {
+      transform: scale(1.09) translateY(-1%);
+    }
+  }
+
+  .hero-gradient-glow {
+    background:
+      radial-gradient(ellipse 80% 60% at 0% 20%, hsl(var(--primary) / 0.08), transparent 55%),
+      radial-gradient(ellipse 60% 50% at 100% 80%, hsl(var(--primary) / 0.05), transparent 50%);
+  }
+
+  .hero-image-shimmer {
+    background: linear-gradient(
+      110deg,
+      transparent 30%,
+      hsl(0 0% 100% / 0.08) 45%,
+      transparent 60%
+    );
+    background-size: 200% 100%;
+    animation: hero-shimmer 7s ease-in-out infinite;
+  }
+
+  @keyframes hero-shimmer {
+    0%,
+    100% {
+      background-position: 200% 0;
+    }
+    50% {
+      background-position: -200% 0;
+    }
+  }
+
+  /* Product card — clean catalog style (Enzo Cavalli–inspired) */
   .product-card {
-    @apply transition-all duration-300 ease-out;
+    @apply transition-opacity duration-300 ease-out;
   }
 
   .product-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-product);
+    @apply opacity-95;
   }
 
   .product-card:hover .product-image {
-    transform: scale(1.05);
+    transform: scale(1.03);
   }
 
   .mobile-wordmark {

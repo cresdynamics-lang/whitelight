@@ -14,46 +14,42 @@ interface HeroSectionProps {
   ctaLink?: string;
 }
 
-interface CategoryContent {
-  title: string;
-  description: string;
+interface HeroSlide {
+  eyebrow: string;
+  headline: string;
   link: string;
   ctaText: string;
 }
 
-const categoryContent: CategoryContent[] = [
+const heroSlides: HeroSlide[] = [
   {
-    title: "Run Nairobi's Streets",
-    description:
-      "Road-running shoes for CBD commutes, evening jogs on Ngong Road, and marathon prep — fitted for how Kenyans actually move.",
+    eyebrow: "Running",
+    headline: "The road is yours.",
     link: "/category/running",
-    ctaText: "Browse running shoes",
+    ctaText: "Shop running",
   },
   {
-    title: "Own Every Kenyan Trail",
-    description:
-      "Trail footwear with real grip for Karura Forest, Ngong Hills, and red-dirt paths — built for mud, rocks, and long weekend hikes.",
+    eyebrow: "Trail",
+    headline: "Go where others stop.",
     link: "/category/trail",
-    ctaText: "Browse trail shoes",
+    ctaText: "Shop trail",
   },
   {
-    title: "Train Hard in Nairobi",
-    description:
-      "Gym and court shoes for lifters, hoopers, and HIIT — stable cushioning for Nairobi gyms, outdoor courts, and daily sessions.",
+    eyebrow: "Gym & court",
+    headline: "Power in every rep.",
     link: "/category/gym",
-    ctaText: "Browse gym & court",
+    ctaText: "Shop gym",
   },
   {
-    title: "Your Luthuli Avenue Stop",
-    description:
-      "White Light Store — authentic Nike, Adidas, HOKA, ASICS and more. Same-day Nairobi delivery and WhatsApp sizing from our CBD shop.",
-    link: "/contact",
-    ctaText: "Talk to us on WhatsApp",
+    eyebrow: "Whitelight",
+    headline: "Step into light.",
+    link: "/sale",
+    ctaText: "Shop now",
   },
 ];
 
-const SLIDE_INTERVAL = 10000;
-const TRANSITION_MS = 1400;
+const SLIDE_INTERVAL = 9000;
+const TRANSITION_MS = 1000;
 
 export function HeroSection({
   title,
@@ -64,6 +60,7 @@ export function HeroSection({
   const [heroImages, setHeroImages] = useState<BannerImage[]>(FALLBACK_MANIFEST.hero);
   const [currentSlide, setCurrentSlide] = useState(0);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const useCustomCopy = Boolean(title);
 
   useEffect(() => {
     let mounted = true;
@@ -79,11 +76,11 @@ export function HeroSection({
 
   const resetAutoplay = useCallback(() => {
     if (intervalRef.current) clearInterval(intervalRef.current);
-    if (slideCount <= 1) return;
+    if (slideCount <= 1 || useCustomCopy) return;
     intervalRef.current = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % slideCount);
     }, SLIDE_INTERVAL);
-  }, [slideCount]);
+  }, [slideCount, useCustomCopy]);
 
   const goToSlide = useCallback(
     (index: number) => {
@@ -104,7 +101,6 @@ export function HeroSection({
     };
   }, [resetAutoplay]);
 
-  // Prefetch the next slide only — avoids loading every hero image on first paint
   useEffect(() => {
     if (heroImages.length <= 1) return;
     const next = heroImages[(currentSlide + 1) % heroImages.length];
@@ -119,129 +115,149 @@ export function HeroSection({
     };
   }, [currentSlide, heroImages]);
 
-  const contentIndex = slideCount ? currentSlide % categoryContent.length : 0;
+  const contentIndex = slideCount ? currentSlide % heroSlides.length : 0;
   const activeImage = heroImages[currentSlide];
+  const activeCopy = useCustomCopy
+    ? { eyebrow: "", headline: title!, link: ctaLink ?? "/", ctaText: ctaText ?? "Shop now" }
+    : heroSlides[contentIndex];
+
+  const slideControls =
+    slideCount > 1 && !useCustomCopy ? (
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={goPrev}
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 lg:border-border lg:bg-white lg:text-foreground lg:hover:border-primary/30 lg:hover:bg-muted"
+          aria-label="Previous slide"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+        <button
+          type="button"
+          onClick={goNext}
+          className="flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white backdrop-blur-md transition hover:bg-white/20 lg:border-border lg:bg-white lg:text-foreground lg:hover:border-primary/30 lg:hover:bg-muted"
+          aria-label="Next slide"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
+    ) : null;
 
   return (
-    <section className="relative overflow-hidden border-b border-border bg-white">
-      <div className="grid min-h-[260px] grid-cols-2 sm:min-h-[340px] md:min-h-[440px] lg:min-h-[540px] xl:min-h-[600px] lg:grid-cols-[minmax(0,0.88fr)_minmax(0,1.12fr)]">
-        {/* Left — Whitelight copy */}
-        <div className="relative z-20 flex flex-col justify-center bg-white px-3 py-6 sm:px-6 sm:py-8 md:px-10 lg:px-12 xl:px-14">
-          <p className="relative z-20 mb-3 text-[9px] font-semibold uppercase tracking-[0.2em] text-primary sm:mb-4 sm:text-[10px] md:text-xs">
-            White Light Store · Luthuli Avenue, Nairobi
-          </p>
+    <section className="relative overflow-hidden border-b border-border bg-neutral-950 lg:bg-white">
+      <div className="relative h-[min(78vh,680px)] min-h-[420px] sm:min-h-[480px] lg:grid lg:h-auto lg:min-h-[560px] lg:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)] xl:min-h-[620px]">
+        {/* Hero image — full bleed mobile, right panel desktop */}
+        <div className="absolute inset-0 lg:inset-y-0 lg:left-auto lg:right-0 lg:w-1/2">
+          <div className="hero-pearl-bg absolute inset-0" aria-hidden />
 
-          <div className="relative z-20 min-h-[8rem] sm:min-h-[9.5rem] md:min-h-[11rem] lg:min-h-[12rem]">
-            {(title
-              ? [{ title, description: subtitle ?? "", link: ctaLink ?? "/", ctaText: ctaText ?? "Shop now" }]
-              : categoryContent
-            ).map((content, index) => {
-              const active = title ? index === 0 : index === contentIndex;
-              const displayLink = ctaLink || content.link;
-              const displayCtaText = ctaText || content.ctaText;
-
-              return (
-                <div
-                  key={index}
-                  className={cn(
-                    "absolute inset-0 flex flex-col justify-start transition-all ease-in-out",
-                    active
-                      ? "pointer-events-auto z-10 translate-x-0 opacity-100"
-                      : "pointer-events-none z-0 translate-x-3 opacity-0"
-                  )}
-                  style={{ transitionDuration: `${TRANSITION_MS}ms` }}
-                  aria-hidden={!active}
-                >
-                  <h1 className="font-heading text-sm font-bold leading-snug tracking-tight text-foreground sm:text-2xl md:text-3xl lg:text-4xl xl:text-[2.65rem]">
-                    {content.title}
-                  </h1>
-
-                  <p className="mt-2 line-clamp-4 max-w-md text-[10px] leading-relaxed text-muted-foreground sm:mt-3 sm:text-sm md:mt-4 md:text-base md:leading-relaxed">
-                    {content.description}
-                  </p>
-
-                  <div className="mt-4 flex flex-wrap items-center gap-2 sm:mt-6 sm:gap-3">
-                    <Button
-                      asChild
-                      size="sm"
-                      className="h-9 rounded-full bg-primary px-4 text-[10px] font-semibold text-primary-foreground shadow-md shadow-primary/20 hover:bg-primary/90 sm:h-10 sm:px-6 sm:text-xs md:h-11 md:px-8 md:text-sm"
-                    >
-                      <Link to={displayLink} className="flex items-center gap-1.5 sm:gap-2">
-                        <span className="hidden sm:inline">{displayCtaText}</span>
-                        <span className="sm:hidden">Shop now</span>
-                        <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                      </Link>
-                    </Button>
-
-                    {slideCount > 1 && !title && (
-                      <div className="hidden items-center gap-1.5 sm:flex">
-                        <button
-                          type="button"
-                          onClick={goPrev}
-                          className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white text-foreground shadow-sm transition-all hover:border-primary/40 hover:bg-muted md:h-10 md:w-10"
-                          aria-label="Previous slide"
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
-                          onClick={goNext}
-                          className="flex h-9 w-9 items-center justify-center rounded-full border border-border bg-white text-foreground shadow-sm transition-all hover:border-primary/40 hover:bg-muted md:h-10 md:w-10"
-                          aria-label="Next slide"
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {slideCount > 1 && !title && (
-            <div className="relative z-20 mt-5 flex items-center gap-2 sm:mt-7">
-              {heroImages.map((_, index) => (
-                <button
-                  key={index}
-                  type="button"
-                  onClick={() => goToSlide(index)}
-                  aria-label={`Go to slide ${index + 1}`}
-                  aria-current={index === currentSlide ? "true" : undefined}
-                  className={cn(
-                    "rounded-full transition-all ease-in-out",
-                    index === currentSlide
-                      ? "h-2 w-6 bg-primary sm:h-2.5 sm:w-8"
-                      : "h-2 w-2 bg-border hover:bg-muted-foreground/40 sm:h-2.5 sm:w-2.5"
-                  )}
-                  style={{ transitionDuration: `${TRANSITION_MS}ms` }}
-                />
-              ))}
+          {activeImage && (
+            <div
+              key={`${currentSlide}-${activeImage.url}`}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <FastImage
+                src={activeImage.url}
+                alt={activeImage.alt_text}
+                variant="hero"
+                priority
+                objectFit="contain"
+                className="hero-ken-burns h-[108%] w-[108%] max-h-none max-w-none object-contain drop-shadow-2xl lg:h-[112%] lg:w-[112%]"
+              />
             </div>
           )}
+
+          <div className="hero-gloss-sheen pointer-events-none absolute inset-0" aria-hidden />
+          <div className="hero-image-shimmer pointer-events-none absolute inset-0 opacity-30" aria-hidden />
+
+          {/* Mobile — cinematic fade for overlaid copy */}
+          <div
+            className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/10 lg:hidden"
+            aria-hidden
+          />
+          <div
+            className="pointer-events-none absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-transparent lg:hidden"
+            aria-hidden
+          />
+
+          {/* Desktop — soft blend into copy column */}
+          <div className="hero-desktop-blend pointer-events-none absolute inset-0 hidden lg:block" aria-hidden />
         </div>
 
-        {/* Right — expanded product image with soft edge fade */}
-        <div className="relative overflow-hidden bg-neutral-50">
-          <div className="relative h-full min-h-[260px] sm:min-h-[340px] md:min-h-[440px] lg:min-h-full">
-            {activeImage && (
-              <div
-                key={`${currentSlide}-${activeImage.url}`}
-                className="absolute inset-0 flex animate-in fade-in-0 duration-700 items-center justify-center"
-              >
-                <FastImage
-                  src={activeImage.url}
-                  alt={activeImage.alt_text}
-                  variant="hero"
-                  priority
-                  objectFit="contain"
-                  className="h-[118%] w-[118%] max-h-none max-w-none scale-110 object-contain sm:h-[120%] sm:w-[120%] lg:scale-[1.15]"
-                />
+        {/* Copy — overlaid on mobile, clean column on desktop */}
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end px-5 pb-8 pt-28 sm:px-8 sm:pb-10 lg:pointer-events-auto lg:static lg:min-h-[560px] lg:items-stretch lg:justify-center lg:px-12 lg:py-16 xl:min-h-[620px] xl:px-16">
+          <div className="pointer-events-auto w-full lg:flex lg:max-w-md lg:flex-col lg:justify-center xl:max-w-lg">
+            {!useCustomCopy && (
+              <div className="relative min-h-[4.5rem] sm:min-h-[5.5rem] lg:min-h-[7.5rem] xl:min-h-[8.5rem]">
+                {heroSlides.map((slide, index) => {
+                const active = index === contentIndex;
+                return (
+                  <div
+                    key={slide.eyebrow}
+                    className={cn(
+                      "transition-all ease-out",
+                      active
+                        ? "relative z-10 opacity-100"
+                        : "pointer-events-none absolute inset-0 z-0 opacity-0 translate-y-3"
+                    )}
+                    style={{ transitionDuration: `${TRANSITION_MS}ms` }}
+                    aria-hidden={!active}
+                  >
+                    <p className="mb-2 text-[10px] font-medium uppercase tracking-[0.28em] text-white/70 sm:text-[11px] lg:text-primary/80">
+                      {slide.eyebrow}
+                    </p>
+                    <h1 className="font-heading text-[2rem] font-black leading-[1.02] tracking-tight text-white sm:text-5xl lg:text-[3.25rem] lg:text-foreground xl:text-[3.75rem]">
+                      {slide.headline}
+                    </h1>
+                  </div>
+                );
+              })}
               </div>
             )}
 
-            {/* Soft vignette — hides hard image edges on all sides */}
-            <div className="hero-image-vignette pointer-events-none absolute inset-0 z-10" />
+            {useCustomCopy && (
+              <>
+                <h1 className="font-heading text-3xl font-black leading-tight text-white lg:text-5xl lg:text-foreground">
+                  {title}
+                </h1>
+                {subtitle && (
+                  <p className="mt-3 text-sm text-white/75 lg:text-muted-foreground">{subtitle}</p>
+                )}
+              </>
+            )}
+
+            <div className="mt-6 flex flex-wrap items-center gap-3 sm:mt-8">
+              <Button
+                asChild
+                size="lg"
+                className="hero-cta-shine h-11 rounded-full border-0 bg-white px-7 text-sm font-semibold text-neutral-950 shadow-lg shadow-black/20 hover:bg-white/95 lg:bg-primary lg:text-primary-foreground lg:shadow-primary/25 lg:hover:bg-primary/90"
+              >
+                <Link to={activeCopy.link} className="flex items-center gap-2">
+                  {activeCopy.ctaText}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+              {slideControls}
+            </div>
+
+            {slideCount > 1 && !useCustomCopy && (
+              <div className="mt-6 flex items-center gap-2 lg:mt-8">
+                {heroImages.map((_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => goToSlide(index)}
+                    aria-label={`Go to slide ${index + 1}`}
+                    aria-current={index === currentSlide ? "true" : undefined}
+                    className={cn(
+                      "rounded-full transition-all duration-500",
+                      index === currentSlide
+                        ? "h-1 w-7 bg-white lg:bg-primary"
+                        : "h-1 w-1 bg-white/40 hover:bg-white/70 lg:bg-border lg:hover:bg-muted-foreground/50"
+                    )}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
