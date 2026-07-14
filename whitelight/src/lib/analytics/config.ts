@@ -1,7 +1,7 @@
 /** Client-side analytics IDs — set in .env (VITE_* prefix). */
 
 /** Whitelight Store Meta Pixel (Events Manager) */
-export const DEFAULT_META_PIXEL_ID = "1294655459040259";
+export const DEFAULT_META_PIXEL_ID = "1060087716452785";
 
 export const analyticsConfig = {
   metaPixelId:
