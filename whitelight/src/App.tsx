@@ -33,6 +33,7 @@ const AdminProducts = lazy(() => import("./pages/admin/AdminProducts"));
 const AdminProductForm = lazy(() => import("./pages/admin/AdminProductForm"));
 const AdminOrders = lazy(() => import("./pages/admin/AdminOrders"));
 const AdminMessages = lazy(() => import("./pages/admin/AdminMessages"));
+const AdminSaleManager = lazy(() => import("./pages/admin/AdminSaleManager"));
 
 function PageLoader() {
   return (
@@ -129,6 +130,16 @@ const App = () => {
                   <ProtectedRoute>
                     <AdminLayout>
                       <AdminProductForm />
+                    </AdminLayout>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/sale"
+                element={
+                  <ProtectedRoute>
+                    <AdminLayout>
+                      <AdminSaleManager />
                     </AdminLayout>
                   </ProtectedRoute>
                 }

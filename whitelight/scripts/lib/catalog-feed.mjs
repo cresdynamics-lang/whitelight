@@ -219,3 +219,49 @@ export function buildMetaCatalogJson(products) {
     })),
   };
 }
+
+function csvEscape(value = "") {
+  const str = String(value ?? "");
+  if (/[",\n\r]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
+
+/** Meta Commerce Manager CSV feed (URL should end with .csv) */
+export function buildMetaCatalogCsv(products) {
+  const items = toFeedItems(products);
+  const headers = [
+    "id",
+    "title",
+    "description",
+    "availability",
+    "condition",
+    "price",
+    "sale_price",
+    "link",
+    "image_link",
+    "brand",
+    "item_group_id",
+  ];
+
+  const rows = items.map((item) =>
+    [
+      item.id,
+      item.title,
+      item.description,
+      item.availability,
+      item.condition,
+      item.price,
+      item.sale_price ?? "",
+      item.link,
+      item.image_link,
+      item.brand,
+      item.item_group_id,
+    ]
+      .map(csvEscape)
+      .join(",")
+  );
+
+  return [headers.join(","), ...rows].join("\n") + "\n";
+}
