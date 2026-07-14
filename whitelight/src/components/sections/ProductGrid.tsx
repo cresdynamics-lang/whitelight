@@ -7,6 +7,8 @@ interface ProductGridProps {
   products: Product[];
   columns?: 2 | 3 | 4;
   className?: string;
+  /** Enable WhatsApp order + size picker on each card */
+  enableWhatsAppOrder?: boolean;
 }
 
 export function ProductGrid({
@@ -14,6 +16,7 @@ export function ProductGrid({
   products,
   columns = 4,
   className,
+  enableWhatsAppOrder = false,
 }: ProductGridProps) {
   const gridCols = {
     2: "grid-cols-1 sm:grid-cols-2",
@@ -38,6 +41,7 @@ export function ProductGrid({
               key={product.id}
               product={product}
               priority={index < 4}
+              enableWhatsAppOrder={enableWhatsAppOrder}
             />
           ))}
         </div>

@@ -5,16 +5,45 @@ import { formatPrice } from "@/lib/products";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { FastImage } from "@/components/ui/FastImage";
+import { Button } from "@/components/ui/button";
+import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
 
 interface ProductCardProps {
   product: Product;
   className?: string;
   /** Load image immediately (above-the-fold rows) */
   priority?: boolean;
+  /** Show size picker + WhatsApp order (sale sections) */
+  enableWhatsAppOrder?: boolean;
 }
 
-export function ProductCard({ product, className, priority = false }: ProductCardProps) {
+function getDisplaySize(size: number | string, category: string) {
+  if (String(category) === "accessories" && typeof size === "number") {
+    const sizeMap: Record<number, string> = {
+      1: "XS",
+      2: "2XL",
+      3: "3XL",
+      4: "4XL",
+      5: "5XL",
+      6: "L",
+      7: "XL",
+      8: "M",
+      9: "S",
+    };
+    return sizeMap[size] || size.toString();
+  }
+  return size;
+}
+
+export function ProductCard({
+  product,
+  className,
+  priority = false,
+  enableWhatsAppOrder = false,
+}: ProductCardProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [selectedSize, setSelectedSize] = useState<number | string | null>(null);
+  const [sizeError, setSizeError] = useState(false);
 
   const id = product?.id ?? "";
   const slug = product?.slug ?? product?.id ?? "";
@@ -29,6 +58,7 @@ export function ProductCard({ product, className, priority = false }: ProductCar
   const variants = Array.isArray(product?.variants) ? product.variants : [];
   const inStockVariants = variants.filter((v) => Boolean(v?.inStock));
   const isSoldOut = variants.length > 0 && inStockVariants.length === 0;
+  const showOrder = enableWhatsAppOrder && !isSoldOut;
 
   const swatchImages = images.slice(0, 4);
   const moreAngles = Math.max(0, images.length - swatchImages.length);
@@ -37,6 +67,34 @@ export function ProductCard({ product, className, priority = false }: ProductCar
     product.alt_text_main ||
     activeImage?.alt ||
     `${brand} ${name} ${category} — available in Kenya`;
+
+  const handleWhatsAppOrder = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (inStockVariants.length > 0 && selectedSize == null) {
+      setSizeError(true);
+      return;
+    }
+
+    setSizeError(false);
+    const sizeLabel =
+      selectedSize != null
+        ? String(getDisplaySize(selectedSize, category))
+        : undefined;
+    const imageUrl = activeImage?.url || images[0]?.url || "";
+    const productUrl = `${window.location.origin}/product/${slug}`;
+
+    openWhatsAppOrderMessage({
+      productName: name,
+      productPrice: price,
+      imageUrl,
+      productUrl,
+      currency: siteConfig.currency,
+      quantity: 1,
+      sizeLabel,
+    });
+  };
 
   if (!id) return null;
 
@@ -93,7 +151,7 @@ export function ProductCard({ product, className, priority = false }: ProductCar
         </div>
       )}
 
-      <div className="mt-2 space-y-1">
+      <div className="mt-2 flex flex-1 flex-col space-y-1">
         <p className="text-xs font-normal text-muted-foreground">{brand}</p>
 
         <Link to={`/product/${slug}`} className="block">
@@ -118,6 +176,64 @@ export function ProductCard({ product, className, priority = false }: ProductCar
             <span className="text-xs text-muted-foreground">New</span>
           )}
         </div>
+
+        {showOrder && (
+          <div className="mt-auto space-y-2 pt-2">
+            {inStockVariants.length > 0 && (
+              <div
+                className={cn(
+                  "rounded-md",
+                  sizeError && "ring-2 ring-red-500/50 p-1 -mx-1"
+                )}
+              >
+                <p className="mb-1 text-[10px] font-medium text-muted-foreground sm:text-xs">
+                  Choose size
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {inStockVariants.map((variant) => {
+                    const displaySize = getDisplaySize(variant.size, category);
+                    const selected = selectedSize === variant.size;
+                    return (
+                      <button
+                        key={variant.id ?? `${id}-${variant.size}`}
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          setSelectedSize(variant.size);
+                          setSizeError(false);
+                        }}
+                        className={cn(
+                          "h-7 min-w-[1.85rem] rounded border px-1.5 text-[10px] font-medium transition-colors sm:h-8 sm:min-w-[2.25rem] sm:text-xs",
+                          selected
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-white hover:border-primary"
+                        )}
+                      >
+                        {displaySize}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <Button
+              type="button"
+              size="sm"
+              className="h-8 w-full bg-green-600 px-2 text-[10px] font-semibold text-white hover:bg-green-700 sm:h-9 sm:text-xs"
+              onClick={handleWhatsAppOrder}
+            >
+              Order on WhatsApp
+            </Button>
+
+            {sizeError && (
+              <p className="text-[11px] font-medium text-red-600">
+                Choose a size first, then order.
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </article>
   );

@@ -30,7 +30,12 @@ export function HomeSaleSection({ products, className }: HomeSaleSectionProps) {
 
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4 md:gap-4">
           {display.map((product, index) => (
-            <ProductCard key={product.id} product={product} priority={index < 2} />
+            <ProductCard
+              key={product.id}
+              product={product}
+              priority={index < 2}
+              enableWhatsAppOrder
+            />
           ))}
         </div>
       </div>

@@ -84,6 +84,7 @@ export default function SalePage() {
           <ProductGrid
             products={products}
             columns={4}
+            enableWhatsAppOrder
             title={
               products.length
                 ? `${products.length} product${products.length === 1 ? "" : "s"} on sale`
