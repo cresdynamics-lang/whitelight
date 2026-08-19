@@ -19,12 +19,20 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CheckoutForm } from "./CheckoutForm";
 
 export function CartDrawer() {
-  const { items, isOpen, setIsOpen, removeFromCart, updateQuantity, getTotal, getItemCount } = useCart();
+  const { items, isOpen, setIsOpen, removeFromCart, updateQuantity, getTotal, getItemCount, openCheckoutOnNextOpen, setOpenCheckoutOnNextOpen } = useCart();
   const [showCheckout, setShowCheckout] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && openCheckoutOnNextOpen) {
+      setShowCheckout(true);
+      setOpenCheckoutOnNextOpen(false);
+    }
+    if (!isOpen) setShowCheckout(false);
+  }, [isOpen, openCheckoutOnNextOpen, setOpenCheckoutOnNextOpen]);
 
   const handleWhatsAppOrder = () => {
     if (items.length === 0) return;

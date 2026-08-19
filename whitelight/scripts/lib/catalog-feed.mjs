@@ -1,8 +1,7 @@
 /**
- * Shared catalog feed builder — used by Vercel API routes and local generate scripts.
- * Fetches live products from Supabase (same shape as the storefront).
+ * Shared catalog feed builder — fetches products from Postgres (DATABASE_URL).
  */
-import { createClient } from "@supabase/supabase-js";
+import pg from "pg";
 
 const BASE_URL = "https://whitelightstore.co.ke";
 const CURRENCY = "KES";
@@ -17,17 +16,17 @@ const GOOGLE_CATEGORIES = {
   accessories: "Apparel & Accessories > Clothing Accessories",
 };
 
-function getSupabase() {
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const key =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.VITE_SUPABASE_ANON_KEY;
-  if (!url || !key) {
-    throw new Error(
-      "Missing Supabase credentials (SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY or VITE_SUPABASE_ANON_KEY)"
-    );
+async function getPgClient() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) {
+    throw new Error("Missing DATABASE_URL for catalog feeds");
   }
-  return createClient(url, key);
+  const client = new pg.Client({
+    connectionString: databaseUrl,
+    ssl: process.env.PGSSL === "require" ? { rejectUnauthorized: false } : undefined,
+  });
+  await client.connect();
+  return client;
 }
 
 function normalizeProduct(row) {
@@ -57,12 +56,6 @@ function normalizeProduct(row) {
   };
 }
 
-const CATALOG_SELECT = `
-  *,
-  product_images (*),
-  product_variants (*)
-`;
-
 export function getProductLink(product) {
   if (product.url_slug) {
     const path = product.url_slug.startsWith("/")
@@ -75,9 +68,23 @@ export function getProductLink(product) {
 
 export function getAvailability(product) {
   const variants = product.variants || [];
-  if (variants.length === 0) return "in stock";
-  const inStock = variants.some((v) => v.inStock);
+  if (variants.length === 0) return "out of stock";
+  const inStock = variants.some((v) => v.inStock || Number(v.stockQuantity) > 0);
   return inStock ? "in stock" : "out of stock";
+}
+
+export function filterValidCatalogProducts(products = []) {
+  return products.filter((product) => {
+    if (!product || !product.id || !product.slug || !product.name || !product.brand) return false;
+    const price = Number(product.price);
+    if (!Number.isFinite(price) || price <= 0) return false;
+    const variants = Array.isArray(product.variants) ? product.variants : [];
+    if (variants.length === 0) return false;
+    if (!variants.some((v) => Boolean(v.inStock) || Number(v.stockQuantity) > 0)) return false;
+    const imageLink = getMainImage(product);
+    if (!imageLink) return false;
+    return true;
+  });
 }
 
 function getMainImage(product) {
@@ -105,31 +112,53 @@ function stripHtml(text) {
 }
 
 export async function fetchCatalogProducts() {
-  const supabase = getSupabase();
-  const { data, error } = await supabase
-    .from("products")
-    .select(CATALOG_SELECT)
-    .order("updated_at", { ascending: false });
-
-  if (error) throw error;
-  return (data || []).map(normalizeProduct).filter((p) => p.id && p.slug);
+  const client = await getPgClient();
+  try {
+    const { rows } = await client.query(
+      `SELECT p.*,
+        COALESCE(
+          (SELECT json_agg(json_build_object('id', i.id, 'url', i.url, 'alt_text', i.alt_text) ORDER BY i.id)
+           FROM product_images i WHERE i.product_id = p.id), '[]'::json
+        ) AS product_images,
+        COALESCE(
+          (SELECT json_agg(json_build_object('id', v.id, 'size', v.size, 'in_stock', v.in_stock, 'stock_quantity', v.stock_quantity) ORDER BY v.id)
+           FROM product_variants v WHERE v.product_id = p.id), '[]'::json
+        ) AS product_variants
+       FROM products p
+       ORDER BY p.updated_at DESC NULLS LAST`
+    );
+    return filterValidCatalogProducts(rows.map(normalizeProduct));
+  } finally {
+    await client.end();
+  }
 }
 
 /** Products marked On Sale in admin — used for Meta/Google ad catalog feeds */
 export async function fetchSaleCatalogProducts() {
-  const supabase = getSupabase();
-  const { data, error } = await supabase
-    .from("products")
-    .select(CATALOG_SELECT)
-    .eq("is_on_offer", true)
-    .order("updated_at", { ascending: false });
-
-  if (error) throw error;
-  return (data || []).map(normalizeProduct).filter((p) => p.id && p.slug);
+  const client = await getPgClient();
+  try {
+    const { rows } = await client.query(
+      `SELECT p.*,
+        COALESCE(
+          (SELECT json_agg(json_build_object('id', i.id, 'url', i.url, 'alt_text', i.alt_text) ORDER BY i.id)
+           FROM product_images i WHERE i.product_id = p.id), '[]'::json
+        ) AS product_images,
+        COALESCE(
+          (SELECT json_agg(json_build_object('id', v.id, 'size', v.size, 'in_stock', v.in_stock, 'stock_quantity', v.stock_quantity) ORDER BY v.id)
+           FROM product_variants v WHERE v.product_id = p.id), '[]'::json
+        ) AS product_variants
+       FROM products p
+       WHERE p.is_on_offer = TRUE
+       ORDER BY p.updated_at DESC NULLS LAST`
+    );
+    return filterValidCatalogProducts(rows.map(normalizeProduct));
+  } finally {
+    await client.end();
+  }
 }
 
 export function toFeedItems(products) {
-  return products
+  return filterValidCatalogProducts(products)
     .map((product) => {
       const imageLink = getMainImage(product);
       if (!imageLink) return null;

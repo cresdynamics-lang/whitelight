@@ -18,9 +18,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Orbitron", "monospace"],
-        body: ["Rajdhani", "sans-serif"],
-        accent: ["Exo 2", "sans-serif"],
+        heading: ["Maiandra GD", "Trebuchet MS", "Segoe UI", "sans-serif"],
+        body: ["Maiandra GD", "Trebuchet MS", "Segoe UI", "sans-serif"],
+        accent: ["Maiandra GD", "Trebuchet MS", "Segoe UI", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

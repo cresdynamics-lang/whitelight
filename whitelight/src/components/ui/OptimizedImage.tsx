@@ -16,9 +16,11 @@ interface OptimizedImageProps {
 }
 
 function getWebpPath(path: string): string | null {
-  if (!path.startsWith('/')) return null;
-  const match = path.match(/\.(png|jpe?g)$/i);
-  return match ? path.replace(/\.(png|jpe?g)$/i, '.webp') : null;
+  // Relative site assets or absolute upload URLs (e.g. http://host/uploads/…)
+  if (!path.startsWith('/') && !/^https?:\/\//i.test(path)) return null;
+  const match = path.match(/\.(png|jpe?g)(\?.*)?$/i);
+  if (!match) return null;
+  return path.replace(/\.(png|jpe?g)(\?.*)?$/i, '.webp$2');
 }
 
 export function OptimizedImage({
@@ -40,7 +42,7 @@ export function OptimizedImage({
   const imgRef = useRef<HTMLImageElement>(null);
 
   const resolvedSrc = src.startsWith('/') ? resolveStaticImage(src) : src;
-  const webpSrc = getWebpPath(src) ?? (src.startsWith('/') ? getWebpPath(resolvedSrc) : null);
+  const webpSrc = getWebpPath(src) || getWebpPath(resolvedSrc);
   const isCdn = src.includes('digitaloceanspaces.com');
   const placeholder =
     'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="1" height="1"%3E%3C/svg%3E';

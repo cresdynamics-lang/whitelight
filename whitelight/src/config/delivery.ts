@@ -1,25 +1,33 @@
 import { siteConfig } from "@/config/site";
 
-/** Nairobi delivery zones and fees (KSh) */
+/** Delivery mode: ship to customer or collect in store */
+export type DeliveryMode = "ship" | "pickup";
+
+/** Shipping zones from store rates (KSh) */
 export type DeliveryZoneId =
   | "pickup_shop"
-  | "cbd"
-  | "westlands"
-  | "upperhill"
-  | "outside_nairobi";
+  | "zone_e"
+  | "zone_d"
+  | "zone_c"
+  | "parcel_outside"
+  | "zone_b"
+  | "zone_a";
 
 export interface DeliveryZone {
   id: DeliveryZoneId;
   label: string;
   fee: number;
+  /** Areas covered — shown under zone name */
+  areas?: string;
   description?: string;
-  /** Full address when customer collects in-store */
   pickupAddress?: string;
+  /** Only listed under Ship; pickup is separate */
+  shipOnly?: boolean;
 }
 
-/** In-store collection — same as site contact address */
 export const SHOP_PICKUP_ADDRESS = `${siteConfig.contact.address}, ${siteConfig.contact.city}`;
 
+/** Rates matching store shipping board */
 export const DELIVERY_ZONES: DeliveryZone[] = [
   {
     id: "pickup_shop",
@@ -29,28 +37,53 @@ export const DELIVERY_ZONES: DeliveryZone[] = [
     pickupAddress: SHOP_PICKUP_ADDRESS,
   },
   {
-    id: "cbd",
-    label: "Nairobi CBD (delivery)",
-    fee: 0,
-    description: "Free delivery within CBD",
+    id: "zone_e",
+    label: "Nairobi Zone E",
+    fee: 200,
+    areas: "Riara rd, Ngong rd, Kilimani, Valley Arcade",
+    shipOnly: true,
   },
   {
-    id: "westlands",
-    label: "Westlands",
+    id: "zone_d",
+    label: "Nairobi Zone D",
     fee: 300,
+    areas:
+      "Lavington, Westlands, Upperhill, Naivasha Rd, Kileleshwa, Madaraka, Nairobi West, CBD",
+    shipOnly: true,
   },
   {
-    id: "upperhill",
-    label: "Upperhill",
-    fee: 250,
+    id: "zone_c",
+    label: "Nairobi Zone C",
+    fee: 450,
+    areas:
+      "Karen, Parklands, Spring Valley, Lower Kabete, Uthiru, Kangemi, Langata, South B & C",
+    shipOnly: true,
   },
   {
-    id: "outside_nairobi",
-    label: "Outside Nairobi",
-    fee: 300,
-    description: "Delivery to other towns / counties",
+    id: "parcel_outside",
+    label: "Parcel Fees (Outside Nairobi Shipping)",
+    fee: 500,
+    areas: "Outside Nairobi — parcel / courier",
+    shipOnly: true,
+  },
+  {
+    id: "zone_b",
+    label: "Nairobi Zone B",
+    fee: 600,
+    areas:
+      "Dagoretti, Ruaka, Kitusuru, Runda, Ngong, Roysambu, Kasarani, Kiambu rd, Kahawa, Kinoo",
+    shipOnly: true,
+  },
+  {
+    id: "zone_a",
+    label: "Nairobi Zone A",
+    fee: 1000,
+    areas: "Ruiru, Syokimau, Juja, Kitengela, Embakasi, Utawala and environs",
+    shipOnly: true,
   },
 ];
+
+export const SHIPPING_ZONES = DELIVERY_ZONES.filter((z) => z.shipOnly);
 
 export function getDeliveryZone(id: string): DeliveryZone | undefined {
   return DELIVERY_ZONES.find((z) => z.id === id);
@@ -71,4 +104,12 @@ export function getResolvedDeliveryAddress(
   const zone = getDeliveryZone(zoneId);
   if (zone?.pickupAddress) return zone.pickupAddress;
   return addressInput.trim();
+}
+
+export function formatZoneFee(fee: number): string {
+  if (fee === 0) return "Free";
+  return `${siteConfig.currency} ${fee.toLocaleString("en-KE", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
 }

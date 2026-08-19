@@ -9,7 +9,12 @@ declare global {
 
 type Fbq = {
   (command: "init", pixelId: string): void;
-  (command: "track", event: string, params?: Record<string, unknown>): void;
+  (
+    command: "track",
+    event: string,
+    params?: Record<string, unknown>,
+    options?: { eventID?: string }
+  ): void;
   (command: "trackCustom", event: string, params?: Record<string, unknown>): void;
   callMethod?: (...args: unknown[]) => void;
   queue?: unknown[];
@@ -73,12 +78,17 @@ export function initMetaPixel(): void {
 
 export function trackMeta(
   event: string,
-  params?: Record<string, unknown>
+  params?: Record<string, unknown>,
+  eventId?: string
 ): void {
   if (!isMetaEnabled() || typeof window === "undefined") return;
-  window.fbq?.("track", event, params);
+  if (eventId) {
+    window.fbq?.("track", event, params, { eventID: eventId });
+  } else {
+    window.fbq?.("track", event, params);
+  }
   if (analyticsConfig.debug) {
-    console.log("[analytics] Meta", event, params);
+    console.log("[analytics] Meta", event, params, eventId);
   }
 }
 

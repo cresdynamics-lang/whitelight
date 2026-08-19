@@ -7,6 +7,7 @@ import { ShopByBrand } from "@/components/sections/ShopByBrand";
 import { CategoryBanner } from "@/components/sections/CategoryBanner";
 import { HorizontalProductRow } from "@/components/sections/HorizontalProductRow";
 import { HomeSaleSection } from "@/components/sections/HomeSaleSection";
+import { BlogUpdatesSection } from "@/components/sections/BlogUpdatesSection";
 import { useCatalogPartitions } from "@/hooks/useCatalog";
 import { HomePageHead } from "@/components/seo/HomePageHead";
 import { CatalogErrorFallback } from "@/components/CatalogErrorFallback";
@@ -73,10 +74,9 @@ const Index = () => {
       return result;
     };
 
-    const shuffledNew = [...newArrivals].sort(() => Math.random() - 0.5);
-
     return {
-      uniqueNewArrivals: takeUnique(shuffledNew, 10),
+      // Latest updated products first (order comes from partitionCatalog)
+      uniqueNewArrivals: takeUnique(newArrivals, 10),
       uniqueBestSellers: takeUnique(bestSellers, 12),
       uniqueRunning: takeUnique(running, 12),
       uniqueTrail: takeUnique(trail, 12),
@@ -201,6 +201,8 @@ const Index = () => {
             />
           </>
         )}
+
+        <BlogUpdatesSection />
 
         <section className="border-t border-muted mt-8">
           <div className="container py-8">

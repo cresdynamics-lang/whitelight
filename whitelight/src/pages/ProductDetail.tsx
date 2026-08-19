@@ -17,7 +17,7 @@ import { SEOHead } from "@/components/seo/SEOHead";
 import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { FastImage } from "@/components/ui/FastImage";
 import { getOriginalProductUrl } from "@/lib/imageUtils";
-import { trackViewContent } from "@/lib/analytics/events";
+import { trackViewContent, trackAddToCart } from "@/lib/analytics/events";
 import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
 
 const ProductDetail = () => {
@@ -78,7 +78,7 @@ const ProductDetail = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [sizeError, setSizeError] = useState(false);
-  const { addItem } = useCart();
+  const { addItem, setOpenCheckoutOnNextOpen } = useCart();
   const trackedViewRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -87,6 +87,14 @@ const ProductDetail = () => {
       trackViewContent(product);
     }
   }, [product]);
+
+  useEffect(() => {
+    setSelectedSize(null);
+    setSelectedSizes([]);
+    setQuantity(1);
+    setSelectedImageIndex(0);
+    setSizeError(false);
+  }, [slug]);
 
   // Prefetch every angle so switching views is instant after first load
   useEffect(() => {
@@ -202,17 +210,24 @@ const ProductDetail = () => {
     }
   };
 
+  const buildCartLine = () => {
+    const allSizes = selectedSize
+      ? [selectedSize, ...selectedSizes.filter((s) => s !== selectedSize)]
+      : selectedSizes;
+    const sizesParam = allSizes.map((s, i) => `size${i + 1}=${s}`).join("&");
+    const referenceLink = `${window.location.origin}/product/${slug}?img=${selectedImageIndex}&${sizesParam}`;
+    return { allSizes, referenceLink };
+  };
+
   const handleAddToCart = () => {
     if (!selectedSize && selectedSizes.length === 0) {
       setSizeError(true);
       return;
     }
-    
+
     setSizeError(false);
-    const allSizes = selectedSize ? [selectedSize, ...selectedSizes.filter(s => s !== selectedSize)] : selectedSizes;
-    const sizesParam = allSizes.map((s, i) => `size${i + 1}=${s}`).join('&');
-    const referenceLink = `${window.location.origin}/product/${slug}?img=${selectedImageIndex}&${sizesParam}`;
-    
+    const { allSizes, referenceLink } = buildCartLine();
+
     addItem({
       id: product.id,
       name: product.name,
@@ -222,15 +237,41 @@ const ProductDetail = () => {
       selectedSizes: allSizes,
       referenceLink,
       quantity,
-      category: product.category
+      category: product.category,
+      slug: product.slug,
     });
-    
-    const sizeText = allSizes.length > 1 ? 
-      `Sizes ${allSizes.map(s => getDisplaySize(s, product.category)).join(', ')}` : 
-      `Size ${getDisplaySize(allSizes[0], product.category)}`;
+
+    const sizeText =
+      allSizes.length > 1
+        ? `Sizes ${allSizes.map((s) => getDisplaySize(s, product.category)).join(", ")}`
+        : `Size ${getDisplaySize(allSizes[0], product.category)}`;
     toast.success("Added to cart!", {
       description: `${product.name} - ${sizeText}`,
     });
+  };
+
+  /** Reserve → cart + open checkout (fill details → pay → WhatsApp) */
+  const handleReserve = () => {
+    if (!selectedSize && selectedSizes.length === 0) {
+      setSizeError(true);
+      return;
+    }
+    setSizeError(false);
+    const { allSizes, referenceLink } = buildCartLine();
+    setOpenCheckoutOnNextOpen(true);
+    addItem({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.images[selectedImageIndex]?.url || product.images[0]?.url,
+      size: selectedSize || selectedSizes[0],
+      selectedSizes: allSizes,
+      referenceLink,
+      quantity,
+      category: product.category,
+      slug: product.slug,
+    });
+    toast.success("Reserved — complete checkout to pay");
   };
 
   const getSelectedSizeLabels = () => {
@@ -254,6 +295,8 @@ const ProductDetail = () => {
       : selectedSizes;
     const sizesParam = allSizes.map((s, i) => `size${i + 1}=${s}`).join("&");
     const productUrl = `${window.location.origin}/product/${slug}?img=${selectedImageIndex}&${sizesParam}`;
+
+    trackAddToCart(product, quantity, selectedSize || selectedSizes[0]);
 
     openWhatsAppOrderMessage({
       productName: product.name,
@@ -348,33 +391,46 @@ const ProductDetail = () => {
         </div>
       </div>
 
-      <div className="flex flex-row gap-2">
+      <div className="flex flex-row gap-1.5 sm:gap-2">
         <Button
           size={compact ? "sm" : "lg"}
+          type="button"
+          variant="secondary"
           className={cn(
-            "min-w-0 flex-1 px-2",
-            compact ? "h-9 text-xs" : "h-14 sm:px-4 sm:text-base"
+            "min-w-0 flex-1 px-1.5 sm:px-2",
+            compact ? "h-9 text-[10px] sm:text-xs" : "h-12 sm:h-14 text-xs sm:text-sm"
           )}
-          onClick={handleAddToCart}
+          onClick={handleReserve}
         >
-          <ShoppingBag className={cn("mr-1 shrink-0", compact ? "h-3.5 w-3.5" : "mr-2 h-5 w-5")} />
-          <span className="truncate">Add to Cart</span>
+          <span className="truncate">Reserve this</span>
         </Button>
         <Button
           size={compact ? "sm" : "lg"}
           type="button"
           className={cn(
-            "min-w-0 flex-1 bg-green-600 px-2 text-white hover:bg-green-700",
-            compact ? "h-9 text-xs" : "h-14 sm:px-4 sm:text-base"
+            "min-w-0 flex-1 px-1.5 sm:px-2",
+            compact ? "h-9 text-[10px] sm:text-xs" : "h-12 sm:h-14 text-xs sm:text-sm"
+          )}
+          onClick={handleAddToCart}
+        >
+          <ShoppingBag className={cn("shrink-0", compact ? "h-3 w-3 mr-0.5" : "h-4 w-4 mr-1")} />
+          <span className="truncate">Add to cart</span>
+        </Button>
+        <Button
+          size={compact ? "sm" : "lg"}
+          type="button"
+          className={cn(
+            "min-w-0 flex-1 bg-green-600 px-1.5 text-white hover:bg-green-700 sm:px-2",
+            compact ? "h-9 text-[10px] sm:text-xs" : "h-12 sm:h-14 text-xs sm:text-sm"
           )}
           onClick={handleOrderWhatsApp}
         >
-          <span className="truncate">{compact ? "WhatsApp" : "Order on WhatsApp"}</span>
+          <span className="truncate">Via WhatsApp</span>
         </Button>
       </div>
       {sizeError && (
         <p className={cn("mt-1.5 font-medium text-red-600", compact ? "text-[11px]" : "text-sm mt-2")}>
-          Please choose a size before adding to cart or ordering.
+          Please choose a size before continuing.
         </p>
       )}
     </>
@@ -546,20 +602,49 @@ const ProductDetail = () => {
           </div>
         </div>
 
-        {/* Related Products */}
-        {youMayAlsoLike.length > 0 && (
+        {/* Below product: most ordered → how to confirm → you may also like */}
+        {mostOrdered.length > 0 && (
           <ProductGrid
-            title="You May Also Like"
-            products={youMayAlsoLike}
+            title="What Most People Order"
+            products={mostOrdered}
             columns={4}
             className="bg-secondary/30"
           />
         )}
 
-        {mostOrdered.length > 0 && (
+        <section className="border-y border-border/60 bg-background">
+          <div className="container py-10 md:py-12 max-w-3xl">
+            <h2 className="font-heading text-xl md:text-2xl font-semibold mb-3">
+              How They Confirm
+            </h2>
+            <p className="text-muted-foreground text-sm md:text-base mb-5">
+              Same flow as our Nairobi store — pick your size, send the order on WhatsApp, and we confirm availability and share payment details before you pay.
+            </p>
+            <ol className="space-y-3 text-sm md:text-base text-foreground">
+              <li className="flex gap-3">
+                <span className="font-semibold text-muted-foreground w-6 shrink-0">1.</span>
+                <span>Open this product and tap through the photo angles so you know the exact pair.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-semibold text-muted-foreground w-6 shrink-0">2.</span>
+                <span>Select your size (required), then Add to Cart or Order on WhatsApp.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-semibold text-muted-foreground w-6 shrink-0">3.</span>
+                <span>Our team replies on WhatsApp to confirm availability and share payment details.</span>
+              </li>
+              <li className="flex gap-3">
+                <span className="font-semibold text-muted-foreground w-6 shrink-0">4.</span>
+                <span>You pay via M-Pesa Paybill 247247 (Acc 0708749473) after confirmation — we pack and deliver.</span>
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        {youMayAlsoLike.length > 0 && (
           <ProductGrid
-            title="What Nairobi Customers Order Most"
-            products={mostOrdered}
+            title="You May Also Like"
+            products={youMayAlsoLike}
             columns={4}
           />
         )}

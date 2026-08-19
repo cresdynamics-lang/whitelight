@@ -1,5 +1,6 @@
 // WhatsApp integration utility
 import { siteConfig } from "@/config/site";
+import { trackMeta } from "@/lib/analytics/metaPixel";
 
 export interface WhatsAppMessageParams {
   productName: string;
@@ -58,7 +59,7 @@ ${sizeLabel ? `👟 *Size(s):* ${sizeLabel}\n` : ""}📊 *Quantity:* ${quantity}
 ${productUrl ? `🔗 *Product Page:* ${productUrl}` : ""}
 ${imageUrl ? `🖼️ *Image Link:* ${imageUrl}` : ""}
 
-Please confirm availability and delivery details. Thank you!`;
+Please confirm availability and share payment details. Thank you!`;
 
   // Encode message for URL
   const encodedMessage = encodeURIComponent(message);
@@ -75,6 +76,11 @@ Please confirm availability and delivery details. Thank you!`;
  * @param params Product details
  */
 export function openWhatsAppOrderMessage(params: WhatsAppMessageParams): void {
+  trackMeta("Contact", {
+    content_name: params.productName,
+    value: params.productPrice,
+    currency: params.currency || siteConfig.currency,
+  });
   const url = generateWhatsAppMessage(params);
   window.open(url, "_blank", "noopener,noreferrer");
 }
@@ -164,6 +170,11 @@ export function openWhatsAppCartOrderMessage(params: {
   deliveryFee?: number;
   total?: number;
 }): void {
+  trackMeta("Contact", {
+    content_name: "Cart order WhatsApp",
+    value: params.total,
+    currency: params.currency || siteConfig.currency,
+  });
   const url = generateWhatsAppCartOrderMessage(params);
   window.open(url, "_blank", "noopener,noreferrer");
 }

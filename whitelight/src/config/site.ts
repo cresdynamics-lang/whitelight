@@ -18,7 +18,10 @@ export const siteConfig = {
     email: "hello@whitelight.com",
     phone: "+254 708 749473",
     whatsapp: "+254708749473",
-    tillNumber: "5684680",
+    /** @deprecated Prefer M-Pesa Paybill in config/payment.ts */
+    tillNumber: "",
+    paybillNumber: "247247",
+    paybillAccount: "0708749473",
     address: "Luthuli Avenue, Rware Building Shop 410, Fourth Floor",
     city: "Nairobi, Kenya"
   },
@@ -38,6 +41,7 @@ export const siteConfig = {
     { label: "Tennis", href: "/category/tennis" },
     { label: "Accessories", href: "/category/accessories" },
     { label: "Sale", href: "/sale" },
+    { label: "Updates", href: "/blog" },
     { label: "Guide", href: "/buying-guide" },
     { label: "About", href: "/about" },
     { label: "Contact", href: "/contact" },

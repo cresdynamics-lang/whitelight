@@ -1,57 +1,38 @@
 /**
- * Build-time snapshot of the storefront catalog for instant image loading.
- * Written to public/catalog.json and served from CDN — no Supabase wait on first paint.
+ * Build-time snapshot of the storefront catalog from Postgres (DATABASE_URL).
  */
 import { writeFileSync, existsSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { createClient } from "@supabase/supabase-js";
+import pg from "pg";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const OUT = join(__dirname, "../public/catalog.json");
-
-const CATALOG_SELECT = `
-  id, slug, name, brand, category, categories, price, original_price,
-  description, tags, is_new, is_best_seller, is_on_offer, url_slug, alt_text_main,
-  created_at, updated_at,
-  product_images (id, url, alt_text),
-  product_variants (id, size, in_stock)
-`;
-
-function getSupabase() {
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
-  const key =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
-    process.env.VITE_SUPABASE_ANON_KEY;
-  if (!url || !key) {
-    throw new Error(
-      "Missing Supabase credentials. Set SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY in Vercel (Production build), or VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY locally."
-    );
-  }
-  return createClient(url, key);
-}
+const OUT = process.env.CATALOG_OUT || join(__dirname, "../public/catalog.json");
 
 function normalizeLean(row) {
-  const imagesRaw = Array.isArray(row.product_images) ? row.product_images : [];
-  const firstImage = imagesRaw[0];
-  const images = firstImage
-    ? [
-        {
-          id: String(firstImage.id ?? ""),
-          url: String(firstImage.url ?? ""),
-          alt: String(firstImage.alt_text ?? firstImage.alt ?? ""),
-        },
-      ]
-    : [];
+  const imagesRaw = Array.isArray(row.product_images)
+    ? row.product_images
+    : Array.isArray(row.images)
+      ? row.images
+      : [];
+  const images = imagesRaw
+    .filter((img) => img && (img.url || img.src))
+    .map((img) => ({
+      id: String(img.id ?? ""),
+      url: String(img.url ?? img.src ?? ""),
+      alt: String(img.alt_text ?? img.alt ?? ""),
+    }));
 
-  const variants = Array.isArray(row.product_variants)
-    ? row.product_variants.map((v) => ({
-        id: String(v.id ?? ""),
-        size: v.size ?? 0,
-        inStock: Boolean(v.in_stock ?? v.inStock),
-      }))
-    : [];
+  const variantsRaw = Array.isArray(row.product_variants)
+    ? row.product_variants
+    : Array.isArray(row.variants)
+      ? row.variants
+      : [];
+  const variants = variantsRaw.map((v) => ({
+    id: String(v.id ?? ""),
+    size: v.size ?? 0,
+    inStock: Boolean(v.in_stock ?? v.inStock),
+  }));
 
   return {
     id: String(row.id ?? ""),
@@ -61,7 +42,8 @@ function normalizeLean(row) {
     category: row.category ?? "running",
     categories: Array.isArray(row.categories) ? row.categories : undefined,
     price: Number(row.price) || 0,
-    originalPrice: row.original_price != null ? Number(row.original_price) : undefined,
+    originalPrice:
+      row.original_price != null ? Number(row.original_price) : row.originalPrice,
     description: String(row.description ?? ""),
     tags: Array.isArray(row.tags) ? row.tags : [],
     isNew: Boolean(row.is_new ?? row.isNew),
@@ -72,53 +54,60 @@ function normalizeLean(row) {
     images,
     variants,
     createdAt: row.created_at ?? row.createdAt ?? "",
+    updatedAt: row.updated_at ?? row.updatedAt ?? "",
   };
+}
+
+async function fromDatabaseUrl() {
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) return null;
+  const client = new pg.Client({
+    connectionString: databaseUrl,
+    ssl: process.env.PGSSL === "require" ? { rejectUnauthorized: false } : undefined,
+  });
+  await client.connect();
+  try {
+    const { rows } = await client.query(
+      `SELECT p.*,
+        COALESCE(
+          (SELECT json_agg(json_build_object('id', i.id, 'url', i.url, 'alt_text', i.alt_text) ORDER BY i.id)
+           FROM product_images i WHERE i.product_id = p.id), '[]'::json
+        ) AS product_images,
+        COALESCE(
+          (SELECT json_agg(json_build_object('id', v.id, 'size', v.size, 'in_stock', v.in_stock) ORDER BY v.id)
+           FROM product_variants v WHERE v.product_id = p.id), '[]'::json
+        ) AS product_variants
+       FROM products p
+       ORDER BY p.updated_at DESC NULLS LAST`
+    );
+    return rows.map(normalizeLean).filter((p) => p.id);
+  } finally {
+    await client.end();
+  }
 }
 
 async function main() {
   try {
-    const supabase = getSupabase();
-    const { data, error } = await supabase
-      .from("products")
-      .select(CATALOG_SELECT)
-      .order("updated_at", { ascending: false });
-
-    if (error) throw error;
-
-    const products = (data || []).map(normalizeLean).filter((p) => p.id);
-
-    const payload = {
-      generatedAt: new Date().toISOString(),
-      count: products.length,
-      products,
-    };
-
-    writeFileSync(OUT, JSON.stringify(payload));
-    console.log(`Wrote ${products.length} products to public/catalog.json`);
-  } catch (err) {
-    if (existsSync(OUT)) {
-      console.warn(
-        "generate-catalog-json skipped (keeping existing catalog.json):",
-        err.message
-      );
-      if (process.env.VERCEL) {
-        console.warn(
-          "Vercel build: add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY under Project → Settings → Environment Variables (Production) so catalog.json is generated with real products."
-        );
-      }
-      process.exit(0);
-    }
-    console.warn("generate-catalog-json skipped:", err.message);
-    if (process.env.VERCEL) {
-      console.error(
-        "Vercel build failed catalog generation: set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in project environment variables."
-      );
-      process.exit(1);
+    const products = await fromDatabaseUrl();
+    if (!products) {
+      throw new Error("Missing DATABASE_URL for catalog generation.");
     }
     writeFileSync(
       OUT,
-      JSON.stringify({ generatedAt: null, count: 0, products: [] })
+      JSON.stringify({
+        generatedAt: new Date().toISOString(),
+        count: products.length,
+        products,
+      })
     );
+    console.log(`Wrote ${products.length} products to public/catalog.json`);
+  } catch (err) {
+    if (existsSync(OUT)) {
+      console.warn("generate-catalog-json skipped (keeping existing catalog.json):", err.message);
+      process.exit(0);
+    }
+    console.warn("generate-catalog-json skipped:", err.message);
+    writeFileSync(OUT, JSON.stringify({ generatedAt: null, count: 0, products: [] }));
     process.exit(0);
   }
 }

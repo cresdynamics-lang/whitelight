@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { NavPrefetchLink } from "@/components/NavPrefetchLink";
 import type { Product } from "@/types/product";
 import { formatPrice } from "@/lib/products";
 import { siteConfig } from "@/config/site";
@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { FastImage } from "@/components/ui/FastImage";
 import { Button } from "@/components/ui/button";
 import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
+import { trackAddToCart } from "@/lib/analytics/events";
 
 interface ProductCardProps {
   product: Product;
@@ -41,7 +42,6 @@ export function ProductCard({
   priority = false,
   enableWhatsAppOrder = false,
 }: ProductCardProps) {
-  const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedSize, setSelectedSize] = useState<number | string | null>(null);
   const [sizeError, setSizeError] = useState(false);
 
@@ -60,9 +60,8 @@ export function ProductCard({
   const isSoldOut = variants.length > 0 && inStockVariants.length === 0;
   const showOrder = enableWhatsAppOrder && !isSoldOut;
 
-  const swatchImages = images.slice(0, 4);
-  const moreAngles = Math.max(0, images.length - swatchImages.length);
-  const activeImage = images[activeImageIndex] ?? images[0];
+  // Listing cards: one hero image only — all angles live on the product page after click.
+  const activeImage = images[0];
   const mainAlt =
     product.alt_text_main ||
     activeImage?.alt ||
@@ -85,6 +84,9 @@ export function ProductCard({
     const imageUrl = activeImage?.url || images[0]?.url || "";
     const productUrl = `${window.location.origin}/product/${slug}`;
 
+    // Sale / WhatsApp order counts as AddToCart for Meta (+ CAPI)
+    trackAddToCart(product, 1, selectedSize ?? undefined);
+
     openWhatsAppOrderMessage({
       productName: name,
       productPrice: price,
@@ -100,65 +102,26 @@ export function ProductCard({
 
   return (
     <article className={cn("group product-card flex flex-col", className)}>
-      <Link to={`/product/${slug}`} className="block">
+      <NavPrefetchLink to={`/product/${slug}`} className="block">
         <div className="relative aspect-[4/5] overflow-hidden bg-neutral-100">
           <FastImage
             src={activeImage?.url || images[0]?.url || "/whitelight_logo.webp"}
             alt={mainAlt}
             objectFit="contain"
-            className="product-image h-full w-full transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+            className="product-image h-full w-full transition-transform duration-300 ease-out group-hover:scale-[1.02]"
             priority={priority}
           />
         </div>
-      </Link>
-
-      {swatchImages.length > 1 && (
-        <div className="mt-2 flex items-center gap-1.5">
-          {swatchImages.map((image, index) => (
-            <button
-              key={image.id || `${id}-angle-${index}`}
-              type="button"
-              aria-label={`View angle ${index + 1}`}
-              onMouseEnter={() => setActiveImageIndex(index)}
-              onFocus={() => setActiveImageIndex(index)}
-              onClick={(e) => {
-                e.preventDefault();
-                setActiveImageIndex(index);
-              }}
-              className={cn(
-                "h-9 w-9 shrink-0 overflow-hidden rounded-sm border bg-white p-0 transition-colors",
-                activeImageIndex === index
-                  ? "border-foreground"
-                  : "border-neutral-200 hover:border-neutral-400"
-              )}
-            >
-              <FastImage
-                src={image.url}
-                alt={image.alt || `${name} angle ${index + 1}`}
-                variant="thumb"
-                className="h-full w-full"
-              />
-            </button>
-          ))}
-          {moreAngles > 0 && (
-            <Link
-              to={`/product/${slug}`}
-              className="text-xs text-muted-foreground hover:text-foreground whitespace-nowrap"
-            >
-              +{moreAngles} more
-            </Link>
-          )}
-        </div>
-      )}
+      </NavPrefetchLink>
 
       <div className="mt-2 flex flex-1 flex-col space-y-1">
         <p className="text-xs font-normal text-muted-foreground">{brand}</p>
 
-        <Link to={`/product/${slug}`} className="block">
+        <NavPrefetchLink to={`/product/${slug}`} className="block">
           <h3 className="text-sm font-normal leading-snug text-foreground line-clamp-2 hover:underline underline-offset-2">
             {name}
           </h3>
-        </Link>
+        </NavPrefetchLink>
 
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 pt-0.5">
           <span className="text-sm text-foreground">{formatPrice(price, siteConfig.currency)}</span>

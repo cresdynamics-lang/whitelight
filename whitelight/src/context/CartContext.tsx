@@ -9,20 +9,24 @@ interface CartContextType {
     name: string;
     price: number;
     image: string;
-    size: number;
-    selectedSizes?: number[];
+    size: number | string;
+    selectedSizes?: (number | string)[];
     referenceLink: string;
     quantity: number;
     category?: string;
+    slug?: string;
   }) => void;
   addToCart: (product: Product, size: number, quantity?: number) => void;
-  removeFromCart: (productId: string, size: number) => void;
-  updateQuantity: (productId: string, size: number, quantity: number) => void;
+  removeFromCart: (productId: string, size: number | string) => void;
+  updateQuantity: (productId: string, size: number | string, quantity: number) => void;
   clearCart: () => void;
   getTotal: () => number;
   getItemCount: () => number;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+  /** When true, cart drawer opens on checkout form (Reserve this) */
+  openCheckoutOnNextOpen: boolean;
+  setOpenCheckoutOnNextOpen: (v: boolean) => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -38,6 +42,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return [];
   });
   const [isOpen, setIsOpen] = useState(false);
+  const [openCheckoutOnNextOpen, setOpenCheckoutOnNextOpen] = useState(false);
 
   // Persist cart to localStorage
   useEffect(() => {
@@ -49,15 +54,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     name: string;
     price: number;
     image: string;
-    size: number;
-    selectedSizes?: number[];
+    size: number | string;
+    selectedSizes?: (number | string)[];
     referenceLink: string;
     quantity: number;
     category?: string;
+    slug?: string;
   }) => {
     setItems((currentItems) => {
       const existingIndex = currentItems.findIndex(
-        (cartItem) => cartItem.product.id === item.id && cartItem.size === item.size && JSON.stringify(cartItem.selectedSizes) === JSON.stringify(item.selectedSizes)
+        (cartItem) =>
+          cartItem.product.id === item.id &&
+          cartItem.size === item.size &&
+          JSON.stringify(cartItem.selectedSizes) === JSON.stringify(item.selectedSizes)
       );
 
       if (existingIndex >= 0) {
@@ -70,7 +79,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
         id: item.id,
         name: item.name,
         price: item.price,
-        slug: item.id,
+        slug: item.slug || item.id,
         brand: "",
         category: (item.category || "running") as Product["category"],
         images: [{ id: item.id, url: item.image, alt: item.name }],
@@ -82,13 +91,16 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
       trackAddToCart(cartProduct, item.quantity, item.size);
 
-      return [...currentItems, {
-        product: cartProduct,
-        size: item.size,
-        selectedSizes: item.selectedSizes,
-        referenceLink: item.referenceLink,
-        quantity: item.quantity
-      }];
+      return [
+        ...currentItems,
+        {
+          product: cartProduct,
+          size: item.size as number,
+          selectedSizes: item.selectedSizes as number[] | undefined,
+          referenceLink: item.referenceLink,
+          quantity: item.quantity,
+        },
+      ];
     });
     setIsOpen(true);
   };
@@ -162,6 +174,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         getItemCount,
         isOpen,
         setIsOpen,
+        openCheckoutOnNextOpen,
+        setOpenCheckoutOnNextOpen,
       }}
     >
       {children}

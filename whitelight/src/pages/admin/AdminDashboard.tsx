@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { adminProductsService } from "@/services/adminSupabaseProducts";
+import { adminProductsService } from "@/services/adminProducts";
 import { contactService } from "@/services/contactService";
 import { fetchOrders } from "@/services/orderService";
 import { buildBrandInventory, formatAdminDate } from "@/lib/adminBrandInventory";

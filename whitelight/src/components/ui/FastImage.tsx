@@ -21,12 +21,16 @@ interface FastImageProps {
   onClick?: () => void;
 }
 
-const CARD_SIZES = "(max-width: 640px) 32vw, (max-width: 1024px) 176px, 208px";
+const CARD_SIZES = "(max-width: 640px) 42vw, (max-width: 1024px) 176px, 208px";
 const HERO_SIZES = "100vw";
 const DETAIL_SIZES = "(max-width: 1024px) 100vw, 50vw";
 const THUMB_SIZES = "(max-width: 1024px) 45vw, 80px";
 
-/** Lightweight image — WebP for static assets, resized CDN URLs for products */
+function isProductAsset(src: string) {
+  return src.includes("digitaloceanspaces.com") || src.startsWith("/uploads/");
+}
+
+/** Lightweight image — WebP + srcSet for /uploads and Spaces */
 export function FastImage({
   src,
   alt,
@@ -38,14 +42,15 @@ export function FastImage({
 }: FastImageProps) {
   const [error, setError] = useState(false);
   const isCdn = src.includes("digitaloceanspaces.com");
-  const isStatic = src.startsWith("/");
+  const isUpload = src.startsWith("/uploads/");
+  const isPublicStatic = src.startsWith("/") && !isUpload;
 
   useEffect(() => {
     setError(false);
   }, [src]);
 
   const resolveUrl = () => {
-    if (isStatic) {
+    if (isPublicStatic) {
       return variant === "hero"
         ? getHeroImageUrl(resolveStaticImage(src))
         : getCardImageUrl(resolveStaticImage(src));
@@ -63,14 +68,15 @@ export function FastImage({
   };
 
   const displaySrc = error ? "/whitelight_logo.webp" : resolveUrl();
-  const webpStatic = isStatic ? getWebpPath(src) : null;
-  const staticFallback = isStatic && webpStatic ? src : null;
-  const srcSet =
-    variant === "detail" && isCdn
+  const webpStatic = isPublicStatic ? getWebpPath(src) : null;
+  const staticFallback = isPublicStatic && webpStatic ? src : null;
+  const useResponsive =
+    !error && isProductAsset(src) && (variant === "card" || variant === "detail" || variant === "thumb");
+  const srcSet = useResponsive
+    ? variant === "detail"
       ? getDetailImageSrcSet(src)
-      : variant === "card" && isCdn
-        ? getCardImageSrcSet(src)
-        : undefined;
+      : getCardImageSrcSet(src)
+    : undefined;
   const sizes =
     variant === "hero"
       ? HERO_SIZES
@@ -98,7 +104,7 @@ export function FastImage({
     onClick,
   };
 
-  if (webpStatic && !isCdn) {
+  if (webpStatic && !isCdn && !isUpload) {
     return (
       <picture className={cn("block h-full w-full", onClick && "cursor-pointer")}>
         <source type="image/webp" srcSet={displaySrc} sizes={sizes} />

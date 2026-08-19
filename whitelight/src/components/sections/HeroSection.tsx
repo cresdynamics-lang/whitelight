@@ -183,6 +183,17 @@ export function HeroSection({
           <div className="hero-desktop-blend pointer-events-none absolute inset-0 hidden lg:block" aria-hidden />
         </div>
 
+        {/* Mobile — floating New Arrivals button, centred on the hero image */}
+        <div className="absolute left-1/2 top-1/2 z-30 -translate-x-1/2 -translate-y-1/2 lg:hidden">
+          <Link
+            to="/new-arrivals"
+            className="hero-float-btn flex items-center gap-2 rounded-full border border-white/30 bg-white/15 px-6 py-3 text-sm font-bold text-white shadow-xl shadow-black/30 backdrop-blur-md transition-colors hover:bg-white/25 active:scale-95"
+          >
+            New Arrivals
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
         {/* Copy — overlaid on mobile, clean column on desktop */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 flex items-end px-5 pb-8 pt-28 sm:px-8 sm:pb-10 lg:pointer-events-auto lg:static lg:min-h-[560px] lg:items-stretch lg:justify-center lg:px-12 lg:py-16 xl:min-h-[620px] xl:px-16">
           <div className="pointer-events-auto w-full lg:flex lg:max-w-md lg:flex-col lg:justify-center xl:max-w-lg">

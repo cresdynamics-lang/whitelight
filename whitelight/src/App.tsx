@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CartProvider } from "@/context/CartContext";
@@ -23,8 +23,12 @@ const ContactPage = lazy(() => import("./pages/ContactPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const NewArrivalsPage = lazy(() => import("./pages/NewArrivalsPage"));
 const SalePage = lazy(() => import("./pages/SalePage"));
+const AllProductsPage = lazy(() => import("./pages/AllProductsPage"));
+const PaymentSuccessPage = lazy(() => import("./pages/PaymentSuccessPage"));
 const AccessoriesPage = lazy(() => import("./pages/AccessoriesPage"));
 const BuyingGuidePage = lazy(() => import("./pages/BuyingGuidePage"));
+const BlogPage = lazy(() => import("./pages/BlogPage"));
+const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
 const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
@@ -80,9 +84,13 @@ const App = () => {
               <Route path="/about" element={<AboutPage />} />
               <Route path="/accessories" element={<AccessoriesPage />} />
               <Route path="/buying-guide" element={<BuyingGuidePage />} />
+              <Route path="/blog" element={<BlogPage />} />
+              <Route path="/blog/:slug" element={<BlogPostPage />} />
               <Route path="/terms" element={<TermsOfServicePage />} />
               <Route path="/new-arrivals" element={<NewArrivalsPage />} />
               <Route path="/sale" element={<SalePage />} />
+              <Route path="/products" element={<AllProductsPage />} />
+              <Route path="/payment/success" element={<PaymentSuccessPage />} />
               
               {/* Legacy routes redirect */}
               <Route path="/running" element={<CategoryPage />} />
@@ -93,6 +101,7 @@ const App = () => {
               <Route path="/tennis" element={<CategoryPage />} />
               
               {/* Admin routes */}
+              <Route path="/admin/login" element={<Navigate to="/admin" replace />} />
               <Route path="/admin" element={<AdminLogin />} />
               <Route
                 path="/admin/dashboard"

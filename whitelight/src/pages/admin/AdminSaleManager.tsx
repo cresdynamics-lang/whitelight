@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { adminProductsService } from "@/services/adminSupabaseProducts";
+import { adminProductsService } from "@/services/adminProducts";
 import type { Product } from "@/types/product";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

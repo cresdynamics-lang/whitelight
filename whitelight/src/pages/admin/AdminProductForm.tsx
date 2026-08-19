@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { adminProductsService } from "@/services/adminSupabaseProducts";
-import { uploadProductImage } from "@/services/adminSupabaseStorage";
+import { adminProductsService } from "@/services/adminProducts";
+import { uploadProductImage } from "@/services/adminStorage";
+import { analyzeProductImage, getAiStatus } from "@/services/adminImageAnalysis";
 import { sanitizeProductSlug } from "@/lib/adminProductSave";
 import { Product, ProductCategory } from "@/types/product";
 import { Button } from "@/components/ui/button";
@@ -18,11 +19,22 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Loader2, Save, Upload, X } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Sparkles, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { ADMIN_BRAND_OPTIONS } from "@/config/brands";
 
 const MAX_PRODUCT_IMAGES = 10;
+
+function resolveAdminBrand(suggested: string): string {
+  const raw = suggested.trim();
+  if (!raw) return "";
+  const exact = ADMIN_BRAND_OPTIONS.find((b) => b.toLowerCase() === raw.toLowerCase());
+  if (exact) return exact;
+  const partial = ADMIN_BRAND_OPTIONS.find(
+    (b) => b !== "Other" && raw.toLowerCase().includes(b.toLowerCase())
+  );
+  return partial ?? raw;
+}
 
 const CATEGORIES: { value: ProductCategory; label: string }[] = [
   { value: "running", label: "Running" },
@@ -48,6 +60,11 @@ const AdminProductForm = () => {
   const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]); // URLs of images uploaded to server
   const [uploadingImages, setUploadingImages] = useState(false); // Track if images are being uploaded
   const [uploadProgress, setUploadProgress] = useState<Record<number, 'uploading' | 'success' | 'error'>>({}); // Track individual image upload status
+  const [analyzingImage, setAnalyzingImage] = useState(false);
+  const [aiConfigured, setAiConfigured] = useState(false);
+  const [aiProvider, setAiProvider] = useState<string | null>(null);
+  const [aiModel, setAiModel] = useState<string | null>(null);
+  const [aiFallback, setAiFallback] = useState(false);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -89,6 +106,64 @@ const AdminProductForm = () => {
     formData.categories.every((c) => c === "accessories");
 
   useEffect(() => {
+    void getAiStatus().then((status) => {
+      if (status?.configured) {
+        setAiConfigured(true);
+        setAiProvider(status.provider || status.groq?.configured ? "groq" : "gemini");
+        setAiModel(status.groq?.model || status.gemini?.model || status.model || null);
+        setAiFallback(Boolean(status.fallback));
+      }
+    });
+  }, []);
+
+  const getSizesForAi = () => {
+    if (isAccessoryCategory) {
+      return CLOTHING_SIZES.filter((s) => selectedSizes.has(s.value)).map((s) => s.label);
+    }
+    return Array.from(selectedSizes).sort((a, b) => a - b);
+  };
+
+  const applyImageAnalysis = async (imageUrl: string, { auto = false } = {}) => {
+    if (analyzingImage) return;
+    setAnalyzingImage(true);
+    toast.loading("AI is analyzing the product image… this can take up to a minute", {
+      id: "ai-analyze",
+    });
+    try {
+      const result = await analyzeProductImage({
+        imageUrl,
+        name: formData.name,
+        brand: formData.brand,
+        category: formData.categories[0] || formData.category,
+        sizes: getSizesForAi(),
+      });
+
+      const aiTags = result.suggestedTags?.length ? result.suggestedTags.join(", ") : "";
+      const aiBrand = resolveAdminBrand(result.suggestedBrand);
+
+      setFormData((prev) => ({
+        ...prev,
+        description: result.description || prev.description,
+        name: result.suggestedName?.trim() || prev.name,
+        brand: aiBrand || prev.brand,
+        tags: aiTags || prev.tags,
+      }));
+
+      toast.success(
+        auto
+          ? "AI filled name, brand, tags & description from your image"
+          : "AI updated product copy (name, brand, tags, description)",
+        { id: "ai-analyze", duration: 4000 }
+      );
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : "AI analysis failed";
+      toast.error(msg, { id: "ai-analyze", duration: 8000 });
+    } finally {
+      setAnalyzingImage(false);
+    }
+  };
+
+  useEffect(() => {
     if (isEditing) {
       setIsLoading(true);
       adminProductsService.getById(id).then((product) => {
@@ -104,7 +179,8 @@ const AdminProductForm = () => {
             price: String(product.price),
             originalPrice: product.originalPrice ? String(product.originalPrice) : "",
             description: product.description,
-            imageUrl: product.images[0]?.url || "",
+            // Existing images are tracked separately so the first image is not duplicated on save.
+            imageUrl: "",
             tags: product.tags.join(", "),
             isNew: product.isNew || false,
             isBestSeller: product.isBestSeller || false,
@@ -120,8 +196,9 @@ const AdminProductForm = () => {
             const productCategory = product.category || product.categories?.[0];
             if (productCategory !== 'accessories') {
               const inStockSizes = product.variants
-                .filter(v => v.inStock && typeof v.size === 'number' && AVAILABLE_SIZES.includes(v.size))
-                .map(v => v.size as number);
+                .filter((v) => v.inStock)
+                .map((v) => Number(v.size))
+                .filter((size) => Number.isInteger(size) && AVAILABLE_SIZES.includes(size));
               setSelectedSizes(new Set(inStockSizes));
             }
             // For accessories, we'll handle separately if needed in the future
@@ -195,6 +272,11 @@ const AdminProductForm = () => {
           
           // Add URL to uploaded URLs immediately
           setUploadedImageUrls(prev => [...prev, imageUrl]);
+
+          // First uploaded image → AI fills name, brand, tags, description
+          if (i === 0) {
+            void applyImageAnalysis(imageUrl, { auto: true });
+          }
           
           toast.success(`Image ${i + 1}/${toAdd.length} uploaded`, { 
             id: `image-upload-${currentIndex}`,
@@ -276,23 +358,26 @@ const AdminProductForm = () => {
 
     // Validate at least one category is selected
     if (formData.categories.length === 0) {
-      toast.error("Please select at least one category");
+      toast.error("Please select at least one category", { id: "product-save" });
       setIsSaving(false);
       return;
     }
 
     // Validate at least one size is selected (for non-accessory products)
     if (!isAccessoryCategory && selectedSizes.size === 0) {
-      toast.error("Please select at least one size");
+      toast.error("Please select at least one size", { id: "product-save" });
       setIsSaving(false);
       return;
     }
 
-    // Combine uploaded URLs with any URL from imageUrl field
-    const allImageUrls = [...uploadedImageUrls];
-    if (formData.imageUrl) {
-      allImageUrls.push(formData.imageUrl);
-    }
+    // Preserve every existing image that remains, then append newly uploaded/manual URLs.
+    const allImageUrls = Array.from(
+      new Set([
+        ...existingImages.map((image) => image.url),
+        ...uploadedImageUrls,
+        ...(formData.imageUrl.trim() ? [formData.imageUrl.trim()] : []),
+      ])
+    );
 
     const primaryCategory = formData.categories[0] ?? formData.category;
 
@@ -487,13 +572,49 @@ const AdminProductForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description *</Label>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <Label htmlFor="description">Description *</Label>
+                  {aiConfigured && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="h-8 gap-1.5 text-xs"
+                      disabled={
+                        analyzingImage ||
+                        (uploadedImageUrls.length === 0 &&
+                          existingImages.filter((img) => !imagesToDelete.includes(img.id)).length === 0)
+                      }
+                      onClick={() => {
+                        const imageUrl =
+                          uploadedImageUrls[0] ||
+                          existingImages.find((img) => !imagesToDelete.includes(img.id))?.url;
+                        if (imageUrl) void applyImageAnalysis(imageUrl);
+                      }}
+                    >
+                      {analyzingImage ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Sparkles className="h-3.5 w-3.5" />
+                      )}
+                      Generate SEO (AI)
+                    </Button>
+                  )}
+                </div>
+                {aiConfigured && aiModel && (
+                  <p className="text-[11px] text-muted-foreground">
+                    {aiProvider === "gemini" ? "Gemini" : "Groq"} vision · {aiModel}
+                    {aiFallback ? " · Gemini fallback if Groq fails" : ""} · Upload a photo to auto-fill
+                    name, brand, tags & description
+                  </p>
+                )}
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Product description..."
-                  rows={4}
+                  placeholder="Full product story — AI generates 5–7 paragraphs when you upload a photo…"
+                  rows={12}
+                  className="min-h-[280px] text-sm leading-relaxed"
                   required
                 />
               </div>

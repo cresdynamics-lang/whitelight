@@ -1,5 +1,6 @@
 import { Truck, MapPin, CreditCard, Clock } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { trackFindLocation } from "@/lib/analytics/events";
 
 export function ServicesSection() {
   const services = [
@@ -77,6 +78,7 @@ export function ServicesSection() {
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               title="Whitelight Store Location"
+              onLoad={() => trackFindLocation()}
             />
           </div>
         </div>

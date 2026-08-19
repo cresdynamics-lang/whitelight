@@ -1,4 +1,4 @@
-/** Image URL helpers — WebP for local assets, CDN resize for product photos. */
+/** Image URL helpers — local /uploads via /api/img, Spaces CDN resize, WebP static assets. */
 
 export function getWebpPath(path: string): string | null {
   if (!path.startsWith("/")) return null;
@@ -11,12 +11,33 @@ export function resolveStaticImage(path: string): string {
   return getWebpPath(path) ?? path;
 }
 
+function isLocalUpload(url: string): boolean {
+  return url.startsWith("/uploads/") || url.includes("/uploads/");
+}
+
+function uploadPathOnly(url: string): string {
+  if (url.startsWith("/uploads/")) return url.split("?")[0];
+  try {
+    const u = new URL(url, "https://whitelightstore.co.ke");
+    if (u.pathname.startsWith("/uploads/")) return u.pathname;
+  } catch {
+    /* ignore */
+  }
+  return url.split("?")[0];
+}
+
+/** On-droplet resized WebP via Node sharp cache */
+export function getLocalUploadImgUrl(url: string, width: number, quality = 68): string {
+  const src = encodeURIComponent(uploadPathOnly(url));
+  return `/api/img?src=${src}&w=${width}&q=${quality}`;
+}
+
 /** Product card thumbnail — small file size, fast decode */
 export function getCardImageUrl(url?: string, width = 280, quality = 62): string {
   return getOptimizedProductUrl(url ?? "", width, quality);
 }
 
-/** Build a resized product image URL (DO Spaces query params, or original for Supabase/static). */
+/** Build a resized product image URL (local /api/img, DO Spaces, or static). */
 export function getOptimizedProductUrl(
   url: string,
   width: number,
@@ -24,11 +45,14 @@ export function getOptimizedProductUrl(
 ): string {
   if (!url) return "/whitelight_logo.webp";
 
+  if (isLocalUpload(url)) {
+    return getLocalUploadImgUrl(url, width, quality);
+  }
+
   if (url.includes("digitaloceanspaces.com")) {
     return `${url}?w=${width}&q=${quality}&f=webp&auto=compress&dpr=1`;
   }
 
-  // Supabase public URLs — use original file (render API needs Image Transformations add-on)
   return url.startsWith("/") ? resolveStaticImage(url) : url;
 }
 
@@ -42,8 +66,15 @@ export function getDetailThumbUrl(url?: string): string {
   return getOptimizedProductUrl(url ?? "", 240, 65);
 }
 
-/** Responsive srcSet for product detail main image (CDN only) */
+/** Responsive srcSet for product detail main image */
 export function getDetailImageSrcSet(url: string): string | undefined {
+  if (isLocalUpload(url)) {
+    return [
+      `${getLocalUploadImgUrl(url, 480, 68)} 480w`,
+      `${getLocalUploadImgUrl(url, 720, 72)} 720w`,
+      `${getLocalUploadImgUrl(url, 960, 75)} 960w`,
+    ].join(", ");
+  }
   if (!url.includes("digitaloceanspaces.com")) return undefined;
 
   return [
@@ -58,8 +89,15 @@ export function getOriginalProductUrl(url: string): string {
   return url.startsWith("/") ? resolveStaticImage(url) : url;
 }
 
-/** Responsive srcSet for CDN product photos (card grid) */
+/** Responsive srcSet for product photos (card grid) */
 export function getCardImageSrcSet(url: string): string | undefined {
+  if (isLocalUpload(url)) {
+    return [
+      `${getLocalUploadImgUrl(url, 200, 58)} 200w`,
+      `${getLocalUploadImgUrl(url, 280, 62)} 280w`,
+      `${getLocalUploadImgUrl(url, 400, 65)} 400w`,
+    ].join(", ");
+  }
   if (!url.includes("digitaloceanspaces.com")) return undefined;
   return [
     `${url}?w=200&q=58&f=webp&auto=compress&dpr=1 200w`,
@@ -70,6 +108,9 @@ export function getCardImageSrcSet(url: string): string | undefined {
 
 /** Hero / carousel — medium width, capped for LCP */
 export function getHeroImageUrl(url: string, width = 960, quality = 68): string {
+  if (isLocalUpload(url)) {
+    return getLocalUploadImgUrl(url, width, quality);
+  }
   if (url.includes("digitaloceanspaces.com")) {
     return `${url}?w=${width}&q=${quality}&f=webp&auto=compress&dpr=1`;
   }

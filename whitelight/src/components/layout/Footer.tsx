@@ -133,6 +133,11 @@ export function Footer() {
                   </Link>
                 </li>
                 <li>
+                  <Link to="/blog" className="text-gray-300 hover:text-white transition-colors text-sm">
+                    Updates
+                  </Link>
+                </li>
+                <li>
                   <Link to="/category/running" className="text-gray-300 hover:text-white transition-colors text-sm">
                     Officials
                   </Link>
@@ -208,6 +213,11 @@ export function Footer() {
               <li>
                 <Link to="/about" className="text-gray-300 hover:text-white transition-colors text-sm">
                   About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/blog" className="text-gray-300 hover:text-white transition-colors text-sm">
+                  Updates
                 </Link>
               </li>
               <li>
@@ -292,10 +302,13 @@ export function Footer() {
                 <span className="text-gray-300 text-sm">WhatsApp: {siteConfig.contact.whatsapp}</span>
               </div>
               
-              {siteConfig.contact.tillNumber && (
-                <div className="flex items-center gap-3">
-                  <Mail className="h-4 w-4 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-sm">Till Number: {siteConfig.contact.tillNumber}</span>
+              {(siteConfig.contact.paybillNumber || siteConfig.contact.paybillAccount) && (
+                <div className="flex items-start gap-3">
+                  <Mail className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
+                  <div className="text-gray-300 text-sm space-y-0.5">
+                    <p>Paybill: {siteConfig.contact.paybillNumber}</p>
+                    <p>Acc: {siteConfig.contact.paybillAccount}</p>
+                  </div>
                 </div>
               )}
             </div>
@@ -321,6 +334,13 @@ export function Footer() {
               >
                 Cred Dynamics
               </a>
+              {" · "}
+              <Link
+                to="/admin"
+                className="hover:text-white transition-colors underline underline-offset-4"
+              >
+                Staff to help on admin login
+              </Link>
             </p>
           </div>
         </div>

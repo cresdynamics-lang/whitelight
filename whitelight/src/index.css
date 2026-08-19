@@ -4,8 +4,44 @@
 
 /* WHITELIGHT Design System - Premium Sneaker Store */
 
+/* Maiandra GD is a single cut — map several weights so bold text thickens instead of looking thin */
+@font-face {
+  font-family: "Maiandra GD";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local("Maiandra GD"), url("/fonts/maiandra-gd.woff") format("woff");
+}
+@font-face {
+  font-family: "Maiandra GD";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: local("Maiandra GD"), url("/fonts/maiandra-gd.woff") format("woff");
+}
+@font-face {
+  font-family: "Maiandra GD";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local("Maiandra GD"), url("/fonts/maiandra-gd.woff") format("woff");
+}
+@font-face {
+  font-family: "Maiandra GD";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local("Maiandra GD"), url("/fonts/maiandra-gd.woff") format("woff");
+}
+@font-face {
+  font-family: "Maiandra GD";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: local("Maiandra GD"), url("/fonts/maiandra-gd.woff") format("woff");
+}
+
 @layer base {
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&family=Exo+2:wght@300;400;500;600;700;800&display=swap');
   
   :root {
     /* Core palette - Clean white with green accent */
@@ -45,10 +81,10 @@
 
     --radius: 0.5rem;
 
-    /* Custom design tokens - Sportish & Magical */
-    --font-heading: 'Orbitron', monospace;
-    --font-body: 'Rajdhani', sans-serif;
-    --font-accent: 'Exo 2', sans-serif;
+    /* Custom design tokens - Maiandra GD everywhere */
+    --font-heading: 'Maiandra GD', 'Trebuchet MS', 'Segoe UI', sans-serif;
+    --font-body: 'Maiandra GD', 'Trebuchet MS', 'Segoe UI', sans-serif;
+    --font-accent: 'Maiandra GD', 'Trebuchet MS', 'Segoe UI', sans-serif;
     
     /* Magical gradients */
     --gradient-magic: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -129,16 +165,33 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.55;
+    letter-spacing: 0.01em;
+    text-rendering: optimizeLegibility;
   }
 
   img {
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
+    image-rendering: auto;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    @apply font-semibold tracking-tight;
+    font-weight: 700;
+    letter-spacing: 0.005em;
+    @apply tracking-tight;
+  }
+
+  /* Soften fake-bold so Maiandra reads fuller, not spindly */
+  strong,
+  b,
+  .font-medium,
+  .font-semibold,
+  .font-bold,
+  .font-extrabold,
+  .font-black {
+    -webkit-text-stroke: 0.25px currentColor;
   }
 }
 
@@ -290,6 +343,21 @@
 
   .hero-ken-burns {
     animation: hero-ken-burns 16s ease-in-out infinite alternate;
+  }
+
+  /* Gentle bob for the mobile floating New Arrivals button */
+  .hero-float-btn {
+    animation: hero-float-bob 3s ease-in-out infinite;
+  }
+
+  @keyframes hero-float-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
   }
 
   @keyframes hero-ken-burns {

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { apiFetch } from "@/lib/apiClient";
 
 interface AdminUser {
   id: number;
@@ -36,17 +36,15 @@ export const AdminAuthProvider = ({ children }: AdminAuthProviderProps) => {
   const [user, setUser] = useState<AdminUser | null>(null);
 
   useEffect(() => {
-    // Check for existing session
     const token = localStorage.getItem("admin_token");
     const userData = localStorage.getItem("admin_user");
-    
+
     if (token && userData) {
       try {
         const parsedUser = JSON.parse(userData);
         setUser(parsedUser);
         setIsAuthenticated(true);
-      } catch (error) {
-        // Invalid stored data, clear it
+      } catch {
         localStorage.removeItem("admin_token");
         localStorage.removeItem("admin_user");
       }
@@ -56,39 +54,13 @@ export const AdminAuthProvider = ({ children }: AdminAuthProviderProps) => {
 
   const login = async (username: string, password: string) => {
     try {
-      if (!supabase) {
-        return {
-          success: false,
-          error: "Supabase client is not initialised. Check your environment variables.",
-        };
-      }
-
-      // Treat the username field as email for login
-      const { data, error } = await supabase.rpc("admin_login", {
-        p_email: username,
-        p_password: password,
+      const data = await apiFetch<{ token: string; user: AdminUser }>("/api/admin/login", {
+        method: "POST",
+        body: JSON.stringify({ email: username, password }),
       });
-
-      if (error) {
-        return { success: false, error: error.message || "Login failed" };
-      }
-
-      const admin = Array.isArray(data) && data.length > 0 ? data[0] : null;
-
-      if (!admin) {
-        return { success: false, error: "Invalid email or password" };
-      }
-
-      // Create a simple client-side token for session state
-      const token =
-        typeof crypto !== "undefined" && "randomUUID" in crypto
-          ? crypto.randomUUID()
-          : `supabase-admin-${Date.now()}`;
-
-      localStorage.setItem("admin_token", token);
-      localStorage.setItem("admin_user", JSON.stringify(admin));
-
-      setUser(admin);
+      localStorage.setItem("admin_token", data.token);
+      localStorage.setItem("admin_user", JSON.stringify(data.user));
+      setUser(data.user);
       setIsAuthenticated(true);
       return { success: true };
     } catch (error) {

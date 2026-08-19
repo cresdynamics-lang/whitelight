@@ -10,13 +10,12 @@
     <meta name="geo.placename" content="Nairobi, Kenya" />
     <link rel="icon" type="image/webp" href="/whitelight_logo.webp" />
     <link rel="apple-touch-icon" href="/whitelight_logo.webp" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+    <link rel="preload" href="/fonts/maiandra-gd.woff" as="font" type="font/woff" crossorigin />
     <link rel="preconnect" href="https://whitelight-store.sfo3.digitaloceanspaces.com" crossorigin />
     <link rel="dns-prefetch" href="https://whitelight-store.sfo3.digitaloceanspaces.com" />
     <link rel="preload" href="/catalog.json" as="fetch" crossorigin="anonymous" />
     <link rel="dns-prefetch" href="https://connect.facebook.net" />
-    <!-- Meta Pixel Code -->
+    <!-- Meta Pixel Code — base tag on every page (SPA index.html) -->
     <script>
     !function(f,b,e,v,n,t,s)
     {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
@@ -27,6 +26,19 @@
     s.parentNode.insertBefore(t,s)}(window, document,'script',
     'https://connect.facebook.net/en_US/fbevents.js');
     fbq('init', '1060087716452785');
+    fbq('track', 'PageView');
+    </script>
+    <!-- Additional Meta Pixel Code -->
+    <script>
+    !function(f,b,e,v,n,t,s)
+    {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+    if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+    n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];
+    s.parentNode.insertBefore(t,s)}(window, document,'script',
+    'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1789008132452117');
     fbq('track', 'PageView');
     </script>
     <!-- End Meta Pixel Code -->
@@ -44,9 +56,12 @@
   </head>
 
   <body>
-    <!-- Meta Pixel noscript fallback (must be in body for Vite HTML build) -->
+    <!-- Meta Pixel noscript (Vite requires noscript in body) -->
     <noscript><img height="1" width="1" style="display:none"
     src="https://www.facebook.com/tr?id=1060087716452785&ev=PageView&noscript=1"
+    /></noscript>
+    <noscript><img height="1" width="1" style="display:none"
+    src="https://www.facebook.com/tr?id=1789008132452117&ev=PageView&noscript=1"
     /></noscript>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

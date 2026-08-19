@@ -12,6 +12,10 @@ __pycache__/
 *.pyc
 venv/
 .env
+.env.do
+whitelight/scripts/migrate-to-do/export/
+whitelight/uploads/
+whitelight/server/node_modules/
 
 # OS
 .DS_Store

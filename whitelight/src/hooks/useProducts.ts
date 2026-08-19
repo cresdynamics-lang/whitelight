@@ -5,6 +5,7 @@ import {
   getNewArrivals,
   getProductBySlug,
   getProductsByCategory,
+  sortByLatestUpdated,
 } from "@/lib/products";
 import type { ProductFilters, ProductCategory } from "@/types/product";
 import { useCatalog, useCatalogByCategory } from "@/hooks/useCatalog";
@@ -28,9 +29,8 @@ export function useBestSellers(limit?: number) {
 
 export function useNewArrivals(limit?: number) {
   const { data = [], ...rest } = useCatalog();
-  const items = data.filter((p) => p.isNew).length
-    ? data.filter((p) => p.isNew)
-    : data;
+  // New arrivals = latest updated products first
+  const items = sortByLatestUpdated(data);
   return {
     ...rest,
     data: limit ? items.slice(0, limit) : items,
@@ -47,11 +47,18 @@ export function useSaleProducts(limit?: number) {
 }
 
 export function useProduct(slug: string) {
+  const { data: catalog = [] } = useCatalog();
+  const catalogHit = catalog.find(
+    (p) => p.slug === slug || String(p.id) === slug
+  );
+
   return useQuery({
     queryKey: ["product", slug],
     queryFn: () => getProductBySlug(slug),
     enabled: !!slug,
     staleTime: 5 * 60 * 1000,
+    // Show catalogue row immediately (hero image) while full PDP fetch resolves
+    placeholderData: catalogHit || undefined,
   });
 }
 

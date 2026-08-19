@@ -13,6 +13,7 @@ import { seoConfig } from "@/config/seo";
 import { toast } from "sonner";
 import { contactService } from "@/services/contactService";
 import { useProducts } from "@/hooks/useProducts";
+import { trackContact } from "@/lib/analytics/events";
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -72,6 +73,7 @@ export default function ContactPage() {
       window.open(`https://wa.me/${siteConfig.contact.whatsapp}?text=${encodedMessage}`, "_blank");
 
       setFormStatus("success");
+      trackContact();
       toast.success("Message sent successfully!");
       setFormData({ fullName: "", email: "", whatsapp: "", alternativePhone: "", message: "" });
     } catch (error) {

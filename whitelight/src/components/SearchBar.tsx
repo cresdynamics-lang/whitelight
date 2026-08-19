@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useCatalog } from "@/hooks/useCatalog";
 import { getCardImageUrl } from "@/lib/imageUtils";
 import { useSearch } from "@/context/SearchContext";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { trackSearch } from "@/lib/analytics/events";
 
 // Debounce hook for smooth filtering
 function useDebounce(value: string, delay: number) {
@@ -104,7 +104,9 @@ export function SearchBar() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Just close dropdown on submit, keep filtering on current page
+    if (query.trim()) {
+      trackSearch(query);
+    }
     setIsOpen(false);
   };
 
