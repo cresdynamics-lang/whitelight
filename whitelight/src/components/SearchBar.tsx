@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useCatalog } from "@/hooks/useCatalog";
 import { getCardImageUrl } from "@/lib/imageUtils";
 import { useSearch } from "@/context/SearchContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { trackSearch } from "@/lib/analytics/events";
 
 // Debounce hook for smooth filtering
