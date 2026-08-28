@@ -133,13 +133,15 @@ const Index = () => {
         {showProducts && (
           <>
             <HorizontalProductRow
-              title="New In"
+              title="New Arrivals"
               products={rows.uniqueNewArrivals}
               className="bg-secondary/30"
               viewAllHref="/new-arrivals"
               initialDirection="left"
               priorityCount={2}
             />
+
+            <CategoryBanner />
 
             <BrandHighlightCarousel />
 
@@ -153,8 +155,6 @@ const Index = () => {
             {rows.homeSale.length > 0 && (
               <HomeSaleSection products={rows.homeSale} className="bg-red-50/40" />
             )}
-
-            <CategoryBanner />
 
             <HorizontalProductRow
               title="Running"

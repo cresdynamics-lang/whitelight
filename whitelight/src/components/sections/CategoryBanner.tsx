@@ -28,58 +28,31 @@ const categoryTaglines: Record<string, string> = {
   orthopedic: "Need all-day comfort?\nSupportive pairs for long Nairobi days on your feet.",
 };
 
-function CategoryCard({
-  category,
-  duplicate = false,
-}: {
-  category: CategoryImage;
-  duplicate?: boolean;
-}) {
+function CategoryCard({ category }: { category: CategoryImage }) {
   const label = categoryLabels[category.category] || category.category;
   const tagline = categoryTaglines[category.category] || "";
   const cardClass =
-    "group relative flex-shrink-0 w-56 sm:w-60 md:w-64 aspect-[4/5] overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105";
-
-  const overlay = (
-    <>
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-      <div className="absolute inset-0 flex items-end p-4">
-        <div className="text-center w-full space-y-2">
-          <h3 className="font-heading text-xl md:text-2xl font-bold text-white mb-1">{label}</h3>
-          <p className="whitespace-pre-line text-xs md:text-sm text-white/85 leading-snug">{tagline}</p>
-          {!duplicate && (
-            <span className="inline-flex items-center gap-2 mt-2 text-white text-xs md:text-sm font-semibold group-hover:gap-3 transition-all duration-300 bg-white/10 backdrop-blur-sm px-3 py-1.5 rounded-full">
-              Step inside →
-            </span>
-          )}
-        </div>
-      </div>
-    </>
-  );
-
-  const image = (
-    <FastImage
-      src={category.url}
-      alt={duplicate ? "" : category.alt_text}
-      variant="card"
-      priority={!duplicate}
-      className="transition-transform duration-500 group-hover:scale-110"
-    />
-  );
-
-  if (duplicate) {
-    return (
-      <div aria-hidden className={cn(cardClass, "pointer-events-none")}>
-        {image}
-        {overlay}
-      </div>
-    );
-  }
+    "group relative w-full aspect-[4/5] overflow-hidden rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 hover:scale-105";
 
   return (
     <Link to={`/category/${category.category}`} className={cardClass}>
-      {image}
-      {overlay}
+      <FastImage
+        src={category.url}
+        alt={category.alt_text}
+        variant="card"
+        priority
+        className="transition-transform duration-500 group-hover:scale-110"
+      />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+      <div className="absolute inset-0 flex items-end p-3 sm:p-4">
+        <div className="text-center w-full space-y-1.5 sm:space-y-2">
+          <h3 className="font-heading text-base sm:text-xl md:text-2xl font-bold text-white">{label}</h3>
+          <p className="whitespace-pre-line text-[10px] sm:text-xs md:text-sm text-white/85 leading-snug line-clamp-3">{tagline}</p>
+          <span className="inline-flex items-center justify-center gap-1.5 mt-1.5 sm:mt-2 text-white text-[10px] sm:text-xs md:text-sm font-semibold group-hover:gap-3 transition-all duration-300 bg-white/10 backdrop-blur-sm px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full">
+            Step inside →
+          </span>
+        </div>
+      </div>
     </Link>
   );
 }
@@ -110,15 +83,10 @@ export function CategoryBanner({ className }: CategoryBannerProps) {
           </p>
         </div>
 
-        <div className="relative">
-          <div className="flex animate-scroll space-x-3">
-            {categories.map((category) => (
-              <CategoryCard key={category.category} category={category} />
-            ))}
-            {categories.map((category) => (
-              <CategoryCard key={`dup-${category.category}`} category={category} duplicate />
-            ))}
-          </div>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+          {categories.map((category) => (
+            <CategoryCard key={category.category} category={category} />
+          ))}
         </div>
       </div>
     </section>

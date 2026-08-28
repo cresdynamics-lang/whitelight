@@ -29,17 +29,24 @@ app.use("/uploads", express.static(config.uploadsDir, {
   },
 }));
 
-function toFeedItems(products) {
+function toFeedItems(products, { forceInStock = false } = {}) {
   const CURRENCY = "KES";
   const BRAND = "WHITELIGHT STORE";
   const BASE = "https://whitelightstore.co.ke";
   return products
     .map((p) => {
-      const image = p.images?.[0]?.url;
-      if (!image) return null;
+      const rawImage = p.images?.[0]?.url;
+      if (!rawImage) return null;
+      // Meta requires absolute image URLs — older rows store relative /uploads paths
+      const image = /^https?:\/\//i.test(rawImage)
+        ? rawImage
+        : `${BASE}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`;
       const variants = p.variants || [];
-      const availability =
-        variants.length === 0 || variants.some((v) => v.inStock) ? "in stock" : "out of stock";
+      const availability = forceInStock
+        ? "in stock"
+        : variants.length === 0 || variants.some((v) => v.inStock)
+          ? "in stock"
+          : "out of stock";
       const link = p.url_slug
         ? `${BASE}${p.url_slug.startsWith("/") ? p.url_slug : `/${p.url_slug}`}`
         : `${BASE}/product/${p.slug}`;
@@ -69,8 +76,8 @@ function csvEscape(value = "") {
   return str;
 }
 
-function buildMetaCsv(products) {
-  const items = toFeedItems(products);
+function buildMetaCsv(products, opts) {
+  const items = toFeedItems(products, opts);
   const headers = [
     "id", "title", "description", "availability", "condition", "price", "sale_price",
     "link", "image_link", "brand", "item_group_id",
@@ -457,10 +464,11 @@ app.get("/api/admin/orders", requireAdmin, async (_req, res) => {
 });
 
 // Feeds
+// Meta catalog: ONLY products on the sale page (is_on_offer), availability always "in stock".
 app.get(["/api/feeds/meta.json", "/api/feeds/meta"], async (_req, res) => {
   try {
     const products = await loadProductsFull(query, { saleOnly: true });
-    const data = toFeedItems(products);
+    const data = toFeedItems(products, { forceInStock: true });
     res.json({ data });
   } catch (e) {
     res.status(500).json({ error: e.message });
@@ -470,7 +478,7 @@ app.get(["/api/feeds/meta.json", "/api/feeds/meta"], async (_req, res) => {
 app.get(["/feeds/meta.csv", "/api/feeds/meta.csv", "/api/feeds/meta-csv"], async (_req, res) => {
   try {
     const products = await loadProductsFull(query, { saleOnly: true });
-    const csv = buildMetaCsv(products);
+    const csv = buildMetaCsv(products, { forceInStock: true });
     res.setHeader("Content-Type", "text/csv; charset=utf-8");
     res.setHeader("Content-Disposition", 'inline; filename="meta.csv"');
     res.send(csv);
