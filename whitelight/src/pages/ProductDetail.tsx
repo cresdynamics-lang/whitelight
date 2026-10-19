@@ -115,12 +115,18 @@ export default function ProductDetail() {
     );
   }
 
-  const images = enriched.images.length
+  const images = Array.isArray(enriched.images) && enriched.images.length
     ? enriched.images
     : [{ id: "1", url: "/whitelight_logo.webp", alt: enriched.name }];
   const feel = enriched.feel || {};
   const hotspots = defaultHotspots(enriched);
-  const inStockCount = enriched.variants.filter((v) => v.inStock).length;
+  const variants = Array.isArray(enriched.variants) ? enriched.variants : [];
+  const inStockCount = variants.filter((v) => v.inStock).length;
+  const brandSlug = (enriched.brand || "nike").toLowerCase().replace(/\s+/g, "-");
+  const purposeLabel =
+    PURPOSE_LABELS[enriched.purpose || "daily"] || PURPOSE_LABELS.daily;
+  const fitLabel =
+    FIT_NOTE_LABELS[enriched.fitNote || "true_to_size"] || FIT_NOTE_LABELS.true_to_size;
 
   const pickSize = (size: number | string) => {
     setSelectedSize(size);
@@ -138,7 +144,7 @@ export default function ProductDetail() {
         title={`${enriched.brand} ${enriched.name} | The Whitelight Nairobi`}
         description={
           enriched.seo_description ||
-          `${enriched.forWhom} KSh ${enriched.price}. ${FIT_NOTE_LABELS[enriched.fitNote || "true_to_size"]}. Same-day CBD delivery.`
+          `${enriched.forWhom || enriched.name} KSh ${enriched.price}. ${fitLabel}. Same-day CBD delivery.`
         }
         canonical={`https://whitelightstore.co.ke/shoes/${enriched.slug}`}
         ogImage={images[0]?.url}
@@ -153,7 +159,7 @@ export default function ProductDetail() {
           <p className="text-xs text-muted-foreground font-ui mb-4">
             <Link to="/">Home</Link> ›{" "}
             <Link to={`/${enriched.category}`}>{enriched.category}</Link> ›{" "}
-            <Link to={`/brand/${enriched.brand.toLowerCase()}`}>{enriched.brand}</Link> ›{" "}
+            <Link to={`/brand/${brandSlug}`}>{enriched.brand || "Brand"}</Link> ›{" "}
             {enriched.name}
           </p>
 
@@ -203,7 +209,7 @@ export default function ProductDetail() {
 
             <div ref={buyRef}>
               <p className="text-xs uppercase tracking-wider text-moss font-ui">
-                {enriched.brand} · {PURPOSE_LABELS[enriched.purpose || "daily"]}
+                {enriched.brand} · {purposeLabel}
               </p>
               <h1 className="font-heading text-3xl md:text-4xl font-semibold text-forest mt-1">
                 {enriched.name}
@@ -230,7 +236,7 @@ export default function ProductDetail() {
                   </Link>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  {enriched.variants.map((v) => (
+                  {variants.map((v) => (
                     <button
                       key={v.id || String(v.size)}
                       type="button"
@@ -250,8 +256,8 @@ export default function ProductDetail() {
                 </div>
                 <p className="mt-2 text-sm text-muted-foreground font-ui">
                   {selectedSize != null
-                    ? `✓ Size ${selectedSize} in stock · ${FIT_NOTE_LABELS[enriched.fitNote || "true_to_size"]}`
-                    : FIT_NOTE_LABELS[enriched.fitNote || "true_to_size"]}
+                    ? `✓ Size ${selectedSize} in stock · ${fitLabel}`
+                    : fitLabel}
                 </p>
               </div>
 
@@ -359,9 +365,9 @@ export default function ProductDetail() {
                 <tbody>
                   {[
                     ["Brand", enriched.brand],
-                    ["Use", `${enriched.category} · ${PURPOSE_LABELS[enriched.purpose || "daily"]}`],
-                    ["Fit", FIT_NOTE_LABELS[enriched.fitNote || "true_to_size"]],
-                    ["Sizes", enriched.variants.map((v) => v.size).join(", ")],
+                    ["Use", `${enriched.category} · ${purposeLabel}`],
+                    ["Fit", fitLabel],
+                    ["Sizes", variants.map((v) => v.size).join(", ") || "Ask on WhatsApp"],
                   ].map(([k, v]) => (
                     <tr key={k} className="border-b border-border">
                       <td className="py-2 text-muted-foreground">{k}</td>

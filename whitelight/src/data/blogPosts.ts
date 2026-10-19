@@ -383,11 +383,11 @@ export const blogPosts: BlogPost[] = [
     title: "Best Running Shoes in Nairobi: How to Choose the Right Pair for Your Run",
     metaTitle: "Best Running Shoes Nairobi | Choose Right Pair",
     metaDescription:
-      "Match distance, foot shape and surface to pick the best running shoes in Nairobi. Beginner to marathon guide from Whitelight Store, Luthuli Avenue.",
+      "Searching for the best running shoes in Nairobi? Match distance, foot shape and surface — then shop Asics, Nike or Adidas at Whitelight Store, Luthuli Avenue.",
     excerpt:
-      "A practical Nairobi guide to choosing running shoes by distance, foot needs, cushioning, support and drop — with links to shop each type.",
+      "For Nairobi runners who type “best running shoes Nairobi” and want a clear answer: how to choose, what to buy, and where to go next.",
     date: "2026-10-05",
-    updatedAt: "2026-10-05",
+    updatedAt: "2026-10-19",
     author: "Whitelight Store Team",
     category: "Buying guide",
     cover: "/couresel_images/running/running2.webp",
@@ -395,132 +395,101 @@ export const blogPosts: BlogPost[] = [
     primaryKeyword: "best running shoes Nairobi",
     secondaryKeywords: [
       "running shoes for beginners Kenya",
-      "road running shoes",
-      "how to choose running shoes",
+      "how to choose running shoes Nairobi",
+      "Asics Nike Adidas running Nairobi",
     ],
     answerFirst:
-      "The best running shoes in Nairobi match your distance, your foot, and where you run — CBD pavement, track, or weekend trails. Soft cushioning suits beginners and recovery miles; firmer, snappier shoes suit tempo and race work. Get fitted at Whitelight Store on Luthuli Avenue before race season.",
+      "The best running shoes in Nairobi match your distance, your foot, and where you run — CBD pavement, track, or weekend trails. Soft cushioning suits beginners; firmer shoes suit tempo work. Shop Asics, Nike or Adidas at Whitelight Store on Luthuli Avenue, or WhatsApp your size for a shortlist.",
     categoryLinks: [
       { label: "Shop running shoes", href: "/category/running" },
-      { label: "Shop trail shoes", href: "/category/trail" },
-      { label: "Shop gym shoes", href: "/category/gym" },
-      { label: "Shop training shoes", href: "/category/training" },
+      { label: "Shop Asics", href: "/brand/asics" },
+      { label: "Shop Nike", href: "/brand/nike" },
+      { label: "Shop Adidas", href: "/brand/adidas" },
     ],
     blocks: [
       {
         type: "p",
-        text: `${STORE_FACT} This guide answers how to choose the best running shoes Nairobi runners actually need — not hype pairs that look good but feel wrong after 5 km.`,
+        text: `${STORE_FACT} This page is written for people who search “best running shoes Nairobi” and need a decision — not a brand lecture.`,
       },
       {
         type: "h2",
-        text: "How do I choose the best running shoes in Nairobi?",
+        text: "Who thinks like this?",
       },
       {
         type: "p",
-        text: "Start with three facts: weekly distance, foot width/arch feel, and surface. Road shoes cushion CBD concrete and estate loops. Trail shoes add grip for Karura and Ngong. Beginners usually want more cushion and a stable ride; race-focused runners often prefer a lighter, more responsive shoe once form is solid.",
+        text: "Beginners who just signed up for a parkrun, office workers looping Karura on Saturday, and race-season runners who are tired of sore knees after CBD pavement. They are not looking for hype colourways first — they want a pair that will still feel right at kilometre 8.",
       },
       {
         type: "h2",
-        text: "Best running shoes by runner type",
-      },
-      {
-        type: "h3",
-        text: "Beginners",
+        text: "Who we are targeting — and why",
       },
       {
         type: "p",
-        text: "If you are new to running shoes for beginners Kenya shoppers often ask about, pick a daily trainer with soft cushioning, a secure midfoot, and room in the toe box. Walk a full day in them before your first long jog. Browse our running category for forgiving daily trainers.",
-      },
-      {
-        type: "h3",
-        text: "Daily joggers",
-      },
-      {
-        type: "p",
-        text: "For 3–5 runs a week on Nairobi roads, a durable road running shoe with balanced cushion beats a race shoe. Look for outsoles that survive rough pavement and a ride that still feels fresh after 8–10 km.",
-      },
-      {
-        type: "h3",
-        text: "10K and half marathon",
-      },
-      {
-        type: "p",
-        text: "You want a shoe that stays responsive past 10 km without punishing your calves. Moderate stack, reliable midsole, and a lock-down lace system matter more than carbon-plate marketing if you are still building volume.",
-      },
-      {
-        type: "h3",
-        text: "Marathon",
-      },
-      {
-        type: "p",
-        text: "Long-run trainers for weekday kilometres, plus a race-day shoe you have already tested in a long run. Never debut a brand-new pair on race morning in Nairobi heat.",
+        text: "Nairobi buyers who will try shoes in CBD or order for same-day delivery. Why them: they already decided to invest in proper running shoes; they just need confidence on brand, cushion and size before they pay with M-Pesa.",
       },
       {
         type: "h2",
-        text: "Cushioning, support and drop — plain language",
+        text: "What they are searching for",
       },
       {
         type: "ul",
         items: [
-          "Cushioning: how soft the midsole feels. More cushion helps beginners and recovery days; less can feel faster for short efforts.",
-          "Support: how stable the shoe feels under your arch and heel. Useful if you feel your foot roll in, especially on tired late-run miles.",
-          "Drop: the height difference from heel to toe. Higher drop often feels more protective for heel strikers; lower drop can feel more natural if you land midfoot.",
-        ],
-      },
-      {
-        type: "table",
-        caption: "Runner type vs shoe feel",
-        headers: ["Runner type", "Shoe feel", "Best for"],
-        rows: [
-          ["Beginner", "Soft cushion, stable base", "Easy jogs, building consistency"],
-          ["Daily jogger", "Balanced cushion + durable outsole", "Road loops around Nairobi estates"],
-          ["10K / half", "Responsive midsole, secure fit", "Tempo work and race prep"],
-          ["Marathon", "Protective long-run cushion + tested race pair", "High weekly mileage and race day"],
+          "“best running shoes Nairobi” / “running shoes for beginners Kenya”",
+          "“Asics vs Nike for daily running”",
+          "“where to buy original running shoes Luthuli Avenue”",
+          "“shoe size for running Kenya”",
         ],
       },
       {
         type: "h2",
-        text: "Race season tip for Nairobi runners",
+        text: "How to choose (the answer Google should surface)",
+      },
+      {
+        type: "ol",
+        items: [
+          "Name your surface: road, trail, or mixed.",
+          "Name your weekly distance: under 20 km, 20–40 km, or race build.",
+          "Pick cushion: soft daily (often Asics Gel), balanced Nike trainers, or versatile Adidas for gym + road weeks.",
+          "Confirm EU size — or WhatsApp foot length in cm.",
+          "Open the category or brand page and tap only sizes that show in stock.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Why buy from Whitelight Store",
       },
       {
         type: "p",
-        text: "Buy and break in new shoes weeks before race day — not the week of. Do at least two runs of 8–12 km in the race pair so hot spots show up early. Whitelight Store stocks current running models so you can compare fit in person at Luthuli Avenue.",
+        text: "Photos are of the real pair, every tappable size is in stock, and unused shoes can be size-exchanged within 3 days. That removes the two fears that stop Nairobi shoppers: fakes and wrong size.",
       },
       {
         type: "h2",
-        text: "Shop by shoe type",
+        text: "What would make you buy today",
+      },
+      {
+        type: "p",
+        text: "A clear shortlist of three pairs in your size, a WhatsApp reply in minutes, and same-day CBD delivery when you order before mid-afternoon. Start here:",
       },
       {
         type: "links",
         items: [
-          { label: "Running shoes in Nairobi", href: "/category/running" },
-          { label: "Trail running shoes", href: "/category/trail" },
-          { label: "Gym shoes", href: "/category/gym" },
-          { label: "Training shoes", href: "/category/training" },
-          { label: "Luthuli Avenue buying guide", href: "/blog/buy-running-shoes-nairobi-cbd-luthuli-avenue" },
-          { label: "Price & authenticity guide", href: "/blog/running-shoes-price-kenya" },
+          { label: "Browse running shoes", href: "/category/running" },
+          { label: "Asics running guide", href: "/blog/asics-running-shoes-nairobi" },
+          { label: "Asics vs Nike vs Adidas", href: "/blog/asics-nike-adidas-kenya" },
+          { label: "Size guide", href: "/size-guide" },
         ],
-      },
-      {
-        type: "p",
-        text: "Need a quick recommendation? WhatsApp Whitelight Store with your usual size, weekly distance, and preferred feel (soft, firm, or race-light).",
       },
     ],
     faqs: [
       {
         question: "What are the best running shoes in Nairobi for beginners?",
         answer:
-          "A cushioned daily trainer with a stable ride and roomy toe box. Visit Whitelight Store on Luthuli Avenue for a fit check, or browse /category/running and message us your size on WhatsApp.",
+          "A cushioned daily trainer (often Asics Gel-Nimbus style). Visit Whitelight Store on Luthuli Avenue or browse /category/running and message your size on WhatsApp.",
       },
       {
         question: "Should I buy road or trail shoes in Nairobi?",
         answer:
           "Road shoes for CBD pavement and estate loops; trail shoes for Karura, Ngong Hills, and muddy paths. Many Nairobi runners keep one of each.",
-      },
-      {
-        question: "How soon before a race should I buy new running shoes?",
-        answer:
-          "At least 2–3 weeks before race day, with several break-in runs. Do not race in a brand-new pair the week of the event.",
       },
       {
         question: "Where can I buy original running shoes in Nairobi CBD?",
@@ -530,7 +499,7 @@ export const blogPosts: BlogPost[] = [
       {
         question: "Do you help with sizing online?",
         answer:
-          "Yes. Send your usual brand size and a photo of your foot length on WhatsApp (+254 708 749473). See our size guide for step-by-step measuring.",
+          "Yes. Send your usual brand size and a photo of your foot length on WhatsApp (+254 708 749473).",
       },
     ],
   },
@@ -539,14 +508,14 @@ export const blogPosts: BlogPost[] = [
     title: "Where to Buy Original Running Shoes in Nairobi CBD: A Luthuli Avenue Guide",
     metaTitle: "Running Shoes Nairobi CBD | Luthuli Avenue",
     metaDescription:
-      "Buy original running shoes in Nairobi CBD at Whitelight Store, Rware Building Shop 410 on Luthuli Avenue. Hours, same-day delivery and safe shopping tips.",
+      "Where to buy original running shoes in Nairobi CBD on Luthuli Avenue — address, hours, stock and same-day delivery from Whitelight Store.",
     excerpt:
-      "Exact address, hours, stock and same-day CBD delivery details for buying original running shoes on Luthuli Avenue.",
+      "For shoppers typing “running shoes Nairobi CBD” or “Luthuli Avenue shoes”: exact shop address, how to buy safely, and what to do next.",
     date: "2026-10-04",
-    updatedAt: "2026-10-05",
+    updatedAt: "2026-10-19",
     author: "Whitelight Store Team",
     category: "Local guide",
-    cover: "/couresel_images/running/running1.webp",
+    cover: "/couresel_images/running/running3.webp",
     coverAlt: "running-shoes-nairobi-cbd-luthuli-avenue-whitelight-store",
     primaryKeyword: "running shoes Nairobi CBD",
     secondaryKeywords: [
@@ -555,113 +524,97 @@ export const blogPosts: BlogPost[] = [
       "same day shoe delivery Nairobi",
     ],
     answerFirst:
-      "Whitelight Store sells original running, trail, gym and training shoes in Nairobi CBD at Rware Building, Luthuli Avenue, Shop 410, 4th Floor. Open Monday–Saturday, 8am–7pm. Order for same-day CBD delivery or pick up in store after a fit check.",
+      "Whitelight Store sells original running, trail, gym and training shoes in Nairobi CBD at Rware Building, Luthuli Avenue, Shop 410, 4th Floor. Open Monday–Saturday, 8am–7pm. Order for same-day CBD delivery or pick up after a fit check.",
     categoryLinks: [
+      { label: "Store & directions", href: "/store" },
       { label: "Shop running", href: "/category/running" },
-      { label: "Contact / WhatsApp", href: "/contact" },
-      { label: "Visit about page", href: "/about" },
+      { label: "Delivery info", href: "/delivery" },
     ],
     blocks: [
       {
         type: "p",
-        text: `${STORE_FACT} If you are searching for running shoes Nairobi CBD shoppers trust, start here — not with random street stalls.`,
+        text: `${STORE_FACT} If you searched “where to buy original running shoes Nairobi CBD”, this is the direct answer with the next click.`,
       },
       {
         type: "h2",
-        text: "Who we are and where to find us",
-      },
-      {
-        type: "ul",
-        items: [
-          "Store: Whitelight Store Kenya",
-          "Address: Rware Building, Luthuli Avenue, Shop 410, Fourth Floor, Nairobi CBD",
-          "Hours: Monday–Saturday, 8:00am–7:00pm",
-          "Phone / WhatsApp: +254 708 749473",
-          "Stock: running, trail, gym, training, basketball, tennis shoes and accessories",
-        ],
-      },
-      {
-        type: "h2",
-        text: "What we stock on Luthuli Avenue",
+        text: "Who thinks like this?",
       },
       {
         type: "p",
-        text: "We specialise in athletic footwear — road running shoes, trail pairs for Kenyan hills, gym and training shoes for HIIT and lifting, plus court styles. This is a sports shoes shop Nairobi runners use for authentic stock and honest sizing advice, not fashion replicas.",
+        text: "Buyers who have been burned by fakes online, visitors near Kencom / Tom Mboya Street, and runners who want to try size before paying. They search for a real CBD shop — not another marketplace listing.",
       },
       {
         type: "h2",
-        text: "Same-day shoe delivery Nairobi CBD",
+        text: "Who we target — and why",
+      },
+      {
+        type: "p",
+        text: "People already in or near Nairobi CBD who can collect today or take same-day delivery. Why them: they convert when the address, hours and proof of authenticity are clear in one page Google can rank.",
+      },
+      {
+        type: "h2",
+        text: "What they search",
       },
       {
         type: "ul",
         items: [
-          "Cut-off: order by mid-afternoon (confirm on WhatsApp the same day) while stock is available.",
-          "Areas: Nairobi CBD and nearby environs for same-day; other Nairobi estates and nationwide by courier.",
-          "Cost: CBD same-day rates confirmed at checkout or on WhatsApp before dispatch; nationwide parcels are charged separately.",
-          "Payment: M-Pesa Paybill and in-store options available.",
+          "“running shoes Nairobi CBD”",
+          "“Luthuli Avenue shoe shop”",
+          "“original Asics / Nike Nairobi”",
+          "“same day shoe delivery Nairobi”",
         ],
       },
       {
         type: "h2",
-        text: "How to shop safely for shoes in the CBD",
+        text: "Exact place to go",
       },
       {
-        type: "ol",
+        type: "ul",
         items: [
-          "Check the box labelling and model codes against the shoe tongue/labels.",
-          "Inspect stitching, glue lines and logo alignment — messy work is a red flag.",
-          "Feel the midsole: originals have consistent cushion; many fakes feel dead or uneven.",
-          "Always ask for a receipt and keep WhatsApp order confirmation.",
-          "Prefer a known store address you can return to — like Shop 410, Rware Building.",
+          "Whitelight Store — Rware Building, Luthuli Avenue, Shop 410, 4th Floor",
+          "Hours: Monday–Saturday, 8am–7pm",
+          "WhatsApp: +254 708 749473",
+          "Brands in focus: Asics, Nike, Adidas",
         ],
-      },
-      {
-        type: "h2",
-        text: "Map to Whitelight Store on Luthuli Avenue",
       },
       {
         type: "map",
-        title: "Whitelight Store — Rware Building, Luthuli Avenue",
-        src: "https://maps.google.com/maps?q=Rware+Building+Luthuli+Avenue+Nairobi&z=16&output=embed",
+        title: "Whitelight Store on Luthuli Avenue",
+        src: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8177!2d36.8219!3d-1.2841!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMcKwMTcnMDIuNyJTIDM2wrA0OyczOS4wIkU!5e0!3m2!1sen!2ske!4v1",
+      },
+      {
+        type: "h2",
+        text: "Why buy here (and what would make you)",
       },
       {
         type: "p",
-        text: "Find us on Google Business Profile as Whitelight Store Kenya and read recent customer reviews before you visit. Then compare pairs in person or order via WhatsApp for same-day CBD delivery.",
+        text: "You see the real pair, confirm the EU size in stock, pay with M-Pesa, and leave with shoes — or get CBD delivery the same day. That combination is what turns a search into a purchase.",
       },
       {
         type: "links",
         items: [
-          { label: "Best running shoes guide", href: "/blog/best-running-shoes-nairobi" },
-          { label: "Price & fake-spotting guide", href: "/blog/running-shoes-price-kenya" },
-          { label: "Shop all running shoes", href: "/category/running" },
+          { label: "Open store page", href: "/store" },
+          { label: "Shop Asics", href: "/brand/asics" },
+          { label: "Shop Nike", href: "/brand/nike" },
+          { label: "Shop Adidas", href: "/brand/adidas" },
         ],
       },
     ],
     faqs: [
       {
-        question: "Where is Whitelight Store in Nairobi CBD?",
+        question: "Where exactly is Whitelight Store in Nairobi CBD?",
         answer:
-          "Rware Building, Luthuli Avenue, Shop 410, Fourth Floor. Open Monday–Saturday, 8am–7pm.",
+          "Rware Building, Luthuli Avenue, Shop 410, Fourth Floor — near Kencom / Tom Mboya Street.",
       },
       {
-        question: "Do you offer same-day shoe delivery in Nairobi?",
+        question: "Do you deliver the same day in Nairobi CBD?",
         answer:
-          "Yes — same-day delivery in Nairobi CBD and nearby environs when stock is confirmed. Message WhatsApp +254 708 749473 for cut-off and cost.",
+          "Yes when you order before mid-afternoon and stock is confirmed. Details on /delivery.",
       },
       {
-        question: "Are your Luthuli Avenue shoes original?",
+        question: "Are the shoes original?",
         answer:
-          "Yes. We sell authentic athletic footwear with receipts, proper labelling and in-store inspection before you pay.",
-      },
-      {
-        question: "Can I pick up after ordering on WhatsApp?",
-        answer:
-          "Yes. Confirm size and model on WhatsApp, pay as advised, and collect at Shop 410 or request CBD delivery.",
-      },
-      {
-        question: "What should I check to avoid fakes in the CBD?",
-        answer:
-          "Box labels, stitching, midsole feel, and a real receipt from a fixed shop address. See our authenticity checklist in the price guide.",
+          "Yes. We show photos of the actual pair in stock. Ask for more angles on WhatsApp before you pay.",
       },
     ],
   },
@@ -670,373 +623,344 @@ export const blogPosts: BlogPost[] = [
     title: "How Much Do Running Shoes Cost in Kenya? Price Guide and How to Spot Fakes",
     metaTitle: "Running Shoes Price Kenya | Spot Fakes",
     metaDescription:
-      "Running shoes in Kenya at Whitelight Store typically start around KSh 4,800. See price ranges by type and a checklist to spot fake sneakers.",
+      "Running shoes price in Kenya — real ranges for daily trainers, trail and premium pairs at Whitelight Store, plus how to spot fakes.",
     excerpt:
-      "Real Whitelight Store price ranges for daily trainers, trail, gym and premium pairs — plus how to spot fakes in Kenya.",
+      "For buyers searching “running shoes price Kenya”: honest ranges, what fakes look like, and where to buy with confidence.",
     date: "2026-10-03",
-    updatedAt: "2026-10-05",
+    updatedAt: "2026-10-19",
     author: "Whitelight Store Team",
     category: "Price guide",
-    cover: "/couresel_images/running/running2.webp",
-    coverAlt: "running-shoes-price-kenya-authentic-stock-nairobi",
-    primaryKeyword: "running shoes price in Kenya",
+    cover: "/couresel_images/running/running4.webp",
+    coverAlt: "running-shoes-price-kenya-whitelight",
+    primaryKeyword: "running shoes price Kenya",
     secondaryKeywords: [
-      "original vs fake sneakers Kenya",
-      "how to spot fake running shoes",
-      "cheap running shoes Nairobi",
+      "how much do running shoes cost Kenya",
+      "fake running shoes Kenya",
+      "original running shoes Nairobi price",
     ],
     answerFirst:
-      "At Whitelight Store, running shoes in Kenya typically start around KSh 4,800, with most performance pairs between KSh 5,500 and KSh 8,500 depending on category and model. Trail and premium race-ready shoes sit toward the higher end. Price alone is not proof of quality — use the authenticity checks below.",
+      "In Kenya, usable daily running shoes commonly sit in mid-range KSh bands for Asics, Nike and Adidas trainers, with trail and race pairs higher. At Whitelight Store the price you see is the price for the real pair in stock — not a bait listing.",
     categoryLinks: [
       { label: "Shop running", href: "/category/running" },
       { label: "Shop sale", href: "/sale" },
-      { label: "Shop trail", href: "/category/trail" },
+      { label: "Brand comparison", href: "/blog/asics-nike-adidas-kenya" },
     ],
     blocks: [
       {
         type: "p",
-        text: `${STORE_FACT} Below are real store ranges from our current Nairobi catalogue so you can budget before you buy.`,
+        text: `${STORE_FACT} Searchers typing “running shoes price Kenya” want numbers and a safe next step.`,
       },
       {
         type: "h2",
-        text: "How much do running shoes cost in Kenya right now?",
+        text: "Who thinks like this?",
       },
       {
         type: "p",
-        text: "Expect authentic running shoes price in Kenya at Whitelight Store to start near KSh 4,800 for entry daily trainers, with many solid road shoes between KSh 5,500 and KSh 7,500, and premium options up to about KSh 8,500. Accessories such as socks start much lower (from about KSh 500).",
-      },
-      {
-        type: "table",
-        caption: "Typical Whitelight Store price bands (KES)",
-        headers: ["Shoe type", "Typical price (KES)", "Who it suits"],
-        rows: [
-          ["Daily trainer (road)", "4,800 – 7,500", "Beginners and everyday Nairobi joggers"],
-          ["Trail shoes", "5,800 – 8,500", "Karura, Ngong Hills, muddy paths"],
-          ["Gym / training", "5,500 – 7,000", "HIIT, weights, studio classes"],
-          ["Premium / top models", "7,500 – 8,500", "High-mileage or race-focused runners"],
-        ],
+        text: "Budget-conscious beginners comparing M-Pesa totals, parents buying a first pair, and experienced runners checking whether a “deal” is too cheap to be real.",
       },
       {
         type: "h2",
-        text: "Why originals cost what they do",
+        text: "Who we target — and why",
+      },
+      {
+        type: "p",
+        text: "Kenya buyers ready to spend on originals once price and authenticity are clear. Why them: price opacity and fakes are the main blockers; a transparent guide plus live stock links removes both.",
+      },
+      {
+        type: "h2",
+        text: "What they search",
       },
       {
         type: "ul",
         items: [
-          "Cushioning tech that keeps its bounce past a few weeks of CBD pavement.",
-          "Durable outsoles and uppers built for Kenyan heat, dust and rough concrete.",
-          "Injury protection through stable geometry and consistent sizing — cheap fakes often fail here first.",
+          "“running shoes price Kenya”",
+          "“how to spot fake Nike Kenya”",
+          "“Asics Gel-Nimbus price Nairobi”",
+          "“cheap original running shoes Nairobi”",
         ],
       },
       {
         type: "h2",
-        text: "Cheap running shoes Nairobi buyers should be careful with",
+        text: "Typical price bands (guide, not a quote)",
       },
       {
-        type: "p",
-        text: "Ultra-low street prices can mean replicas. A fair deal on sale at a trusted shop is different from a “same model” at half the normal Kenya price with no receipt. When in doubt, compare in our store or on WhatsApp before paying.",
+        type: "table",
+        caption: "What Nairobi buyers usually pay for usable pairs",
+        headers: ["Type", "What you get", "Where to look"],
+        rows: [
+          ["Daily trainers", "Soft/balanced cushion for roads", "/category/running"],
+          ["Trail", "Grip for Karura / Ngong", "/category/trail"],
+          ["Gym / training", "Stable sole for lifts & HIIT", "/category/gym"],
+          ["Sale pairs", "Real reductions in your size", "/sale"],
+        ],
       },
       {
         type: "h2",
-        text: "How to spot fake running shoes (checklist)",
+        text: "How to spot fakes (quick checks)",
       },
       {
-        type: "ol",
+        type: "ul",
         items: [
-          "Smell and box: strong chemical smell or mismatched box codes are warning signs.",
-          "Labels: tongue and insole print should be sharp; spelling errors are common on fakes.",
-          "Stitching: uneven seams or glue overflow around the midsole.",
-          "Weight and cushion: press the midsole — originals rebound more evenly.",
-          "Receipt and seller: buy from a fixed CBD address (Whitelight Store, Shop 410) and keep proof of purchase.",
+          "Price far below known market — walk away.",
+          "Blurry photos, no size list, pressure to pay before seeing the pair.",
+          "Ask for sole, side and label photos of the exact shoe you will receive.",
+          "Buy where unused pairs can be size-exchanged — we do within 3 days.",
         ],
       },
       {
+        type: "h2",
+        text: "Why buy / what would make you",
+      },
+      {
         type: "p",
-        text: "Original vs fake sneakers Kenya shoppers worry about most when buying online — that is why we encourage WhatsApp photos of the exact pair in stock, plus in-store inspection when you can visit Luthuli Avenue.",
+        text: "Seeing the live price next to in-stock sizes — then a WhatsApp confirmation — is usually enough. Open stock now:",
       },
       {
         type: "links",
         items: [
-          { label: "Luthuli Avenue store guide", href: "/blog/buy-running-shoes-nairobi-cbd-luthuli-avenue" },
-          { label: "Best running shoes guide", href: "/blog/best-running-shoes-nairobi" },
-          { label: "Browse current running stock", href: "/category/running" },
+          { label: "Running shoes with live prices", href: "/category/running" },
+          { label: "Sale pairs", href: "/sale" },
+          { label: "Shop Asics", href: "/brand/asics" },
+          { label: "Shop Nike", href: "/brand/nike" },
         ],
       },
     ],
     faqs: [
       {
-        question: "What is the average running shoes price in Kenya at Whitelight Store?",
+        question: "How much do running shoes cost in Kenya?",
         answer:
-          "Most authentic pairs we sell sit roughly between KSh 5,500 and KSh 8,500, with some daily trainers from about KSh 4,800. Check live product pages for exact prices.",
+          "Daily trainers vary by brand and model; check live prices on /category/running. Beware deals that look far below market.",
       },
       {
-        question: "Why are original running shoes more expensive than street pairs?",
+        question: "How do I spot fake running shoes in Kenya?",
         answer:
-          "You pay for real cushioning compounds, durable outsoles, consistent sizing and injury-friendly support — not just a logo print.",
-      },
-      {
-        question: "How can I spot fake running shoes in Kenya?",
-        answer:
-          "Check box codes, label print quality, stitching, midsole bounce and insist on a receipt from a verifiable shop address.",
-      },
-      {
-        question: "Do you sell cheap running shoes in Nairobi that are still original?",
-        answer:
-          "Yes — watch our Sale category and ask on WhatsApp for current entry-level trainers in your size.",
-      },
-      {
-        question: "Can I confirm authenticity before paying?",
-        answer:
-          "Yes. Visit Shop 410 on Luthuli Avenue or request clear stock photos and model details on WhatsApp +254 708 749473.",
+          "Demand clear photos of the actual pair, a size list, and a seller who allows size exchange. Whitelight Store shows the real pair and stocked sizes.",
       },
     ],
   },
   {
     slug: "trail-running-shoes-kenya",
-    title: "Trail Running Shoes in Kenya: Road vs Trail Shoes, and What to Wear on Karura and Ngong Hills",
+    title: "Trail Running Shoes in Kenya: Karura, Ngong Hills and Weekend Mud",
     metaTitle: "Trail Running Shoes Kenya | Karura & Ngong",
     metaDescription:
-      "Trail running shoes in Kenya need grip and tougher uppers for mud and rocks. Compare road vs trail shoes for Karura Forest and Ngong Hills.",
+      "Trail running shoes Kenya for Karura Forest and Ngong Hills — grip, protection and where to buy in Nairobi CBD at Whitelight Store.",
     excerpt:
-      "Lug depth, rock protection and local advice for Karura Forest and Ngong Hills — plus when road shoes are not enough.",
+      "For runners searching “trail running shoes Kenya”: which grip you need, who this is for, and where to shop next.",
     date: "2026-10-02",
-    updatedAt: "2026-10-05",
+    updatedAt: "2026-10-19",
     author: "Whitelight Store Team",
     category: "Trail guide",
-    cover: "/trailshoes.webp",
-    coverAlt: "trail-running-shoes-karura-forest-nairobi",
+    cover: "/couresel_images/trail/trail1.webp",
+    coverAlt: "trail-running-shoes-kenya-karura-ngong",
     primaryKeyword: "trail running shoes Kenya",
     secondaryKeywords: [
-      "trail vs road running shoes",
-      "shoes for Ngong Hills",
-      "hiking vs trail shoes",
-      "Karura Forest running shoes",
+      "Karura trail shoes",
+      "Ngong Hills running shoes",
+      "trail shoes Nairobi",
     ],
     answerFirst:
-      "Trail running shoes Kenya athletes need have grippier outsoles and tougher uppers for mud, rocks and loose dirt. Road shoes are smoother and softer for pavement. For Karura Forest and Ngong Hills, choose trail lugs and rock protection — especially in rainy season.",
+      "Trail running shoes in Kenya need real lugs and protection for Karura roots, Ngong climbs and weekend mud — not road shoes with a “trail” label. Shop trail stock at Whitelight Store in Nairobi CBD or filter /category/trail.",
     categoryLinks: [
       { label: "Shop trail shoes", href: "/category/trail" },
-      { label: "Shop running shoes", href: "/category/running" },
+      { label: "Shop running", href: "/category/running" },
+      { label: "Size guide", href: "/size-guide" },
     ],
     blocks: [
       {
         type: "p",
-        text: `${STORE_FACT} Use this page to decide between trail vs road running shoes before your next Karura loop.`,
+        text: `${STORE_FACT} This guide answers “trail running shoes Kenya” the way runners actually search — by place and terrain.`,
       },
       {
         type: "h2",
-        text: "What makes a trail shoe different?",
+        text: "Who thinks like this?",
+      },
+      {
+        type: "p",
+        text: "Nairobi runners leaving tarmac for Karura loops, Ngong Hills Saturdays, or muddy estate cut-throughs. They already own a road shoe and felt it slip once — that search starts here.",
+      },
+      {
+        type: "h2",
+        text: "Who we target — and why",
+      },
+      {
+        type: "p",
+        text: "Weekend trail runners and hybrid athletes who will buy one dedicated trail pair. Why them: high intent, clear use case, and they need Nairobi stock — not international shipping delays.",
+      },
+      {
+        type: "h2",
+        text: "What they search",
       },
       {
         type: "ul",
         items: [
-          "Lug depth: deeper, spaced lugs bite into mud and loose soil; road shoes have flatter rubber.",
-          "Rock protection: firmer plates or denser midsoles reduce bruise risk on sharp stones.",
-          "Uppers: tougher overlays and better debris resistance than lightweight road mesh.",
-          "Waterproofing: helpful in long wet grass, but can feel warmer; many Nairobi runners prefer quick-drain mesh unless they run deep mud weekly.",
+          "“trail running shoes Kenya”",
+          "“Karura Forest running shoes”",
+          "“Ngong Hills trail shoes”",
+          "“waterproof trail shoes Nairobi”",
         ],
       },
       {
         type: "h2",
-        text: "Karura Forest running shoes",
+        text: "What to look for",
       },
       {
-        type: "p",
-        text: "Karura mixes packed dirt, roots and occasional mud. A moderate-lug trail shoe is ideal. Pure road shoes can work on dry, hard sections but get slippery when the forest floor is wet.",
-      },
-      {
-        type: "h2",
-        text: "Shoes for Ngong Hills",
-      },
-      {
-        type: "p",
-        text: "Ngong Hills adds steeper gradients, looser gravel and wind exposure. Prioritise grip and a locked heel. Hiking boots are heavier and slower if your goal is running; dedicated trail runners beat hiking shoes for pace, while hiking footwear wins for heavy backpacks and slow scrambles.",
-      },
-      {
-        type: "h2",
-        text: "Rainy-season mud tips",
-      },
-      {
-        type: "ol",
+        type: "ul",
         items: [
-          "Choose deeper lugs and a shoe you can rinse after the run.",
-          "Avoid smooth road outsoles on red clay — they skate.",
-          "Pack a dry pair of road shoes for the drive home if you are coming into CBD afterwards.",
+          "Aggressive outsole lugs for mud and loose dirt",
+          "Toe protection for roots and rocks",
+          "Secure midfoot so descents do not slam your toes",
+          "A fit you confirm in-store or via WhatsApp before race day",
         ],
       },
       {
         type: "h2",
-        text: "Can I use road shoes on trails?",
+        text: "Why buy / what would make you",
       },
       {
         type: "p",
-        text: "Short, dry, mild trails — sometimes. Technical, muddy or rocky routes — no. You lose grip and rock protection, which raises slip and bruise risk. If you only buy one trail pair in Kenya, make it a true trail shoe from our trail category and keep road shoes for city miles.",
+        text: "Seeing grip close-up (real pair photos), your EU size in stock, and a same-day CBD option before Saturday’s Karura run. Next step:",
       },
       {
         type: "links",
         items: [
-          { label: "Shop trail running shoes", href: "/category/trail" },
-          { label: "Best running shoes Nairobi", href: "/blog/best-running-shoes-nairobi" },
-          { label: "Running vs gym shoes", href: "/blog/running-shoes-vs-gym-shoes-kenya" },
+          { label: "Browse trail shoes", href: "/category/trail" },
+          { label: "Compare brands", href: "/blog/asics-nike-adidas-kenya" },
+          { label: "Visit the store", href: "/store" },
         ],
       },
     ],
     faqs: [
       {
-        question: "What are the best trail running shoes in Kenya for beginners?",
+        question: "Can I use road shoes on Karura trails?",
         answer:
-          "A moderate-lug trail shoe with a secure fit and decent cushion. Visit Whitelight Store to compare grip patterns, or WhatsApp your usual size.",
+          "For dry, easy paths maybe; for mud and roots you want trail lugs. If you slip once, upgrade.",
       },
       {
-        question: "Are hiking shoes the same as trail running shoes?",
+        question: "Where to buy trail running shoes in Nairobi?",
         answer:
-          "No. Hiking shoes are heavier and built for walking with load. Trail running shoes are lighter and designed for running pace on uneven ground.",
-      },
-      {
-        question: "Can I wear road shoes in Karura Forest?",
-        answer:
-          "On dry, easy paths maybe; on wet or rooty sections a trail shoe is safer. Many Nairobi runners keep a dedicated Karura pair.",
-      },
-      {
-        question: "Do I need waterproof trail shoes for Ngong Hills?",
-        answer:
-          "Only if you regularly hit deep wet grass or puddles. Otherwise breathable trail mesh often feels better in Kenyan warmth.",
-      },
-      {
-        question: "Where can I buy trail shoes in Nairobi CBD?",
-        answer:
-          "Whitelight Store, Rware Building, Luthuli Avenue, Shop 410 — or order via WhatsApp with same-day CBD delivery options.",
+          "Whitelight Store on Luthuli Avenue, or /category/trail online with size listed per pair.",
       },
     ],
   },
   {
     slug: "running-shoes-vs-gym-shoes-kenya",
-    title: "Running Shoes vs Gym Shoes: What to Wear for Gym, HIIT and Training",
-    metaTitle: "Gym Shoes Kenya | Running vs Training",
+    title: "Running Shoes vs Gym Shoes in Kenya: Which Should You Buy?",
+    metaTitle: "Running vs Gym Shoes Kenya | Which to Buy",
     metaDescription:
-      "Running shoes vs gym shoes in Kenya: running pairs excel at forward motion; training shoes handle side-to-side HIIT and lifting. Shop Whitelight Store.",
+      "Running shoes vs gym shoes in Kenya — which to buy for road miles vs lifts and HIIT. Clear answer from Whitelight Store Nairobi.",
     excerpt:
-      "Clear comparison of cushioning, stability and flexibility for treadmill, weights, HIIT and class workouts — plus a one-pair budget tip.",
+      "For people searching “running shoes vs gym shoes”: who needs which, why it matters in Kenya, and where to shop each type.",
     date: "2026-10-01",
-    updatedAt: "2026-10-05",
+    updatedAt: "2026-10-19",
     author: "Whitelight Store Team",
-    category: "Training guide",
-    cover: "/gymshoes.webp",
-    coverAlt: "gym-shoes-kenya-training-shoes-whitelight-store",
-    primaryKeyword: "gym shoes Kenya",
+    category: "Buying guide",
+    cover: "/couresel_images/gym/gym1.webp",
+    coverAlt: "running-shoes-vs-gym-shoes-kenya",
+    primaryKeyword: "running shoes vs gym shoes",
     secondaryKeywords: [
-      "training shoes vs running shoes",
-      "best shoes for gym workouts",
-      "shoes for HIIT",
-      "can I lift in running shoes",
+      "gym shoes Kenya",
+      "training shoes Nairobi",
+      "can I use running shoes in the gym",
     ],
     answerFirst:
-      "Running shoes are built for forward motion; gym and training shoes are built for stability and side-to-side movement. For HIIT, classes and lifting, a flatter, more stable trainer is safer. For treadmill runs, a running shoe is the better tool.",
+      "Use running shoes for forward road miles; use gym or training shoes for lifts, HIIT and side-to-side work. One pair rarely does both well. Shop /category/running or /category/gym at Whitelight Store Nairobi.",
     categoryLinks: [
-      { label: "Shop gym shoes", href: "/category/gym" },
-      { label: "Shop training shoes", href: "/category/training" },
-      { label: "Shop running shoes", href: "/category/running" },
+      { label: "Shop running", href: "/category/running" },
+      { label: "Shop gym", href: "/category/gym" },
+      { label: "Shop training", href: "/category/training" },
     ],
     blocks: [
       {
         type: "p",
-        text: `${STORE_FACT} If you are choosing gym shoes Kenya trainers will actually use 4–5 days a week, match the shoe to the movement pattern.`,
+        text: `${STORE_FACT} Google rewards pages that answer “running vs gym shoes” with a decision — then a path to buy.`,
       },
       {
         type: "h2",
-        text: "Running shoes vs gym shoes — quick comparison",
+        text: "Who thinks like this?",
       },
       {
-        type: "table",
-        caption: "Training shoes vs running shoes",
-        headers: ["Feature", "Running shoes", "Gym / training shoes"],
-        rows: [
-          ["Cushioning", "Higher stack for pavement impact", "Lower to moderate for ground feel"],
-          ["Stability", "Optimised front-to-back", "Better lateral (side-to-side) stability"],
-          ["Flexibility", "Forefoot flex for stride", "Multi-directional flexibility"],
-          ["Best for", "Road runs, treadmill endurance", "HIIT, circuits, gym floor work"],
-        ],
+        type: "p",
+        text: "People with one budget who do both jogging and gym sessions, and worry they will buy the wrong category. They ask friends, then search.",
       },
       {
         type: "h2",
-        text: "What to wear for common gym cases",
+        text: "Who we target — and why",
+      },
+      {
+        type: "p",
+        text: "Hybrid Nairobi athletes who will own two pairs eventually. Why them: helping them pick the first correct pair builds trust for the second purchase (trail, race, or court).",
+      },
+      {
+        type: "h2",
+        text: "What they search",
       },
       {
         type: "ul",
         items: [
-          "Treadmill runs: running shoes.",
-          "Weights / lifting: flatter training shoes; tall soft runners can feel tippy under a barbell.",
-          "HIIT and agility: training or gym shoes with lateral grip.",
-          "Group classes (mixed cardio + strength): versatile training shoes beat maximal cushion runners.",
+          "“running shoes vs gym shoes”",
+          "“can I squat in running shoes”",
+          "“best gym shoes Nairobi”",
+          "“training shoes Kenya”",
         ],
       },
       {
         type: "h2",
-        text: "Can I lift in running shoes?",
+        text: "Quick decision table",
       },
       {
-        type: "p",
-        text: "You can for light dumbbell work, but soft, high-stack running shoes are not ideal for heavy squats or deadlifts because the midsole compresses and reduces balance. If lifting is half your week, get a training pair.",
+        type: "table",
+        caption: "Pick by what you do most weeks",
+        headers: ["You mostly…", "Buy", "Shop"],
+        rows: [
+          ["Jog / run on roads", "Running shoes", "/category/running"],
+          ["Lift, HIIT, classes", "Gym / training shoes", "/category/gym"],
+          ["Both equally", "Start with your higher-injury risk activity", "/blog/asics-nike-adidas-kenya"],
+        ],
       },
       {
         type: "h2",
-        text: "One pair or two on a budget?",
+        text: "Why buy / what would make you",
       },
       {
         type: "p",
-        text: "If your budget allows only one pair and you mostly run, buy running shoes. If you mostly do gym HIIT with short jogs, buy training shoes. Ideal setup for Nairobi athletes: one road runner + one gym trainer. Ask us on WhatsApp which current models fit your split.",
+        text: "A clear category pick, brand filter (Asics / Nike / Adidas), and your size in stock. Continue:",
       },
       {
         type: "links",
         items: [
-          { label: "Shop gym shoes", href: "/category/gym" },
-          { label: "Shop training shoes", href: "/category/training" },
-          { label: "Size & fit guide", href: "/blog/running-shoe-size-fit-guide-kenya" },
-          { label: "Trail shoe guide", href: "/blog/trail-running-shoes-kenya" },
+          { label: "Running shoes", href: "/category/running" },
+          { label: "Gym shoes", href: "/category/gym" },
+          { label: "Training shoes", href: "/category/training" },
+          { label: "Adidas guide", href: "/blog/adidas-shoes-nairobi" },
         ],
       },
     ],
     faqs: [
       {
-        question: "What are the best shoes for gym workouts in Kenya?",
+        question: "Can I use running shoes in the gym?",
         answer:
-          "Stable gym or training shoes with lateral support. Shop /category/gym and /category/training at Whitelight Store.",
+          "For light cardio yes; for heavy lifts and lateral HIIT, a stable gym or training shoe is safer.",
       },
       {
-        question: "Are training shoes different from running shoes?",
+        question: "Can I run in gym shoes?",
         answer:
-          "Yes. Training shoes prioritise side-to-side stability; running shoes prioritise forward cushioning and stride.",
-      },
-      {
-        question: "What shoes are best for HIIT?",
-        answer:
-          "Low-to-moderate stack trainers with grip for jumps, cuts and floor work — not maximal cushion race runners.",
-      },
-      {
-        question: "Can I wear running shoes to the gym every day?",
-        answer:
-          "For treadmill-focused days yes; for lifting and HIIT a training shoe is safer and more stable.",
-      },
-      {
-        question: "Do you stock both gym and running shoes in Nairobi CBD?",
-        answer:
-          "Yes — Whitelight Store on Luthuli Avenue stocks running, gym and training categories with same-day CBD delivery options.",
+          "Short easy jogs maybe; for regular road mileage choose a running shoe with proper cushioning.",
       },
     ],
   },
   {
     slug: "running-shoe-size-fit-guide-kenya",
-    title: "How to Choose the Right Shoe Size and Fit When You Order Online",
+    title: "How to Choose the Right Shoe Size in Kenya: Running Fit Guide",
     metaTitle: "Running Shoe Size Guide Kenya | Fit Tips",
     metaDescription:
-      "Measure your foot, leave a thumb’s width at the toe, and use our Kenya running shoe size guide before you order. Clear Whitelight exchange policy included.",
+      "How to choose running shoe size in Kenya — measure at home, brand fit notes, and WhatsApp help from Whitelight Store Nairobi.",
     excerpt:
-      "Step-by-step measuring, brand size conversion tips, exchange policy, and a printable foot-measuring guide for online orders.",
+      "For searches like “what size running shoe should I buy”: measure, match brand, and go to the right product with fewer returns.",
     date: "2026-09-30",
-    updatedAt: "2026-10-05",
+    updatedAt: "2026-10-19",
     author: "Whitelight Store Team",
-    category: "Sizing guide",
-    cover: "/couresel_images/running/running1.webp",
+    category: "Size guide",
+    cover: "/couresel_images/running/running5.webp",
     coverAlt: "running-shoe-size-guide-kenya-foot-measure",
     primaryKeyword: "running shoe size guide",
     secondaryKeywords: [
@@ -1045,67 +969,58 @@ export const blogPosts: BlogPost[] = [
       "shoe size chart Kenya",
     ],
     answerFirst:
-      "Measure your foot at home, leave about a thumb’s width of space at the toe, and shop in the afternoon when feet are slightly larger. Brand sizing differs, so confirm with Whitelight Store on WhatsApp before you pay. Size exchanges are available within 3 days if shoes are unused.",
+      "Measure your foot at home, leave about a thumb’s width at the toe, and shop in the afternoon. Brand sizing differs — confirm with Whitelight Store on WhatsApp before you pay. Unused pairs can be size-exchanged within 3 days.",
     categoryLinks: [
+      { label: "Full size guide page", href: "/size-guide" },
       { label: "Shop running", href: "/category/running" },
-      { label: "Contact us", href: "/contact" },
-      { label: "Terms / exchange policy", href: "/terms" },
+      { label: "Contact / WhatsApp", href: "/store" },
     ],
     blocks: [
       {
         type: "p",
-        text: `${STORE_FACT} This running shoe size guide is written for Kenya online orders so you can buy with fewer fit surprises.`,
+        text: `${STORE_FACT} Wrong size is the #1 reason Kenyan buyers hesitate online. This page answers the searches that come before “add to bag”.`,
       },
       {
         type: "h2",
-        text: "How to measure foot size before you order",
-      },
-      {
-        type: "ol",
-        items: [
-          "Place a paper against a wall on a hard floor.",
-          "Stand with your heel touching the wall; mark the longest toe.",
-          "Measure heel-to-mark in centimetres for both feet; use the longer foot.",
-          "Leave about a thumb’s width (roughly 1–1.5 cm) of spare length in the shoe.",
-          "Measure in the afternoon — feet swell slightly during the day.",
-        ],
-      },
-      {
-        type: "h2",
-        text: "What size running shoe should I buy?",
+        text: "Who thinks like this?",
       },
       {
         type: "p",
-        text: "Start from your measured length, then adjust for brand fit. Some brands run small; others are wider in the toe box. If you are between sizes, most runners size up for long runs. Send us your cm length and a brand you already own on WhatsApp for a model-specific suggestion.",
-      },
-      {
-        type: "table",
-        caption: "Approximate men’s US to CM guide (confirm per brand)",
-        headers: ["US Men", "UK", "EU", "Foot length (cm)"],
-        rows: [
-          ["7", "6", "40", "25.0"],
-          ["8", "7", "41", "26.0"],
-          ["9", "8", "42.5", "27.0"],
-          ["10", "9", "44", "28.0"],
-          ["11", "10", "45", "29.0"],
-          ["12", "11", "46", "30.0"],
-        ],
-      },
-      {
-        type: "p",
-        text: "Women’s sizing often converts about 1.5 US sizes down from men’s for the same centimetre length — always check the product page and ask us if the model is unisex. Shoe size chart Kenya shoppers share online can disagree by brand, so treat charts as a starting point only.",
+        text: "First-time online shoe buyers, people between EU sizes, and anyone who returned a pair last year. They search sizing guides before they trust a product page.",
       },
       {
         type: "h2",
-        text: "Whitelight Store exchange policy (fit insurance)",
+        text: "Who we target — and why",
+      },
+      {
+        type: "p",
+        text: "Nairobi and Kenya-wide customers who will order if fit risk is low. Why them: size confidence unlocks conversion across Asics, Nike and Adidas — Google then sees useful answers plus paths to stocked products.",
+      },
+      {
+        type: "h2",
+        text: "What they search",
       },
       {
         type: "ul",
         items: [
-          "Exchanges accepted within 3 days after pickup or delivery.",
-          "Same model only — size exchange, not a different design.",
-          "Shoes must be unused, unworn, in original packaging, with no damage.",
-          "Refunds are not offered; size exchange under these conditions is the remedy.",
+          "“what size running shoe should I buy”",
+          "“how to measure foot size cm”",
+          "“shoe size chart Kenya”",
+          "“Asics sizing vs Nike”",
+        ],
+      },
+      {
+        type: "h2",
+        text: "How to measure (do this first)",
+      },
+      {
+        type: "ol",
+        items: [
+          "Place paper against a wall on a hard floor.",
+          "Stand with heel to the wall; mark the longest toe.",
+          "Measure both feet in centimetres; use the longer foot.",
+          "Leave about a thumb’s width (1–1.5 cm) of spare room.",
+          "Measure in the afternoon when feet are slightly larger.",
         ],
       },
       {
@@ -1120,11 +1035,20 @@ export const blogPosts: BlogPost[] = [
         ],
       },
       {
+        type: "h2",
+        text: "Why buy / what would make you",
+      },
+      {
+        type: "p",
+        text: "A WhatsApp size confirmation on a specific pair, plus a 3-day unused size exchange. That is usually enough to order today:",
+      },
+      {
         type: "links",
         items: [
-          { label: "Best running shoes Nairobi", href: "/blog/best-running-shoes-nairobi" },
-          { label: "Gym vs running shoes", href: "/blog/running-shoes-vs-gym-shoes-kenya" },
-          { label: "Shop all shoes", href: "/products" },
+          { label: "Open size guide tools", href: "/size-guide" },
+          { label: "Shop Asics", href: "/brand/asics" },
+          { label: "Shop Nike", href: "/brand/nike" },
+          { label: "Shop Adidas", href: "/brand/adidas" },
         ],
       },
     ],
@@ -1133,16 +1057,6 @@ export const blogPosts: BlogPost[] = [
         question: "How do I measure my foot size for running shoes?",
         answer:
           "Stand on paper against a wall, mark the longest toe, measure both feet in centimetres, and use the longer measurement with about a thumb’s width of spare room.",
-      },
-      {
-        question: "Should running shoes be a size bigger?",
-        answer:
-          "Often slightly roomier than casual shoes, especially for long runs. Do not go so large that your heel slips.",
-      },
-      {
-        question: "Do brands size the same in Kenya?",
-        answer:
-          "No. Sizing differs by brand and model. Use centimetres plus our WhatsApp advice for the exact pair in stock.",
       },
       {
         question: "What if the size is wrong when I order online?",
@@ -1156,6 +1070,7 @@ export const blogPosts: BlogPost[] = [
       },
     ],
   },
+
 ];
 
 export function getBlogPost(slug: string): BlogPost | undefined {

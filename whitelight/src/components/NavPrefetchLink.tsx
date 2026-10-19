@@ -22,7 +22,7 @@ function pathFromTo(to: LinkProps["to"]): string {
 function prefetchRoute(path: string) {
   if (path === "/") return;
 
-  if (path.startsWith("/product/")) {
+  if (path.startsWith("/product/") || path.startsWith("/shoes/")) {
     void import("../pages/ProductDetail");
     return;
   }

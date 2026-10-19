@@ -19,8 +19,8 @@ import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 import Index from "./pages/Index";
+import ProductDetail from "./pages/ProductDetail";
 
-const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const CategoryPage = lazy(() => import("./pages/CategoryPage"));
 const BrandPage = lazy(() => import("./pages/BrandPage"));
 const ContactPage = lazy(() => import("./pages/ContactPage"));
@@ -49,8 +49,23 @@ const AdminSaleManager = lazy(() => import("./pages/admin/AdminSaleManager"));
 
 function PageLoader() {
   return (
-    <div className="min-h-[40vh] flex items-center justify-center">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-gray-300 border-t-black" />
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="border-b border-border px-4 py-4">
+        <div className="mx-auto flex max-w-6xl items-center gap-3">
+          <div className="h-10 w-10 animate-pulse rounded-full bg-secondary" />
+          <div className="h-4 w-40 animate-pulse rounded bg-secondary" />
+        </div>
+      </div>
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-2">
+        <div className="aspect-square animate-pulse rounded-2xl bg-secondary" />
+        <div className="space-y-4">
+          <div className="h-4 w-24 animate-pulse rounded bg-secondary" />
+          <div className="h-10 w-3/4 animate-pulse rounded bg-secondary" />
+          <div className="h-4 w-full animate-pulse rounded bg-secondary" />
+          <div className="h-4 w-2/3 animate-pulse rounded bg-secondary" />
+          <div className="mt-8 h-12 w-40 animate-pulse rounded-full bg-secondary" />
+        </div>
+      </div>
     </div>
   );
 }
