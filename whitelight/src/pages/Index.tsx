@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { lazy, Suspense, useMemo } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { useCatalogPartitions } from "@/hooks/useCatalog";
@@ -8,17 +8,52 @@ import { BlueprintHero } from "@/components/sections/home/BlueprintHero";
 import { BlueprintPromiseBar } from "@/components/sections/home/BlueprintPromiseBar";
 import { BlueprintActivityTiles } from "@/components/sections/home/BlueprintActivityTiles";
 import { BlueprintProductRail } from "@/components/sections/home/BlueprintProductRail";
-import { BlueprintBestsellers } from "@/components/sections/home/BlueprintBestsellers";
-import { BlueprintAngleViewer } from "@/components/sections/home/BlueprintAngleViewer";
-import { BlueprintFindMyPair } from "@/components/sections/home/BlueprintFindMyPair";
-import { BlueprintAccessories } from "@/components/sections/home/BlueprintAccessories";
-import { BlueprintSaleStrip } from "@/components/sections/home/BlueprintSaleStrip";
-import {
-  BlueprintHowItWorks,
-  BlueprintReviewsFaq,
-  BlueprintVisitUs,
-} from "@/components/sections/home/BlueprintTrustClose";
-import { BlogUpdatesSection } from "@/components/sections/BlogUpdatesSection";
+
+const BlueprintBestsellers = lazy(() =>
+  import("@/components/sections/home/BlueprintBestsellers").then((m) => ({
+    default: m.BlueprintBestsellers,
+  }))
+);
+const BlueprintAngleViewer = lazy(() =>
+  import("@/components/sections/home/BlueprintAngleViewer").then((m) => ({
+    default: m.BlueprintAngleViewer,
+  }))
+);
+const BlueprintFindMyPair = lazy(() =>
+  import("@/components/sections/home/BlueprintFindMyPair").then((m) => ({
+    default: m.BlueprintFindMyPair,
+  }))
+);
+const BlueprintAccessories = lazy(() =>
+  import("@/components/sections/home/BlueprintAccessories").then((m) => ({
+    default: m.BlueprintAccessories,
+  }))
+);
+const BlueprintSaleStrip = lazy(() =>
+  import("@/components/sections/home/BlueprintSaleStrip").then((m) => ({
+    default: m.BlueprintSaleStrip,
+  }))
+);
+const BlueprintHowItWorks = lazy(() =>
+  import("@/components/sections/home/BlueprintTrustClose").then((m) => ({
+    default: m.BlueprintHowItWorks,
+  }))
+);
+const BlueprintReviewsFaq = lazy(() =>
+  import("@/components/sections/home/BlueprintTrustClose").then((m) => ({
+    default: m.BlueprintReviewsFaq,
+  }))
+);
+const BlueprintVisitUs = lazy(() =>
+  import("@/components/sections/home/BlueprintTrustClose").then((m) => ({
+    default: m.BlueprintVisitUs,
+  }))
+);
+const BlogUpdatesSection = lazy(() =>
+  import("@/components/sections/BlogUpdatesSection").then((m) => ({
+    default: m.BlogUpdatesSection,
+  }))
+);
 
 const Index = () => {
   const { partitions, products, isLoading, isSuccess, isError, error, refetch } =
@@ -28,9 +63,9 @@ const Index = () => {
     if (!partitions) return null;
     return {
       all: partitions.all,
-      newArrivals: partitions.newArrivals.slice(0, 12),
+      newArrivals: partitions.newArrivals.slice(0, 8),
       bestSellers: partitions.bestSellers.slice(0, 4),
-      accessories: partitions.accessories,
+      accessories: partitions.accessories.slice(0, 6),
       featured: partitions.bestSellers[0] || partitions.newArrivals[0] || partitions.all[0],
     };
   }, [partitions]);
@@ -76,18 +111,22 @@ const Index = () => {
               viewAllHref="/new"
               viewAllLabel="See all new →"
             />
-            <BlueprintBestsellers products={rows.bestSellers} />
-            <BlueprintAngleViewer product={rows.featured} />
-            <BlueprintFindMyPair products={rows.all} />
-            <BlueprintAccessories products={rows.accessories} shoe={rows.featured} />
-            <BlueprintSaleStrip products={rows.all} />
+            <Suspense fallback={null}>
+              <BlueprintBestsellers products={rows.bestSellers} />
+              <BlueprintAngleViewer product={rows.featured} />
+              <BlueprintFindMyPair products={rows.all} />
+              <BlueprintAccessories products={rows.accessories} shoe={rows.featured} />
+              <BlueprintSaleStrip products={rows.all} />
+            </Suspense>
           </>
         )}
 
-        <BlueprintHowItWorks />
-        <BlueprintReviewsFaq />
-        <BlogUpdatesSection />
-        <BlueprintVisitUs />
+        <Suspense fallback={null}>
+          <BlueprintHowItWorks />
+          <BlueprintReviewsFaq />
+          <BlogUpdatesSection />
+          <BlueprintVisitUs />
+        </Suspense>
       </main>
 
       <Footer />

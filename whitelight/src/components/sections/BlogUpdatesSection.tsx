@@ -5,7 +5,7 @@ import { NavPrefetchLink } from "@/components/NavPrefetchLink";
 
 /** Homepage teaser for store updates / blog */
 export function BlogUpdatesSection() {
-  const posts = blogPosts.slice(0, 3);
+  const posts = blogPosts.slice(0, 4);
 
   return (
     <section className="border-t border-border bg-gradient-to-b from-background via-secondary/35 to-background">
@@ -30,7 +30,7 @@ export function BlogUpdatesSection() {
           </NavPrefetchLink>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-3">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {posts.map((post) => (
             <article key={post.slug} className="flex flex-col">
               <Link

@@ -70,7 +70,7 @@ export const siteConfig = {
     { id: "accessories", label: "Accessories", href: "/accessories", blurb: "Mats · bands · bags" },
   ],
   /** Brand strip / mega menu — Nike, Asics, Adidas only */
-  brands: ["Nike", "Asics", "Adidas"],
+  brands: ["Asics", "Nike", "Adidas"],
   purposes: [
     { id: "race_day", label: "Race day & speed", href: "/running?purpose=race_day" },
     { id: "daily", label: "Daily trainers", href: "/running?purpose=daily" },

@@ -14,7 +14,7 @@ export type PageSeoContent = {
 export const categorySeoContent: Record<string, PageSeoContent> = {
   running: {
     intro:
-      "White Light Store is Nairobi's performance running shoe hub for everyday runners, marathon chasers and weekend joggers. We stock Nike, Adidas, HOKA and more in the right cushioning and support for Kenyan roads and paths, so you get the comfort and confidence you need from CBD loops to long runs out of town.",
+      "White Light Store is Nairobi's performance running shoe hub for everyday runners, marathon chasers and weekend joggers. We stock Asics, Nike and Adidas in the right cushioning and support for Kenyan roads and paths, so you get the comfort and confidence you need from CBD loops to long runs out of town.",
     sections: [
       {
         heading: "Road Running Shoes",
@@ -114,11 +114,11 @@ export const categorySeoContent: Record<string, PageSeoContent> = {
 
   basketball: {
     intro:
-      "White Light Store is Nairobi's trusted basketball shoe shop for outdoor tarmac, indoor leagues and streetball. From Nike and Jordan to Adidas court pairs, we stock cushioning, grip and support tuned for crossovers, landings and quick cuts on Kenyan courts.",
+      "White Light Store is Nairobi's trusted basketball shoe shop for outdoor tarmac, indoor leagues and streetball. From Nike and Adidas court pairs, we stock cushioning, grip and support tuned for crossovers, landings and quick cuts on Kenyan courts.",
     sections: [
       {
-        heading: "Jordan Brand in Nairobi",
-        body: "Explore Air Jordan models for serious hoopers and collectors in Nairobi. We focus on court comfort and support—not just style—so your pair works on game night, not only in photos.",
+        heading: "Adidas Court Shoes in Nairobi",
+        body: "Explore Adidas basketball and court models for serious hoopers in Nairobi. We focus on court comfort and support—not just style—so your pair works on game night, not only in photos.",
       },
       {
         heading: "Nike Performance Basketball",

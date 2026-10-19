@@ -11,16 +11,16 @@ export interface BrandConfig {
 
 export const SHOP_BRANDS: BrandConfig[] = [
   {
-    slug: "nike",
-    name: "Nike",
-    match: ["nike", "jordan"],
-    description: "Running, trail, gym, basketball and lifestyle Nike footwear in Nairobi.",
-  },
-  {
     slug: "asics",
     name: "Asics",
     match: ["asics"],
     description: "Asics running and training shoes — cushioning built for Kenyan roads.",
+  },
+  {
+    slug: "nike",
+    name: "Nike",
+    match: ["nike", "jordan"],
+    description: "Running, trail, gym, basketball and lifestyle Nike footwear in Nairobi.",
   },
   {
     slug: "adidas",

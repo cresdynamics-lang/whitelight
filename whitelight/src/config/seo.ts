@@ -39,9 +39,9 @@ export const seoConfig = {
     home: {
       title: "Best Running, Trail & Gym Shoes Nairobi | Whitelight Store",
       description:
-        "Nairobi's trusted store for the best running, trail, gym, training shoes and accessories. Nike, Adidas, HOKA & more. Same-day CBD delivery. Shop Whitelight Store, Luthuli Avenue.",
+        "Nairobi's trusted store for the best running, trail, gym, training shoes and accessories. Asics, Nike and Adidas. Same-day CBD delivery. Shop Whitelight Store, Luthuli Avenue.",
       keywords:
-        "best running shoes Nairobi, best trail shoes Nairobi, best gym shoes Nairobi, best training shoes Nairobi, best accessories Nairobi, trusted shoe seller Nairobi, athletic shoes Nairobi CBD, Whitelight Store Nairobi",
+        "best running shoes Nairobi, Asics Nairobi, Nike shoes Nairobi, Adidas shoes Nairobi, best trail shoes Nairobi, best gym shoes Nairobi, athletic shoes Nairobi CBD, Whitelight Store Nairobi",
     },
 
     running: {
@@ -69,7 +69,7 @@ export const seoConfig = {
       title: "Best Basketball Shoes Nairobi | Whitelight Store",
       description: getCategoryMetaDescription("basketball"),
       keywords:
-        "best basketball shoes Nairobi, basketball shoes Nairobi CBD, Jordan shoes Nairobi, Nike basketball Nairobi, court shoes Nairobi, trusted basketball footwear Nairobi",
+        "best basketball shoes Nairobi, basketball shoes Nairobi CBD, Nike basketball Nairobi, Adidas basketball Nairobi, court shoes Nairobi, trusted basketball footwear Nairobi",
     },
 
     tennis: {

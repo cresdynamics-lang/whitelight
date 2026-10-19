@@ -52,17 +52,14 @@ export function generateProductKeywords(product: Product): string {
     "Whitelight Store Nairobi",
   ];
 
-  if (product.brand.toLowerCase().includes("nike")) {
+  if (product.brand.toLowerCase().includes("nike") || product.brand.toLowerCase().includes("jordan")) {
     keywords.push("Nike shoes Kenya", "Nike Nairobi", "best Nike seller Kenya");
+  }
+  if (product.brand.toLowerCase().includes("asics")) {
+    keywords.push("Asics shoes Kenya", "Asics Nairobi", "Asics running shoes Kenya");
   }
   if (product.brand.toLowerCase().includes("adidas")) {
     keywords.push("Adidas shoes Kenya", "Adidas Nairobi", "best Adidas seller Kenya");
-  }
-  if (product.brand.toLowerCase().includes("hoka")) {
-    keywords.push("HOKA shoes Kenya", "HOKA Nairobi");
-  }
-  if (product.brand.toLowerCase().includes("salomon")) {
-    keywords.push("Salomon Kenya", "Salomon trail shoes Nairobi");
   }
 
   return keywords.join(", ");

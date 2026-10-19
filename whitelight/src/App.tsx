@@ -14,6 +14,7 @@ import { AnalyticsScripts } from "@/components/analytics/AnalyticsScripts";
 import { CatalogPrefetch } from "@/components/CatalogPrefetch";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
+import { SocialFloat } from "@/components/layout/SocialFloat";
 import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
@@ -82,6 +83,7 @@ const App = () => {
               <AnalyticsScripts />
               <CartDrawer />
               <WhatsAppFloat />
+              <SocialFloat />
               <MobileBottomBar />
             <Suspense fallback={<PageLoader />}>
             <Routes>

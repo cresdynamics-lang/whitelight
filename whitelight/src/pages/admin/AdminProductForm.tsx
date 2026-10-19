@@ -131,7 +131,7 @@ const AdminProductForm = () => {
   const applyImageAnalysis = async (imageUrl: string, { auto = false } = {}) => {
     if (analyzingImage) return;
     setAnalyzingImage(true);
-    toast.loading("AI is analyzing the product image… this can take up to a minute", {
+    toast.loading("Reading the product photo… this can take up to a minute", {
       id: "ai-analyze",
     });
     try {
@@ -156,12 +156,12 @@ const AdminProductForm = () => {
 
       toast.success(
         auto
-          ? "AI filled name, brand, tags & description from your image"
-          : "AI updated product copy (name, brand, tags, description)",
+          ? "Filled name, brand, tags & description from your photo"
+          : "Updated product copy from your photo",
         { id: "ai-analyze", duration: 4000 }
       );
     } catch (error) {
-      const msg = error instanceof Error ? error.message : "AI analysis failed";
+      const msg = error instanceof Error ? error.message : "Photo fill failed";
       toast.error(msg, { id: "ai-analyze", duration: 8000 });
     } finally {
       setAnalyzingImage(false);
@@ -285,7 +285,7 @@ const AdminProductForm = () => {
           // Add URL to uploaded URLs immediately
           setUploadedImageUrls(prev => [...prev, imageUrl]);
 
-          // First uploaded image → AI fills name, brand, tags, description
+          // First uploaded image → fill name, brand, tags, description
           if (i === 0) {
             void applyImageAnalysis(imageUrl, { auto: true });
           }
@@ -620,7 +620,7 @@ const AdminProductForm = () => {
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Full product story — AI generates 5–7 paragraphs when you upload a photo…"
+                  placeholder="Full product story — fill from photo fills this when you upload an image…"
                   rows={12}
                   className="min-h-[280px] text-sm leading-relaxed"
                   required

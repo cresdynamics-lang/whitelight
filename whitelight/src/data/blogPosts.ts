@@ -39,6 +39,346 @@ const STORE_FACT =
 
 export const blogPosts: BlogPost[] = [
   {
+    slug: "asics-running-shoes-nairobi",
+    title: "Asics Running Shoes in Nairobi: Gel Cushioning for Kenyan Roads",
+    metaTitle: "Asics Running Shoes Nairobi | Whitelight Store",
+    metaDescription:
+      "Shop Asics running shoes in Nairobi CBD. Gel-Nimbus, Kayano and Magic Speed at Whitelight Store, Luthuli Avenue — fit help on WhatsApp.",
+    excerpt:
+      "Why Nairobi runners choose Asics for daily mileage, how Gel cushioning feels on CBD pavement, and where to try sizes on Luthuli Avenue.",
+    date: "2026-10-19",
+    updatedAt: "2026-10-19",
+    author: "Whitelight Store Team",
+    category: "Brand guide",
+    cover: "/couresel_images/running/running2.webp",
+    coverAlt: "asics-running-shoes-nairobi-whitelight-store",
+    primaryKeyword: "Asics running shoes Nairobi",
+    secondaryKeywords: [
+      "Asics Nairobi",
+      "Gel-Nimbus Kenya",
+      "Asics shoes Luthuli Avenue",
+    ],
+    answerFirst:
+      "Asics running shoes in Nairobi are a strong daily-trainer choice when you want soft Gel cushioning and a stable ride on CBD pavement and estate loops. Whitelight Store stocks Asics at Rware Building, Luthuli Avenue, Shop 410 — try sizes in store or order for same-day CBD delivery.",
+    categoryLinks: [
+      { label: "Shop Asics", href: "/brand/asics" },
+      { label: "Shop running", href: "/category/running" },
+      { label: "Size guide", href: "/size-guide" },
+    ],
+    blocks: [
+      {
+        type: "p",
+        text: `${STORE_FACT} This guide focuses on Asics running shoes Nairobi shoppers ask for most — Gel-Nimbus, Kayano and race-day options — so you can match cushioning to your weekly kilometres.`,
+      },
+      {
+        type: "h2",
+        text: "Why Asics works for Nairobi roads",
+      },
+      {
+        type: "p",
+        text: "Nairobi pavement is hard and often uneven. Asics Gel midsoles spread impact under the heel and forefoot, which helps beginners and high-mileage runners who feel sore after long CBD or Thika Road sessions. Look for a roomy toe box if you swell on hot afternoon runs.",
+      },
+      {
+        type: "h2",
+        text: "Popular Asics models we fit at Whitelight",
+      },
+      {
+        type: "ul",
+        items: [
+          "Gel-Nimbus — soft daily trainer for easy miles and recovery days.",
+          "Gel-Kayano — more stability if your foot rolls in late in a run.",
+          "Magic Speed — lighter, snappier feel for tempo work and race prep.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "How to buy Asics in Nairobi CBD",
+      },
+      {
+        type: "p",
+        text: "Visit Whitelight Store on Luthuli Avenue, or shop /brand/asics online. Send your usual EU size and weekly distance on WhatsApp (+254 708 749473) for a quick recommendation before you pay.",
+      },
+      {
+        type: "links",
+        items: [
+          { label: "Browse Asics shoes", href: "/brand/asics" },
+          { label: "Nike shoes Nairobi", href: "/blog/nike-shoes-nairobi" },
+          { label: "Adidas shoes Nairobi", href: "/blog/adidas-shoes-nairobi" },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Where can I buy original Asics in Nairobi?",
+        answer:
+          "Whitelight Store, Rware Building, Luthuli Avenue, Shop 410, 4th Floor. Open Mon–Sat 8am–7pm, with same-day CBD delivery.",
+      },
+      {
+        question: "Do Asics run true to size?",
+        answer:
+          "Most Asics daily trainers fit true to size; if you are between sizes or have a wide forefoot, message us your foot length in cm for a model-specific tip.",
+      },
+      {
+        question: "Which Asics is best for beginners in Kenya?",
+        answer:
+          "A cushioned Gel-Nimbus or similar soft daily trainer. Come try pairs at Luthuli Avenue or WhatsApp your size and distance.",
+      },
+    ],
+  },
+  {
+    slug: "nike-shoes-nairobi",
+    title: "Nike Shoes in Nairobi: Running, Training and Court Pairs That Fit",
+    metaTitle: "Nike Shoes Nairobi | Whitelight Store CBD",
+    metaDescription:
+      "Buy Nike shoes in Nairobi CBD — running, training and basketball. Real pairs, real sizes at Whitelight Store, Luthuli Avenue.",
+    excerpt:
+      "How to choose Nike running and court shoes in Nairobi, what sizes we stock, and how to get fit help before you order.",
+    date: "2026-10-19",
+    updatedAt: "2026-10-19",
+    author: "Whitelight Store Team",
+    category: "Brand guide",
+    cover: "/couresel_images/basketball/bk1.webp",
+    coverAlt: "nike-shoes-nairobi-whitelight-store",
+    primaryKeyword: "Nike shoes Nairobi",
+    secondaryKeywords: [
+      "Nike running Nairobi",
+      "Nike basketball Kenya",
+      "buy Nike Luthuli Avenue",
+    ],
+    answerFirst:
+      "Nike shoes in Nairobi at Whitelight Store cover running, training and court use — with photos of the real pair and every in-stock size shown online. Shop on Luthuli Avenue or order for same-day CBD delivery.",
+    categoryLinks: [
+      { label: "Shop Nike", href: "/brand/nike" },
+      { label: "Shop basketball", href: "/category/basketball" },
+      { label: "Shop running", href: "/category/running" },
+    ],
+    blocks: [
+      {
+        type: "p",
+        text: `${STORE_FACT} Nike is one of our three core brands alongside Asics and Adidas. This guide helps you pick the right Nike category for Nairobi roads, gym floors and outdoor courts.`,
+      },
+      {
+        type: "h2",
+        text: "Nike for running vs training vs court",
+      },
+      {
+        type: "ul",
+        items: [
+          "Running — daily trainers and tempo shoes for estate loops and race prep.",
+          "Training / gym — stable soles for lifts, HIIT and mixed sessions.",
+          "Basketball / court — cushioning and grip for tarmac and indoor leagues.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Fit tips for Nike in Kenya",
+      },
+      {
+        type: "p",
+        text: "Nike models vary — some run snug in the forefoot. Measure both feet in the afternoon, leave a thumb’s width of room at the toe, and confirm with WhatsApp if you usually size up in Nike. Unused pairs can be exchanged within 3 days under our size-exchange rule.",
+      },
+      {
+        type: "h2",
+        text: "Shop Nike at Whitelight Store",
+      },
+      {
+        type: "p",
+        text: "Browse /brand/nike for current stock. Every size you can tap is in stock. Visit Rware Building, Luthuli Avenue, Shop 410, or message +254 708 749473 with the product link.",
+      },
+      {
+        type: "links",
+        items: [
+          { label: "Browse Nike shoes", href: "/brand/nike" },
+          { label: "Asics running Nairobi", href: "/blog/asics-running-shoes-nairobi" },
+          { label: "Asics vs Nike vs Adidas", href: "/blog/asics-nike-adidas-kenya" },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Are Nike shoes at Whitelight Store original?",
+        answer:
+          "Yes. We sell authentic pairs with photos of the actual shoe in stock. Ask in store or on WhatsApp if you want more angles before you buy.",
+      },
+      {
+        question: "Do you stock Nike basketball shoes in Nairobi?",
+        answer:
+          "Yes — court and basketball Nike models when in season. Check /brand/nike or /category/basketball for live sizes.",
+      },
+      {
+        question: "Can I get same-day Nike delivery in Nairobi CBD?",
+        answer:
+          "Yes when you order before mid-afternoon and stock is confirmed. Outside CBD we ship by courier.",
+      },
+    ],
+  },
+  {
+    slug: "adidas-shoes-nairobi",
+    title: "Adidas Shoes in Nairobi: Training, Running and Everyday Performance",
+    metaTitle: "Adidas Shoes Nairobi | Whitelight Store",
+    metaDescription:
+      "Shop Adidas shoes in Nairobi CBD at Whitelight Store. Training, running and court pairs with real sizes and WhatsApp fit help.",
+    excerpt:
+      "What Adidas models work for Nairobi gym and road use, how sizing usually feels, and how to buy on Luthuli Avenue.",
+    date: "2026-10-19",
+    updatedAt: "2026-10-19",
+    author: "Whitelight Store Team",
+    category: "Brand guide",
+    cover: "/couresel_images/gym/gym1.webp",
+    coverAlt: "adidas-shoes-nairobi-whitelight-store",
+    primaryKeyword: "Adidas shoes Nairobi",
+    secondaryKeywords: [
+      "Adidas Nairobi CBD",
+      "Adidas training shoes Kenya",
+      "buy Adidas Luthuli Avenue",
+    ],
+    answerFirst:
+      "Adidas shoes in Nairobi at Whitelight Store are chosen for training, running and everyday performance — not dead stock. Shop /brand/adidas or visit Luthuli Avenue for a fit check and same-day CBD delivery options.",
+    categoryLinks: [
+      { label: "Shop Adidas", href: "/brand/adidas" },
+      { label: "Shop training", href: "/category/training" },
+      { label: "Shop gym", href: "/category/gym" },
+    ],
+    blocks: [
+      {
+        type: "p",
+        text: `${STORE_FACT} Adidas sits alongside Asics and Nike as a primary brand we stock. If you previously searched for other max-cushion labels, start here — Adidas training and running pairs cover most Nairobi gym and road needs we fit in-store.`,
+      },
+      {
+        type: "h2",
+        text: "When to choose Adidas",
+      },
+      {
+        type: "p",
+        text: "Pick Adidas when you want a versatile trainer for gym circuits, lifts and casual road miles, or a court-ready silhouette with a stable base. Many Nairobi buyers like Adidas for mixed weeks — two gym days plus weekend jogs — without buying a race-only shoe.",
+      },
+      {
+        type: "h2",
+        text: "Sizing and exchanges",
+      },
+      {
+        type: "p",
+        text: "Adidas sizing is usually close to true; wide feet may prefer half a size up on certain models. Confirm with our size guide, then WhatsApp the product link. Unused shoes can be size-exchanged within 3 days.",
+      },
+      {
+        type: "links",
+        items: [
+          { label: "Browse Adidas shoes", href: "/brand/adidas" },
+          { label: "Nike shoes Nairobi", href: "/blog/nike-shoes-nairobi" },
+          { label: "Brand comparison guide", href: "/blog/asics-nike-adidas-kenya" },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Where to buy Adidas shoes in Nairobi CBD?",
+        answer:
+          "Whitelight Store on Luthuli Avenue (Rware Building, Shop 410) or online at /brand/adidas with CBD delivery.",
+      },
+      {
+        question: "Does Whitelight stock Adidas running shoes?",
+        answer:
+          "Yes when models are in season. Filter by Adidas on the brand page or ask WhatsApp for current running sizes.",
+      },
+      {
+        question: "Adidas or Asics for daily running in Nairobi?",
+        answer:
+          "Asics often wins for soft Gel cushioning; Adidas suits mixed gym + road weeks. Try both feels in store when you can.",
+      },
+    ],
+  },
+  {
+    slug: "asics-nike-adidas-kenya",
+    title: "Asics vs Nike vs Adidas in Kenya: Which Brand Should You Buy?",
+    metaTitle: "Asics vs Nike vs Adidas Kenya | Whitelight",
+    metaDescription:
+      "Compare Asics, Nike and Adidas for Kenya roads, gym and court. Honest fit advice from Whitelight Store, Nairobi CBD.",
+    excerpt:
+      "A plain-language comparison of Asics, Nike and Adidas for Nairobi runners and gym-goers — plus links to shop each brand.",
+    date: "2026-10-19",
+    updatedAt: "2026-10-19",
+    author: "Whitelight Store Team",
+    category: "Buying guide",
+    cover: "/couresel_images/running/running3.webp",
+    coverAlt: "asics-nike-adidas-kenya-comparison-whitelight",
+    primaryKeyword: "Asics vs Nike vs Adidas Kenya",
+    secondaryKeywords: [
+      "best shoe brand Nairobi",
+      "Asics Nike Adidas comparison",
+      "which running shoes Kenya",
+    ],
+    answerFirst:
+      "For Kenya roads and gyms, choose Asics for soft daily cushioning, Nike for sport-specific running and court models, and Adidas for versatile training. Whitelight Store stocks all three on Luthuli Avenue so you can compare fit in one visit.",
+    categoryLinks: [
+      { label: "Shop Asics", href: "/brand/asics" },
+      { label: "Shop Nike", href: "/brand/nike" },
+      { label: "Shop Adidas", href: "/brand/adidas" },
+    ],
+    blocks: [
+      {
+        type: "p",
+        text: `${STORE_FACT} We focus on three brands shoppers actually buy with us: Asics, Nike and Adidas. This comparison replaces older brand lists that mixed labels we do not prioritise on the storefront.`,
+      },
+      {
+        type: "h2",
+        text: "Quick comparison",
+      },
+      {
+        type: "table",
+        caption: "Brand feel at a glance",
+        headers: ["Brand", "Best for", "Feel"],
+        rows: [
+          ["Asics", "Daily road running", "Soft Gel cushion, stable options"],
+          ["Nike", "Running, training, basketball", "Sport-specific models, snug fits"],
+          ["Adidas", "Gym + mixed weeks", "Versatile trainers, stable bases"],
+        ],
+      },
+      {
+        type: "h2",
+        text: "How to decide in 60 seconds",
+      },
+      {
+        type: "ol",
+        items: [
+          "Mostly easy road miles → start with Asics.",
+          "Need court or a specific Nike silhouette → shop Nike.",
+          "Gym circuits plus casual runs → try Adidas.",
+          "Still unsure → WhatsApp your size, sport and budget.",
+        ],
+      },
+      {
+        type: "h2",
+        text: "Shop the three brands",
+      },
+      {
+        type: "links",
+        items: [
+          { label: "Asics in Nairobi", href: "/brand/asics" },
+          { label: "Nike in Nairobi", href: "/brand/nike" },
+          { label: "Adidas in Nairobi", href: "/brand/adidas" },
+          { label: "Best running shoes guide", href: "/blog/best-running-shoes-nairobi" },
+        ],
+      },
+    ],
+    faqs: [
+      {
+        question: "Which brand is best for beginners in Nairobi?",
+        answer:
+          "Asics daily trainers are the safest soft start for most new runners. Come try Nike and Adidas too if you prefer a firmer ride.",
+      },
+      {
+        question: "Do you still sell Hoka or Salomon?",
+        answer:
+          "Our storefront brand filters focus on Asics, Nike and Adidas. Ask WhatsApp about any other model currently in stock.",
+      },
+      {
+        question: "Can I compare all three brands in one shop visit?",
+        answer:
+          "Yes. Whitelight Store on Luthuli Avenue is set up so you can try sizes across Asics, Nike and Adidas before you buy.",
+      },
+    ],
+  },
+  {
     slug: "best-running-shoes-nairobi",
     title: "Best Running Shoes in Nairobi: How to Choose the Right Pair for Your Run",
     metaTitle: "Best Running Shoes Nairobi | Choose Right Pair",

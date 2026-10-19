@@ -3,23 +3,19 @@ import { NavPrefetchLink } from "@/components/NavPrefetchLink";
 import type { Product } from "@/types/product";
 import { formatPrice } from "@/lib/products";
 import { enrichProduct } from "@/lib/productBlueprint";
-import { getDetailThumbUrl, getHeroImageUrl } from "@/lib/imageUtils";
+import { getHeroImageUrl } from "@/lib/imageUtils";
 
 type Props = { products: Product[] };
 
-const ANGLE_LABELS = ["Side", "Sole", "Detail"] as const;
-
 export function BlueprintHero({ products }: Props) {
   const featured = useMemo(() => {
-    const preferred = /nike|asics|adidas|jordan/i;
+    const preferred = /nike|asics|adidas/i;
     const pool = products.filter((p) => p.isNew || p.isBestSeller);
     const primary = pool.filter((p) => preferred.test(p.brand || ""));
-    const list = (primary.length >= 3 ? primary : pool).slice(0, 6);
+    const list = (primary.length >= 3 ? primary : pool).slice(0, 4);
     return list.map(enrichProduct);
   }, [products]);
   const [idx, setIdx] = useState(0);
-  const [angle, setAngle] = useState(0);
-  const [spot, setSpot] = useState({ x: 70, y: 40 });
   const current = featured[idx] || featured[0];
   const newThisWeek = useMemo(() => {
     const weekAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
@@ -33,20 +29,11 @@ export function BlueprintHero({ products }: Props) {
 
   useEffect(() => {
     if (featured.length < 2) return;
-    const t = setInterval(() => setIdx((i) => (i + 1) % featured.length), 5000);
+    const t = setInterval(() => setIdx((i) => (i + 1) % featured.length), 6000);
     return () => clearInterval(t);
   }, [featured.length]);
 
-  useEffect(() => {
-    const t = setInterval(() => setAngle((a) => (a + 1) % 3), 2200);
-    return () => clearInterval(t);
-  }, []);
-
-  const imgs = current?.images || [];
-  const angleImg =
-    imgs.find((i) => i.angleRole === (["side", "sole", "detail"] as const)[angle]) ||
-    imgs[angle] ||
-    imgs[0];
+  const heroImg = current?.images?.[0];
 
   const sizeLabel = useMemo(() => {
     const sizes = (current?.variants || [])
@@ -59,20 +46,12 @@ export function BlueprintHero({ products }: Props) {
   }, [current]);
 
   return (
-    <section
-      className="relative overflow-hidden border-b border-forest/20 bg-forest text-white"
-      onMouseMove={(e) => {
-        const r = e.currentTarget.getBoundingClientRect();
-        setSpot({
-          x: ((e.clientX - r.left) / r.width) * 100,
-          y: ((e.clientY - r.top) / r.height) * 100,
-        });
-      }}
-    >
+    <section className="relative overflow-hidden border-b border-forest/20 bg-forest text-white">
       <div
-        className="pointer-events-none absolute inset-0 transition-[background] duration-300"
+        className="pointer-events-none absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse 55% 50% at ${spot.x}% ${spot.y}%, hsl(var(--leaf) / 0.45), transparent 60%)`,
+          background:
+            "radial-gradient(ellipse 55% 50% at 72% 42%, hsl(var(--leaf) / 0.4), transparent 60%)",
         }}
       />
       <div className="container relative grid gap-10 py-12 md:py-16 lg:grid-cols-2 lg:items-center lg:py-20">
@@ -110,48 +89,17 @@ export function BlueprintHero({ products }: Props) {
         <div className="relative mx-auto w-full max-w-md">
           <div className="absolute inset-x-4 bottom-10 top-8 rounded-full bg-[radial-gradient(circle,hsl(var(--moss)/0.55),transparent_70%)] blur-2xl" />
           <div className="relative aspect-square rounded-full bg-gradient-to-b from-white/15 to-white/5 p-10 ring-1 ring-white/20 shadow-inner">
-            {angleImg && (
+            {heroImg && (
               <img
-                src={getHeroImageUrl(angleImg.url, 900, 80)}
+                src={getHeroImageUrl(heroImg.url, 720, 78)}
                 alt={current ? `${current.brand} ${current.name}` : "Featured shoe"}
-                className="h-full w-full object-contain drop-shadow-2xl transition-opacity duration-500"
+                className="h-full w-full object-contain drop-shadow-2xl"
                 decoding="async"
                 fetchPriority="high"
+                width={720}
+                height={720}
               />
             )}
-          </div>
-
-          <div className="absolute -left-1 top-[18%] flex flex-col gap-2 sm:left-0">
-            {ANGLE_LABELS.map((label, i) => {
-              const thumb =
-                imgs.find((im) => im.angleRole === (["side", "sole", "detail"] as const)[i]) ||
-                imgs[i];
-              return (
-                <button
-                  key={label}
-                  type="button"
-                  onClick={() => setAngle(i)}
-                  className={`flex items-center gap-2 rounded-full border bg-forest/80 backdrop-blur px-2 py-1.5 text-[11px] font-ui transition ${
-                    angle === i
-                      ? "border-white text-white"
-                      : "border-white/30 text-white/70 hover:border-white/60"
-                  }`}
-                >
-                  <span className="h-8 w-8 overflow-hidden rounded-full bg-white/10">
-                    {thumb && (
-                      <img
-                        src={getDetailThumbUrl(thumb.url)}
-                        alt=""
-                        className="h-full w-full object-contain"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                    )}
-                  </span>
-                  {label}
-                </button>
-              );
-            })}
           </div>
 
           {current && (

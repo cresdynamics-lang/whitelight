@@ -8,6 +8,7 @@ HOST="${WL_HOST:-do-new}"
 WEB_ROOT="${WL_WEB_ROOT:-/var/www/sites/whitelightstore.co.ke}"
 API_ROOT="${WL_API_ROOT:-/var/www/sites/whitelight-api/server}"
 SITE_USER="${WL_SITE_USER:-site_whitelight}"
+RSYNC_PATH="sudo -u ${SITE_USER} rsync"
 
 cd "$ROOT/whitelight"
 # Prefer live catalogue for prerender/sitemap when building off-server
@@ -19,16 +20,19 @@ npm run build
 echo "→ Syncing frontend to $WEB_ROOT (preserving uploads/)..."
 rsync -az --delete \
   --exclude 'uploads/' \
+  --rsync-path="$RSYNC_PATH" \
   -e ssh \
   dist/ "$HOST:$WEB_ROOT/"
 
 echo "→ Syncing API sources..."
 rsync -az \
+  --rsync-path="$RSYNC_PATH" \
   -e ssh \
   server/src/ "$HOST:$API_ROOT/src/"
 # Keep package files if present for dependency installs on server
 if [[ -f server/package.json ]]; then
-  rsync -az -e ssh server/package.json server/package-lock.json "$HOST:$API_ROOT/" || true
+  rsync -az --rsync-path="$RSYNC_PATH" -e ssh \
+    server/package.json server/package-lock.json "$HOST:$API_ROOT/" || true
 fi
 
 echo "→ Ensuring nginx serves prerendered HTML paths + restarting API..."

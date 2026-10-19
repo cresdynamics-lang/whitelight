@@ -1,39 +1,23 @@
-import { siteConfig } from "@/config/site";
+import { NavPrefetchLink } from "@/components/NavPrefetchLink";
+import { SHOP_BRANDS } from "@/config/brands";
 
-const promises = [
-  { title: "Same-day CBD delivery", body: `Order before ${siteConfig.delivery.sameDayCutoffHour}:00` },
-  { title: "Pay with M-Pesa", body: "Or card, or on delivery" },
-  { title: "Easy size exchange", body: `Within ${siteConfig.delivery.exchangeDays} days, unworn` },
-  { title: "Photos of the real pair", body: "Every angle, in stock" },
-  { title: "Size help on WhatsApp", body: "Replies in minutes" },
-];
-
+/** Brand filter buttons — Nike / Asics / Adidas → brand PLPs. */
 export function BlueprintPromiseBar() {
-  const brands = [...siteConfig.brands, ...siteConfig.brands];
-
   return (
     <section className="border-b border-border bg-card">
-      <div className="overflow-hidden border-b border-border/60 py-3">
-        <div className="flex w-max animate-[wl-marquee_28s_linear_infinite] gap-10 px-4">
-          {brands.map((b, i) => (
-            <span
-              key={`${b}-${i}`}
-              className="shrink-0 font-heading text-lg font-semibold tracking-[0.12em] uppercase text-forest/55"
-            >
-              {b}
-            </span>
-          ))}
-        </div>
-      </div>
-      <div className="container py-6">
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-          {promises.map((p) => (
-            <div key={p.title} className="rounded-lg bg-sage/50 px-3 py-3">
-              <p className="text-sm font-semibold text-forest font-ui">{p.title}</p>
-              <p className="text-xs text-muted-foreground font-ui mt-0.5">{p.body}</p>
-            </div>
-          ))}
-        </div>
+      <div className="container flex flex-wrap items-center justify-center gap-2 py-4 sm:gap-3 sm:py-5">
+        <p className="w-full text-center text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground font-ui sm:w-auto sm:mr-2 sm:text-left">
+          Shop by brand
+        </p>
+        {SHOP_BRANDS.map((b) => (
+          <NavPrefetchLink
+            key={b.slug}
+            to={`/brand/${b.slug}`}
+            className="inline-flex h-10 items-center rounded-full border border-forest/20 bg-background px-5 text-sm font-semibold uppercase tracking-[0.1em] text-forest font-ui transition hover:border-forest hover:bg-forest hover:text-white"
+          >
+            {b.name}
+          </NavPrefetchLink>
+        ))}
       </div>
     </section>
   );
