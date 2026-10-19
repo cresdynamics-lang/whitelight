@@ -6,7 +6,7 @@ import { config } from "./config.js";
 
 const ALLOWED_EXT = new Set([".jpg", ".jpeg", ".png", ".webp", ".gif"]);
 const MAX_WIDTH = 1600;
-const DEFAULT_Q = 68;
+const DEFAULT_Q = 78;
 
 function resolveUploadPath(rawSrc) {
   if (!rawSrc || typeof rawSrc !== "string") return null;
@@ -57,7 +57,17 @@ export async function handleImg(req, res) {
       Math.max(40, parseInt(String(req.query.q || String(DEFAULT_Q)), 10) || DEFAULT_Q)
     );
 
-    const abs = resolveUploadPath(src);
+    let abs = resolveUploadPath(src);
+    if (abs && !fs.existsSync(abs)) {
+      // Prefer sibling formats when masters were recompressed/renamed
+      const stem = abs.replace(/\.[^.]+$/, "");
+      for (const alt of [".webp", ".jpg", ".jpeg", ".png"]) {
+        if (fs.existsSync(stem + alt)) {
+          abs = stem + alt;
+          break;
+        }
+      }
+    }
     if (!abs || !fs.existsSync(abs)) {
       res.status(404).json({ error: "Image not found" });
       return;

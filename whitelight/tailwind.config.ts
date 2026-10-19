@@ -18,9 +18,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ["Maiandra GD", "Trebuchet MS", "Segoe UI", "sans-serif"],
-        body: ["Maiandra GD", "Trebuchet MS", "Segoe UI", "sans-serif"],
-        accent: ["Maiandra GD", "Trebuchet MS", "Segoe UI", "sans-serif"],
+        heading: ["Cormorant Garamond", "Georgia", "Times New Roman", "serif"],
+        body: ["Inter", "system-ui", "sans-serif"],
+        accent: ["Great Vibes", "Segoe Script", "cursive"],
+        ui: ["Inter", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -28,6 +29,13 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        forest: "hsl(var(--forest))",
+        leaf: "hsl(var(--leaf))",
+        moss: "hsl(var(--moss))",
+        sage: "hsl(var(--sage))",
+        paper: "hsl(var(--paper))",
+        sale: "hsl(var(--sale-red))",
+        whatsapp: "hsl(var(--whatsapp))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

@@ -4,9 +4,10 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import sharp from "sharp";
 import { config, useSpaces } from "./config.js";
 
-const MAX_WIDTH = 900;
-const JPEG_QUALITY = 70;
-const WEBP_QUALITY = 68;
+/** Quality-preserving masters — cards still load via /api/img at smaller widths */
+const MAX_WIDTH = 1400;
+const JPEG_QUALITY = 84;
+const WEBP_QUALITY = 82;
 
 let s3 = null;
 function getS3() {
@@ -34,12 +35,15 @@ async function optimizeImage(buffer, preferredExt = ".jpg") {
     pipeline = pipeline.resize(MAX_WIDTH, null, { withoutEnlargement: true });
   }
 
-  const wantPng = preferredExt === ".png" || (meta.hasAlpha && preferredExt !== ".jpg");
+  const wantPng = Boolean(meta.hasAlpha) && preferredExt === ".png";
   const mainExt = wantPng ? ".png" : preferredExt === ".jpeg" ? ".jpeg" : ".jpg";
   const mainBuf = wantPng
-    ? await pipeline.clone().png({ compressionLevel: 9, palette: true, quality: 70 }).toBuffer()
-    : await pipeline.clone().jpeg({ quality: JPEG_QUALITY, mozjpeg: true }).toBuffer();
-  const webpBuf = await pipeline.clone().webp({ quality: WEBP_QUALITY, effort: 5 }).toBuffer();
+    ? await pipeline.clone().png({ compressionLevel: 9, effort: 8 }).toBuffer()
+    : await pipeline
+        .clone()
+        .jpeg({ quality: JPEG_QUALITY, mozjpeg: true, chromaSubsampling: "4:4:4" })
+        .toBuffer();
+  const webpBuf = await pipeline.clone().webp({ quality: WEBP_QUALITY, effort: 6 }).toBuffer();
   const contentType = wantPng ? "image/png" : "image/jpeg";
   return { mainBuf, webpBuf, mainExt, contentType };
 }

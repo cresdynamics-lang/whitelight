@@ -14,8 +14,8 @@ const PUBLIC_DIR = join(__dirname, "..", "public");
 
 const DEFAULT_MAX = 1100;
 const LOGO_MAX = 192;
-const WEBP_QUALITY = 72;
-const JPEG_QUALITY = 74;
+const WEBP_QUALITY = 80;
+const JPEG_QUALITY = 82;
 
 function* walk(dir) {
   const entries = readdirSync(dir, { withFileTypes: true });

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:safe": "CHOKIDAR_USEPOLLING=1 vite",
-    "build": "npm run generate:catalog-json && vite build",
+    "build": "npm run generate:catalog-json && npm run generate:sitemap && vite build && npm run prerender:seo",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -17,6 +17,7 @@
     "generate:feeds": "node scripts/generate-catalog-feeds.mjs",
     "generate:catalog-json": "node scripts/generate-catalog-json.mjs",
     "generate:catalog": "npm run generate:catalog-json && npm run generate:feeds && npm run generate:sitemap",
+    "prerender:seo": "node --experimental-strip-types scripts/export-blog-snapshot.mjs && node scripts/prerender-seo.mjs",
     "check:seo": "node scripts/check-seo.mjs",
     "admin:upsert": "node server/scripts/upsert-admin.mjs",
     "server:dev": "npm --prefix server run dev",

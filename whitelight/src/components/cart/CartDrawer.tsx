@@ -2,6 +2,7 @@ import { X, Minus, Plus, Trash2, MessageCircle } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { formatPrice } from "@/lib/products";
 import { siteConfig } from "@/config/site";
+import { getDetailThumbUrl } from "@/lib/imageUtils";
 
 // Helper function to display correct size labels
 const getDisplaySize = (size: number | string, category?: string): string => {
@@ -75,9 +76,11 @@ export function CartDrawer() {
                     className="flex gap-4 p-3 border border-primary/20 rounded-lg bg-card"
                   >
                     <img
-                      src={item.product.images[0]?.url}
+                      src={getDetailThumbUrl(item.product.images[0]?.url || "")}
                       alt={item.product.name}
                       className="w-20 h-20 object-cover rounded-md"
+                      loading="lazy"
+                      decoding="async"
                     />
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-sm line-clamp-1">
@@ -140,9 +143,13 @@ export function CartDrawer() {
                   <span>Total</span>
                   <span>{formatPrice(getTotal(), siteConfig.currency)}</span>
                 </div>
+                <p className="text-xs text-muted-foreground font-ui leading-relaxed">
+                  Size exchange within {siteConfig.delivery.exchangeDays} days if unworn and in the
+                  box. Delivery fee shown before you pay.
+                </p>
 
                 <Button
-                  className="w-full"
+                  className="w-full rounded-full"
                   onClick={() => setShowCheckout(true)}
                 >
                   Proceed to Checkout

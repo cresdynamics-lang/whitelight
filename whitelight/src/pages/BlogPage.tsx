@@ -9,9 +9,9 @@ export default function BlogPage() {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SEOHead
-        title="Store Updates & Guides | Whitelight Store Nairobi"
-        description="Shoe buying tips, delivery updates, and new arrivals from Whitelight Store on Luthuli Avenue."
-        keywords="whitelight store blog, running shoes nairobi guide, sneaker updates kenya"
+        title="Running Shoe Guides Nairobi | Whitelight Blog"
+        description="Guides on best running shoes in Nairobi, Luthuli Avenue shopping, Kenya prices, trail shoes, gym shoes and sizing from Whitelight Store."
+        keywords="best running shoes Nairobi, running shoes Nairobi CBD, trail running shoes Kenya, gym shoes Kenya, running shoe size guide"
         canonical="https://whitelightstore.co.ke/blog"
       />
       <Header />
@@ -19,13 +19,13 @@ export default function BlogPage() {
         <section className="border-b border-border bg-gradient-to-b from-secondary/60 to-background">
           <div className="container py-10 md:py-14">
             <p className="font-accent text-sm font-semibold uppercase tracking-[0.18em] text-primary mb-3">
-              Updates
+              Guides
             </p>
             <h1 className="font-heading text-2xl sm:text-3xl md:text-4xl font-bold tracking-tight max-w-2xl">
-              Store news & shoe guides
+              Running shoe guides for Nairobi
             </h1>
             <p className="mt-3 max-w-xl text-muted-foreground font-body text-base md:text-lg leading-relaxed">
-              Fit tips, delivery notes, and fresh drops from Nairobi&apos;s athletic footwear specialists.
+              SEO-backed buying guides from Whitelight Store on Luthuli Avenue — fit, prices, trail vs road, and CBD pickup.
             </p>
           </div>
         </section>

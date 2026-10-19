@@ -184,7 +184,7 @@ const AdminDashboard = () => {
         <CardHeader>
           <CardTitle>Products by Brand</CardTitle>
           <p className="text-sm text-muted-foreground">
-            How your catalogue splits across Nike, Adidas, Brooks, and other brands on the
+            How your catalogue splits across Nike, Asics, Adidas, and other brands on the
             storefront.
           </p>
         </CardHeader>
@@ -218,7 +218,7 @@ const AdminDashboard = () => {
         <CardHeader>
           <CardTitle>Recently Updated by Brand</CardTitle>
           <p className="text-sm text-muted-foreground">
-            Latest changes per brand — useful when refreshing Nike, Adidas, Brooks, and other
+            Latest changes per brand — useful when refreshing Nike, Asics, Adidas, and other
             shelves.
           </p>
         </CardHeader>

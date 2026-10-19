@@ -1,123 +1,49 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { HeroSection } from "@/components/sections/HeroSection";
-import { BrandHighlightCarousel } from "@/components/sections/BrandHighlightCarousel";
-import { ShopByBrand } from "@/components/sections/ShopByBrand";
-import { CategoryBanner } from "@/components/sections/CategoryBanner";
-import { HorizontalProductRow } from "@/components/sections/HorizontalProductRow";
-import { HomeSaleSection } from "@/components/sections/HomeSaleSection";
-import { BlogUpdatesSection } from "@/components/sections/BlogUpdatesSection";
 import { useCatalogPartitions } from "@/hooks/useCatalog";
 import { HomePageHead } from "@/components/seo/HomePageHead";
 import { CatalogErrorFallback } from "@/components/CatalogErrorFallback";
-import type { Product } from "@/types/product";
-
-function ProductRowsSkeleton() {
-  return (
-    <div className="container py-8 space-y-10" aria-hidden>
-      {[1, 2, 3].map((row) => (
-        <div key={row}>
-          <div className="h-8 w-40 bg-secondary rounded mb-4 animate-pulse" />
-          <div className="flex gap-3 overflow-hidden">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="flex-shrink-0 w-32 aspect-square rounded-lg bg-secondary animate-pulse"
-              />
-            ))}
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+import { BlueprintHero } from "@/components/sections/home/BlueprintHero";
+import { BlueprintPromiseBar } from "@/components/sections/home/BlueprintPromiseBar";
+import { BlueprintActivityTiles } from "@/components/sections/home/BlueprintActivityTiles";
+import { BlueprintProductRail } from "@/components/sections/home/BlueprintProductRail";
+import { BlueprintBestsellers } from "@/components/sections/home/BlueprintBestsellers";
+import { BlueprintAngleViewer } from "@/components/sections/home/BlueprintAngleViewer";
+import { BlueprintFindMyPair } from "@/components/sections/home/BlueprintFindMyPair";
+import { BlueprintAccessories } from "@/components/sections/home/BlueprintAccessories";
+import { BlueprintSaleStrip } from "@/components/sections/home/BlueprintSaleStrip";
+import {
+  BlueprintHowItWorks,
+  BlueprintReviewsFaq,
+  BlueprintVisitUs,
+} from "@/components/sections/home/BlueprintTrustClose";
+import { BlogUpdatesSection } from "@/components/sections/BlogUpdatesSection";
 
 const Index = () => {
-  const [rotationKey, setRotationKey] = useState(0);
-  const { partitions, isLoading, isSuccess, isError, error, refetch } = useCatalogPartitions();
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setRotationKey((prev) => prev + 1);
-    }, 5 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const { partitions, products, isLoading, isSuccess, isError, error, refetch } =
+    useCatalogPartitions();
 
   const rows = useMemo(() => {
     if (!partitions) return null;
-
-    const {
-      newArrivals,
-      bestSellers,
-      running,
-      trail,
-      gym,
-      accessories,
-      basketball,
-      tennis,
-    } = partitions;
-
-    const sale = partitions.all.filter((p) => p.isOnOffer);
-    const homeSale = sale.filter((p) => p?.id).slice(0, 4);
-
-    const usedIds = new Set<string>();
-
-    const takeUnique = (products: Product[], limit?: number) => {
-      const result: Product[] = [];
-      for (const product of products) {
-        if (!product?.id || usedIds.has(product.id)) continue;
-        usedIds.add(product.id);
-        result.push(product);
-        if (limit && result.length >= limit) break;
-      }
-      return result;
-    };
-
     return {
-      // Latest updated products first (order comes from partitionCatalog)
-      uniqueNewArrivals: takeUnique(newArrivals, 10),
-      uniqueBestSellers: takeUnique(bestSellers, 12),
-      uniqueRunning: takeUnique(running, 12),
-      uniqueTrail: takeUnique(trail, 12),
-      uniqueGym: takeUnique(gym, 12),
-      uniqueAccessories: takeUnique(accessories, 12),
-      uniqueBasketball: takeUnique(basketball, 12),
-      uniqueTennis: takeUnique(tennis, 12),
-      homeSale,
+      all: partitions.all,
+      newArrivals: partitions.newArrivals.slice(0, 12),
+      bestSellers: partitions.bestSellers.slice(0, 4),
+      accessories: partitions.accessories,
+      featured: partitions.bestSellers[0] || partitions.newArrivals[0] || partitions.all[0],
     };
-  }, [partitions, rotationKey]);
-
-  const showProducts = isSuccess && rows;
+  }, [partitions]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="wh-home min-h-screen flex flex-col pb-14 lg:pb-0">
       <HomePageHead />
       <Header />
 
       <main className="flex-1">
-        <HeroSection />
-
-        <section className="border-b border-border bg-muted/30">
-          <div className="container flex flex-row flex-wrap items-center justify-center gap-4 py-3.5 text-xs md:justify-between md:gap-6 md:text-sm text-muted-foreground">
-            <div className="flex items-center gap-2.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary" />
-              <span>Same-day Nairobi delivery</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary/70" />
-              <span>Authentic performance brands</span>
-            </div>
-            <div className="flex items-center gap-2.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-primary/50" />
-              <span>WhatsApp sizing & checkout</span>
-            </div>
-          </div>
-        </section>
-
-        <ShopByBrand />
-
-        {isLoading && <ProductRowsSkeleton />}
+        <BlueprintHero products={products} />
+        <BlueprintPromiseBar />
+        <BlueprintActivityTiles products={products} />
 
         {isError && !isLoading && (
           <CatalogErrorFallback
@@ -130,95 +56,38 @@ const Index = () => {
           />
         )}
 
-        {showProducts && (
+        {isLoading && (
+          <div className="container py-12 animate-pulse space-y-4" aria-hidden>
+            <div className="h-8 w-48 bg-secondary rounded" />
+            <div className="flex gap-4 overflow-hidden">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="h-64 w-48 shrink-0 bg-secondary rounded-lg" />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {isSuccess && rows && (
           <>
-            <HorizontalProductRow
-              title="New Arrivals"
-              products={rows.uniqueNewArrivals}
-              className="bg-secondary/30"
-              viewAllHref="/new-arrivals"
-              initialDirection="left"
-              priorityCount={2}
+            <BlueprintProductRail
+              title="Just landed."
+              subtitle="Updated daily · newest first · sizes on every card"
+              products={rows.newArrivals}
+              viewAllHref="/new"
+              viewAllLabel="See all new →"
             />
-
-            <CategoryBanner />
-
-            <BrandHighlightCarousel />
-
-            <HorizontalProductRow
-              title="Best Selling"
-              products={rows.uniqueBestSellers}
-              viewAllHref="/new-arrivals"
-              initialDirection="right"
-            />
-
-            {rows.homeSale.length > 0 && (
-              <HomeSaleSection products={rows.homeSale} className="bg-red-50/40" />
-            )}
-
-            <HorizontalProductRow
-              title="Running"
-              products={rows.uniqueRunning}
-              viewAllHref="/category/running"
-              initialDirection="left"
-            />
-
-            <HorizontalProductRow
-              title="Trail"
-              products={rows.uniqueTrail}
-              viewAllHref="/category/trail"
-              initialDirection="right"
-            />
-
-            <HorizontalProductRow
-              title="Gym"
-              products={rows.uniqueGym}
-              className="bg-secondary/30"
-              viewAllHref="/category/gym"
-              initialDirection="left"
-            />
-
-            <HorizontalProductRow
-              title="Accessories"
-              products={rows.uniqueAccessories}
-              viewAllHref="/category/accessories"
-              initialDirection="right"
-            />
-
-            <HorizontalProductRow
-              title="Basketball"
-              products={rows.uniqueBasketball}
-              viewAllHref="/category/basketball"
-              initialDirection="left"
-            />
-
-            <HorizontalProductRow
-              title="Tennis"
-              products={rows.uniqueTennis}
-              className="bg-secondary/30"
-              viewAllHref="/category/tennis"
-              initialDirection="right"
-            />
+            <BlueprintBestsellers products={rows.bestSellers} />
+            <BlueprintAngleViewer product={rows.featured} />
+            <BlueprintFindMyPair products={rows.all} />
+            <BlueprintAccessories products={rows.accessories} shoe={rows.featured} />
+            <BlueprintSaleStrip products={rows.all} />
           </>
         )}
 
+        <BlueprintHowItWorks />
+        <BlueprintReviewsFaq />
         <BlogUpdatesSection />
-
-        <section className="border-t border-muted mt-8">
-          <div className="container py-8">
-            <p className="text-xs md:text-sm text-muted-foreground leading-relaxed max-w-4xl">
-              White Light Store is Nairobi&apos;s specialist for{" "}
-              <strong>running shoes Nairobi</strong>,{" "}
-              <strong>trail shoes Kenya</strong>,{" "}
-              <strong>basketball shoes Nairobi</strong>,{" "}
-              <strong>tennis shoes Kenya</strong> and{" "}
-              <strong>gym shoes Kenya</strong>. We stock performance models from Nike, Adidas, HOKA,
-              ASICS, New Balance and more, fitted for Kenyan runners and athletes. Order your next
-              pair online or via WhatsApp for fast delivery across Nairobi and shipping to the rest
-              of Kenya.
-            </p>
-          </div>
-        </section>
+        <BlueprintVisitUs />
       </main>
 
       <Footer />

@@ -1,668 +1,443 @@
-import { useState, useEffect, useRef, useMemo } from "react";
-import { useParams, Link } from "react-router-dom";
-import { ChevronLeft, ChevronRight, Minus, Plus, ShoppingBag } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useProduct } from "@/hooks/useProducts";
 import { useCatalog } from "@/hooks/useCatalog";
 import { formatPrice } from "@/lib/products";
 import { siteConfig } from "@/config/site";
 import { ProductGrid } from "@/components/sections/ProductGrid";
 import { useCart } from "@/context/CartContext";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 import { SEOHead } from "@/components/seo/SEOHead";
-import { ImageLightbox } from "@/components/ui/ImageLightbox";
 import { FastImage } from "@/components/ui/FastImage";
-import { getOriginalProductUrl } from "@/lib/imageUtils";
-import { trackViewContent, trackAddToCart } from "@/lib/analytics/events";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
+import { getDetailThumbUrl } from "@/lib/imageUtils";
+import { trackViewContent } from "@/lib/analytics/events";
 import { openWhatsAppOrderMessage } from "@/lib/whatsapp";
+import {
+  defaultHotspots,
+  enrichProduct,
+  FIT_NOTE_LABELS,
+  PURPOSE_LABELS,
+} from "@/lib/productBlueprint";
+import { useSizePreference } from "@/context/SizePreferenceContext";
 
-const ProductDetail = () => {
+const FEEL_KEYS = ["cushion", "response", "weight", "grip", "durability"] as const;
+
+export default function ProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { data: product, isLoading } = useProduct(slug || "");
   const { data: catalog = [] } = useCatalog();
-
-  const { youMayAlsoLike, mostOrdered } = useMemo(() => {
-    if (!product?.id) {
-      return { youMayAlsoLike: [] as typeof catalog, mostOrdered: [] as typeof catalog };
-    }
-
-    const exclude = new Set<string>([product.id]);
-
-    const sameCategory = catalog.filter(
-      (p) =>
-        p.id !== product.id &&
-        (p.category === product.category ||
-          (Array.isArray(p.categories) && p.categories.includes(product.category)))
-    );
-
-    const alsoLike: typeof catalog = [];
-    for (const p of sameCategory) {
-      if (alsoLike.length >= 4) break;
-      alsoLike.push(p);
-      exclude.add(p.id);
-    }
-    for (const p of catalog) {
-      if (alsoLike.length >= 4) break;
-      if (!exclude.has(p.id)) {
-        alsoLike.push(p);
-        exclude.add(p.id);
-      }
-    }
-
-    const ordered: typeof catalog = [];
-    for (const p of catalog) {
-      if (ordered.length >= 4) break;
-      if (!exclude.has(p.id) && (p.isBestSeller || p.isOnOffer)) {
-        ordered.push(p);
-        exclude.add(p.id);
-      }
-    }
-    for (const p of catalog) {
-      if (ordered.length >= 4) break;
-      if (!exclude.has(p.id)) {
-        ordered.push(p);
-        exclude.add(p.id);
-      }
-    }
-
-    return { youMayAlsoLike: alsoLike, mostOrdered: ordered };
-  }, [catalog, product]);
-  
+  const { addToCart } = useCart();
+  const { preferredSize, setPreferredSize } = useSizePreference();
   const [selectedSize, setSelectedSize] = useState<number | string | null>(null);
-  const [selectedSizes, setSelectedSizes] = useState<(number | string)[]>([]);
-  const [quantity, setQuantity] = useState(1);
-  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [sizeError, setSizeError] = useState(false);
-  const { addItem, setOpenCheckoutOnNextOpen } = useCart();
-  const trackedViewRef = useRef<string | null>(null);
+  const [imgIdx, setImgIdx] = useState(0);
+  const [showSticky, setShowSticky] = useState(false);
+  const buyRef = useRef<HTMLDivElement>(null);
+  const tracked = useRef<string | null>(null);
+
+  const enriched = useMemo(
+    () => (product ? enrichProduct(product) : null),
+    [product]
+  );
 
   useEffect(() => {
-    if (product?.id && trackedViewRef.current !== product.id) {
-      trackedViewRef.current = product.id;
+    if (product?.id && tracked.current !== product.id) {
+      tracked.current = product.id;
       trackViewContent(product);
     }
   }, [product]);
 
   useEffect(() => {
-    setSelectedSize(null);
-    setSelectedSizes([]);
-    setQuantity(1);
-    setSelectedImageIndex(0);
-    setSizeError(false);
-  }, [slug]);
+    setSelectedSize(preferredSize);
+    setImgIdx(0);
+  }, [slug, preferredSize]);
 
-  // Prefetch every angle so switching views is instant after first load
   useEffect(() => {
-    if (!product?.images?.length) return;
-    const links: HTMLLinkElement[] = [];
-    product.images.forEach((image) => {
-      if (!image?.url) return;
-      const href = getOriginalProductUrl(image.url);
-      const link = document.createElement("link");
-      link.rel = "prefetch";
-      link.as = "image";
-      link.href = href;
-      document.head.appendChild(link);
-      links.push(link);
-      // Warm browser cache
-      const img = new Image();
-      img.src = href;
-    });
-    return () => {
-      links.forEach((link) => {
-        if (link.parentNode) link.parentNode.removeChild(link);
-      });
-    };
-  }, [product?.id, product?.images]);
+    const el = buyRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setShowSticky(!entry.isIntersecting),
+      { threshold: 0.15 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [enriched]);
 
-  // Helper function to display size correctly for accessories
-  const getDisplaySize = (size: number | string, category: string) => {
-    if (category === 'accessories' && typeof size === 'number') {
-      // Map numeric sizes to clothing sizes for accessories based on actual data
-      const sizeMap: Record<number, string> = {
-        1: 'XS', 2: '2XL', 3: '3XL', 4: '4XL', 5: '5XL', 
-        6: 'L', 7: 'XL', 8: 'M', 9: 'S'
-      };
-      return sizeMap[size] || size.toString();
-    }
-    return size;
-  };
+  const related = useMemo(() => {
+    if (!enriched) return [];
+    return catalog
+      .filter((p) => p.id !== enriched.id && p.category === enriched.category)
+      .slice(0, 4);
+  }, [catalog, enriched]);
+
+  const accessories = useMemo(
+    () => catalog.filter((p) => p.category === "accessories").slice(0, 4),
+    [catalog]
+  );
+
+  const cutoffLeft = useMemo(() => {
+    const now = new Date();
+    const hour = (now.getUTCHours() + 3) % 24;
+    const mins = now.getUTCMinutes();
+    const target = siteConfig.delivery.sameDayCutoffHour;
+    let remain = (target - hour) * 60 - mins;
+    if (remain < 0) remain = 0;
+    const h = Math.floor(remain / 60);
+    const m = remain % 60;
+    return { h, m, active: remain > 0 };
+  }, []);
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex flex-col">
         <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="animate-pulse text-muted-foreground">Loading...</div>
-        </main>
+        <div className="container py-20 animate-pulse">
+          <div className="h-96 bg-secondary rounded-xl" />
+        </div>
         <Footer />
       </div>
     );
   }
 
-  if (!product) {
+  if (!enriched) {
     return (
       <div className="min-h-screen flex flex-col">
-        <SEOHead title="Product Not Found - Whitelight Store Kenya" noindex />
         <Header />
-        <main className="flex-1 flex flex-col items-center justify-center">
-          <h1 className="text-2xl font-heading font-semibold mb-4">Product not found</h1>
-          <Button asChild>
-            <Link to="/">Back to Home</Link>
-          </Button>
+        <main className="container py-20 text-center">
+          <h1 className="font-heading text-2xl font-semibold">Product not found</h1>
+          <Link to="/products" className="mt-4 inline-block text-primary font-semibold">
+            Browse all shoes
+          </Link>
         </main>
         <Footer />
       </div>
     );
   }
 
-  // Helper function for category display name
-  const getCategoryDisplayName = (category: string) => {
-    const categoryMap: Record<string, string> = {
-      running: "Running Shoes",
-      trail: "Trail Shoes",
-      gym: "Gym Shoes",
-      training: "Training Shoes",
-      basketball: "Basketball Shoes",
-      tennis: "Tennis Shoes",
-      accessories: "Accessories",
-    };
-    return categoryMap[category] || category;
+  const images = enriched.images.length
+    ? enriched.images
+    : [{ id: "1", url: "/whitelight_logo.webp", alt: enriched.name }];
+  const feel = enriched.feel || {};
+  const hotspots = defaultHotspots(enriched);
+  const inStockCount = enriched.variants.filter((v) => v.inStock).length;
+
+  const pickSize = (size: number | string) => {
+    setSelectedSize(size);
+    if (typeof size === "number") setPreferredSize(size);
   };
 
-  // Prefer Supabase SEO fields when present, with safe fallbacks
-  const computedCategoryName = getCategoryDisplayName(product.category);
-  const fallbackSeoTitle = `${product.name} - ${product.brand} ${computedCategoryName} | Buy in Nairobi Kenya`;
-  const fallbackSeoDescription = `Buy ${product.name} by ${product.brand} in Nairobi. ${product.description.substring(0, 120)}... Available sizes: ${product.variants.filter(v => v.inStock).map(v => v.size).join(', ')}. Same day delivery in Nairobi CBD.`;
-  const fallbackSeoKeywords = `${product.name}, ${product.brand} ${product.category} shoes, ${product.category} shoes Kenya, ${product.category} shoes Nairobi, buy ${product.name} Kenya, ${product.brand} shoes Nairobi`;
-
-  const seoTitle = product.seo_title || fallbackSeoTitle;
-  const seoDescription = product.seo_description || fallbackSeoDescription;
-  const seoKeywords = product.seo_keywords?.join(", ") || fallbackSeoKeywords;
-
-  const mainImageUrl = product.images[0]?.url || "/whitelight_logo.webp";
-  const mainAltText = product.alt_text_main || product.images[0]?.alt || `${product.brand} ${product.name} ${computedCategoryName.toLowerCase()} — available in Kenya`;
-
-  const hasDiscount = product.originalPrice && product.originalPrice > product.price;
-
-  const handleSizeToggle = (size: number | string) => {
-    setSizeError(false);
-    setSelectedSizes(prev => {
-      if (prev.includes(size)) {
-        return prev.filter(s => s !== size);
-      } else {
-        return [...prev, size];
-      }
-    });
-    
-    // Keep first selected size as primary
-    if (!selectedSize && !selectedSizes.includes(size)) {
-      setSelectedSize(size);
-    } else if (selectedSize === size && selectedSizes.filter(s => s !== size).length > 0) {
-      setSelectedSize(selectedSizes.filter(s => s !== size)[0]);
-    } else if (selectedSize === size) {
-      setSelectedSize(null);
-    }
+  const add = () => {
+    if (selectedSize == null) return;
+    addToCart(enriched, selectedSize, 1);
   };
-
-  const buildCartLine = () => {
-    const allSizes = selectedSize
-      ? [selectedSize, ...selectedSizes.filter((s) => s !== selectedSize)]
-      : selectedSizes;
-    const sizesParam = allSizes.map((s, i) => `size${i + 1}=${s}`).join("&");
-    const referenceLink = `${window.location.origin}/product/${slug}?img=${selectedImageIndex}&${sizesParam}`;
-    return { allSizes, referenceLink };
-  };
-
-  const handleAddToCart = () => {
-    if (!selectedSize && selectedSizes.length === 0) {
-      setSizeError(true);
-      return;
-    }
-
-    setSizeError(false);
-    const { allSizes, referenceLink } = buildCartLine();
-
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.images[selectedImageIndex]?.url || product.images[0]?.url,
-      size: selectedSize || selectedSizes[0],
-      selectedSizes: allSizes,
-      referenceLink,
-      quantity,
-      category: product.category,
-      slug: product.slug,
-    });
-
-    const sizeText =
-      allSizes.length > 1
-        ? `Sizes ${allSizes.map((s) => getDisplaySize(s, product.category)).join(", ")}`
-        : `Size ${getDisplaySize(allSizes[0], product.category)}`;
-    toast.success("Added to cart!", {
-      description: `${product.name} - ${sizeText}`,
-    });
-  };
-
-  /** Reserve → cart + open checkout (fill details → pay → WhatsApp) */
-  const handleReserve = () => {
-    if (!selectedSize && selectedSizes.length === 0) {
-      setSizeError(true);
-      return;
-    }
-    setSizeError(false);
-    const { allSizes, referenceLink } = buildCartLine();
-    setOpenCheckoutOnNextOpen(true);
-    addItem({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      image: product.images[selectedImageIndex]?.url || product.images[0]?.url,
-      size: selectedSize || selectedSizes[0],
-      selectedSizes: allSizes,
-      referenceLink,
-      quantity,
-      category: product.category,
-      slug: product.slug,
-    });
-    toast.success("Reserved — complete checkout to pay");
-  };
-
-  const getSelectedSizeLabels = () => {
-    const allSizes = selectedSize
-      ? [selectedSize, ...selectedSizes.filter((s) => s !== selectedSize)]
-      : selectedSizes;
-    return allSizes.map((s) => getDisplaySize(s, product.category)).join(", ");
-  };
-
-  const hasSizeSelected = selectedSize != null || selectedSizes.length > 0;
-
-  const handleOrderWhatsApp = () => {
-    if (!hasSizeSelected) {
-      setSizeError(true);
-      return;
-    }
-
-    setSizeError(false);
-    const allSizes = selectedSize
-      ? [selectedSize, ...selectedSizes.filter((s) => s !== selectedSize)]
-      : selectedSizes;
-    const sizesParam = allSizes.map((s, i) => `size${i + 1}=${s}`).join("&");
-    const productUrl = `${window.location.origin}/product/${slug}?img=${selectedImageIndex}&${sizesParam}`;
-
-    trackAddToCart(product, quantity, selectedSize || selectedSizes[0]);
-
-    openWhatsAppOrderMessage({
-      productName: product.name,
-      productPrice: product.price,
-      imageUrl: product.images[selectedImageIndex]?.url || product.images[0]?.url,
-      productUrl,
-      currency: siteConfig.currency,
-      quantity,
-      sizeLabel: getSelectedSizeLabels(),
-    });
-  };
-
-  const renderPurchaseControls = (compact: boolean) => (
-    <>
-      <div
-        className={cn(
-          compact ? "mb-2" : "mb-4",
-          sizeError && "rounded-lg ring-2 ring-red-500/40 p-2 -mx-2"
-        )}
-      >
-        <p className={cn("font-medium mb-1.5", compact ? "text-xs" : "text-sm mb-2")}>
-          Select Size(s)
-        </p>
-        <div className={cn("flex flex-wrap", compact ? "gap-1" : "gap-2")}>
-          {product.variants.map((variant) => {
-            const displaySize = getDisplaySize(variant.size, product.category);
-            const isSelected =
-              selectedSizes.includes(variant.size) || selectedSize === variant.size;
-            return (
-              <button
-                key={variant.id}
-                disabled={!variant.inStock}
-                onClick={() => handleSizeToggle(variant.size)}
-                className={cn(
-                  "rounded-md border font-medium transition-all duration-200",
-                  compact
-                    ? "h-8 min-w-[2.25rem] px-2 text-xs"
-                    : "h-12 min-w-[3rem] px-4 text-sm",
-                  isSelected
-                    ? "border-primary bg-primary text-primary-foreground shadow-md scale-105"
-                    : variant.inStock
-                      ? "border-border hover:border-primary hover:scale-105"
-                      : "border-border text-muted-foreground opacity-50 cursor-not-allowed"
-                )}
-              >
-                {displaySize}
-              </button>
-            );
-          })}
-        </div>
-        {(selectedSizes.length > 0 || selectedSize) && (
-          <p className={cn("text-muted-foreground mt-1.5", compact ? "text-[10px]" : "text-xs mt-2")}>
-            Selected:{" "}
-            {selectedSize
-              ? [
-                  getDisplaySize(selectedSize, product.category),
-                  ...selectedSizes
-                    .filter((s) => s !== selectedSize)
-                    .map((s) => getDisplaySize(s, product.category)),
-                ].join(", ")
-              : selectedSizes.map((s) => getDisplaySize(s, product.category)).join(", ")}
-          </p>
-        )}
-      </div>
-
-      <div className={compact ? "mb-2" : "mb-6"}>
-        <p className={cn("font-medium", compact ? "text-xs mb-1.5" : "text-sm mb-3")}>
-          Quantity
-        </p>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-            className={cn(
-              "rounded-md border border-border flex items-center justify-center hover:bg-secondary transition-colors",
-              compact ? "h-8 w-8" : "h-10 w-10"
-            )}
-          >
-            <Minus className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
-          </button>
-          <span className={cn("text-center font-medium", compact ? "w-8 text-sm" : "w-12")}>
-            {quantity}
-          </span>
-          <button
-            onClick={() => setQuantity(quantity + 1)}
-            className={cn(
-              "rounded-md border border-border flex items-center justify-center hover:bg-secondary transition-colors",
-              compact ? "h-8 w-8" : "h-10 w-10"
-            )}
-          >
-            <Plus className={compact ? "h-3.5 w-3.5" : "h-4 w-4"} />
-          </button>
-        </div>
-      </div>
-
-      <div className="flex flex-row gap-1.5 sm:gap-2">
-        <Button
-          size={compact ? "sm" : "lg"}
-          type="button"
-          variant="secondary"
-          className={cn(
-            "min-w-0 flex-1 px-1.5 sm:px-2",
-            compact ? "h-9 text-[10px] sm:text-xs" : "h-12 sm:h-14 text-xs sm:text-sm"
-          )}
-          onClick={handleReserve}
-        >
-          <span className="truncate">Reserve this</span>
-        </Button>
-        <Button
-          size={compact ? "sm" : "lg"}
-          type="button"
-          className={cn(
-            "min-w-0 flex-1 px-1.5 sm:px-2",
-            compact ? "h-9 text-[10px] sm:text-xs" : "h-12 sm:h-14 text-xs sm:text-sm"
-          )}
-          onClick={handleAddToCart}
-        >
-          <ShoppingBag className={cn("shrink-0", compact ? "h-3 w-3 mr-0.5" : "h-4 w-4 mr-1")} />
-          <span className="truncate">Add to cart</span>
-        </Button>
-        <Button
-          size={compact ? "sm" : "lg"}
-          type="button"
-          className={cn(
-            "min-w-0 flex-1 bg-green-600 px-1.5 text-white hover:bg-green-700 sm:px-2",
-            compact ? "h-9 text-[10px] sm:text-xs" : "h-12 sm:h-14 text-xs sm:text-sm"
-          )}
-          onClick={handleOrderWhatsApp}
-        >
-          <span className="truncate">Via WhatsApp</span>
-        </Button>
-      </div>
-      {sizeError && (
-        <p className={cn("mt-1.5 font-medium text-red-600", compact ? "text-[11px]" : "text-sm mt-2")}>
-          Please choose a size before continuing.
-        </p>
-      )}
-    </>
-  );
 
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
+    <div className="min-h-screen flex flex-col pb-24 lg:pb-0">
       <SEOHead
-        title={seoTitle}
-        description={seoDescription}
-        keywords={seoKeywords}
-        canonical={product.url_slug ? `https://whitelightstore.co.ke${product.url_slug}` : `https://whitelightstore.co.ke/product/${product.slug}`}
-        ogImage={mainImageUrl}
+        title={`${enriched.brand} ${enriched.name} | The Whitelight Nairobi`}
+        description={
+          enriched.seo_description ||
+          `${enriched.forWhom} KSh ${enriched.price}. ${FIT_NOTE_LABELS[enriched.fitNote || "true_to_size"]}. Same-day CBD delivery.`
+        }
+        canonical={`https://whitelightstore.co.ke/shoes/${enriched.slug}`}
+        ogImage={images[0]?.url}
         ogType="product"
-        product={product}
-        category={product.category}
+        product={enriched}
+        category={enriched.category}
       />
       <Header />
-      
-      <main className="flex-1 overflow-x-hidden">
-        <div className="container py-8">
-          {/* Breadcrumb */}
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-8"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Back to Shop
-          </Link>
 
-          <div className="grid lg:grid-cols-2 gap-4 lg:gap-12 items-start">
-            {/* Mobile: image stack left, details right. Desktop: full gallery column */}
-            <div className="flex gap-3 min-w-0 lg:block lg:sticky lg:top-24 lg:self-start">
-              <div className="w-[46%] max-w-[10.5rem] shrink-0 space-y-2 sm:w-[44%] sm:max-w-[12rem] lg:w-full lg:max-w-none">
-                <div className="relative aspect-square overflow-hidden rounded-lg bg-secondary group lg:aspect-[4/3]">
-                  <FastImage
-                    key={`${selectedImageIndex}-${product.images[selectedImageIndex]?.url ?? product.images[0]?.url}`}
-                    src={product.images[selectedImageIndex]?.url || product.images[0]?.url}
-                    alt={
-                      selectedImageIndex === 0
-                        ? mainAltText
-                        : product.images[selectedImageIndex]?.alt ||
-                          `${product.name} angle ${selectedImageIndex + 1}`
-                    }
-                    variant="detail"
-                    priority
-                    objectFit="contain"
-                    className="h-full w-full cursor-pointer"
-                    onClick={() => setIsLightboxOpen(true)}
+      <main className="flex-1">
+        <div className="container py-6 md:py-10">
+          <p className="text-xs text-muted-foreground font-ui mb-4">
+            <Link to="/">Home</Link> ›{" "}
+            <Link to={`/${enriched.category}`}>{enriched.category}</Link> ›{" "}
+            <Link to={`/brand/${enriched.brand.toLowerCase()}`}>{enriched.brand}</Link> ›{" "}
+            {enriched.name}
+          </p>
+
+          <div className="grid gap-8 lg:grid-cols-2">
+            <div>
+              <div className="relative aspect-square overflow-hidden rounded-2xl bg-paper">
+                <FastImage
+                  src={images[imgIdx]?.url}
+                  alt={images[imgIdx]?.alt || enriched.name}
+                  variant="detail"
+                  priority
+                  className="h-full w-full"
+                />
+                {hotspots.slice(0, 2).map((h) => (
+                  <span
+                    key={h.id}
+                    title={`${h.label}: ${h.body}`}
+                    className="absolute h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-leaf ring-4 ring-leaf/25"
+                    style={{ left: `${h.x}%`, top: `${h.y}%` }}
                   />
-
-                  {product.images.length > 1 && (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSelectedImageIndex((prev) =>
-                            prev === 0 ? product.images.length - 1 : prev - 1
-                          )
-                        }
-                        className="absolute left-1 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white lg:left-2 lg:h-10 lg:w-10 lg:opacity-0 lg:group-hover:opacity-100"
-                      >
-                        <ChevronLeft className="h-4 w-4 lg:h-5 lg:w-5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setSelectedImageIndex((prev) =>
-                            prev === product.images.length - 1 ? 0 : prev + 1
-                          )
-                        }
-                        className="absolute right-1 top-1/2 z-10 flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-full bg-black/50 text-white lg:right-2 lg:h-10 lg:w-10 lg:opacity-0 lg:group-hover:opacity-100"
-                      >
-                        <ChevronRight className="h-4 w-4 lg:h-5 lg:w-5" />
-                      </button>
-                    </>
-                  )}
-                </div>
-
-                {product.images.length > 1 && (
-                  <div className="flex gap-1.5 overflow-x-auto pb-0.5 lg:gap-2">
-                    {product.images.map((image, index) => (
-                      <button
-                        key={index}
-                        type="button"
-                        onClick={() => setSelectedImageIndex(index)}
-                        className={cn(
-                          "h-10 w-10 shrink-0 overflow-hidden rounded border transition-all sm:h-11 sm:w-11 lg:h-20 lg:w-20 lg:rounded-md lg:border-2",
-                          selectedImageIndex === index
-                            ? "border-primary ring-1 ring-primary/20 lg:ring-2"
-                            : "border-border hover:border-primary/50"
-                        )}
-                      >
-                        <FastImage
-                          src={image.url}
-                          alt={
-                            index === 0
-                              ? mainAltText
-                              : image.alt || `${product.name} angle ${index + 1}`
-                          }
-                          variant="thumb"
-                          priority={index < 4}
-                          className="h-full w-full"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                )}
+                ))}
+                <span className="absolute left-3 top-3 rounded bg-card/90 px-2 py-1 text-[10px] font-bold uppercase font-ui">
+                  Photos of the actual pair
+                </span>
               </div>
-
-              {/* Mobile: title, description, sizes, quantity, actions beside images */}
-              <div className="min-w-0 flex-1 space-y-2 lg:hidden">
-                <div>
-                  <div className="flex items-center gap-2 mb-0.5">
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground sm:text-xs">
-                      {product.brand}
-                    </p>
-                    {product.isNew && (
-                      <Badge className="bg-accent text-accent-foreground text-[10px]">NEW</Badge>
-                    )}
-                  </div>
-                  <h1 className="font-heading text-sm font-bold leading-snug sm:text-base">
-                    {product.name}
-                  </h1>
-                  <div className="mt-0.5 flex items-center gap-2">
-                    <span className="text-sm font-semibold sm:text-base">
-                      {formatPrice(product.price, siteConfig.currency)}
-                    </span>
-                    {hasDiscount && (
-                      <span className="text-[11px] text-muted-foreground line-through sm:text-xs">
-                        {formatPrice(product.originalPrice!, siteConfig.currency)}
-                      </span>
-                    )}
-                  </div>
-                  <p className="mt-1.5 line-clamp-4 text-[11px] leading-relaxed text-muted-foreground sm:line-clamp-5 sm:text-xs">
-                    {product.description}
-                  </p>
-                </div>
-
-                {renderPurchaseControls(true)}
+              <div className="mt-3 flex gap-2 overflow-x-auto">
+                {images.map((img, i) => (
+                  <button
+                    key={img.id || i}
+                    type="button"
+                    onClick={() => setImgIdx(i)}
+                    className={`h-16 w-16 shrink-0 overflow-hidden rounded-lg border-2 ${
+                      imgIdx === i ? "border-primary" : "border-transparent"
+                    }`}
+                  >
+                    <img
+                      src={getDetailThumbUrl(img.url)}
+                      alt=""
+                      className="h-full w-full object-contain bg-paper"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </button>
+                ))}
               </div>
             </div>
 
-            {/* Desktop details column */}
-            <div className="hidden min-w-0 lg:block lg:py-0">
-              <div className="mb-2 flex items-center gap-2">
-                <p className="text-sm uppercase tracking-wider text-muted-foreground">
-                  {product.brand}
-                </p>
-                {product.isNew && (
-                  <Badge className="bg-accent text-accent-foreground text-xs">NEW</Badge>
-                )}
-              </div>
-              <h1 className="font-heading mb-3 text-2xl font-bold md:text-3xl">{product.name}</h1>
-              <div className="mb-4 flex items-center gap-3">
-                <span className="text-xl font-semibold">
-                  {formatPrice(product.price, siteConfig.currency)}
-                </span>
-                {hasDiscount && (
-                  <span className="text-base text-muted-foreground line-through">
-                    {formatPrice(product.originalPrice!, siteConfig.currency)}
+            <div ref={buyRef}>
+              <p className="text-xs uppercase tracking-wider text-moss font-ui">
+                {enriched.brand} · {PURPOSE_LABELS[enriched.purpose || "daily"]}
+              </p>
+              <h1 className="font-heading text-3xl md:text-4xl font-semibold text-forest mt-1">
+                {enriched.name}
+              </h1>
+              <p className="mt-3 text-base text-muted-foreground font-ui leading-relaxed">
+                {enriched.forWhom}
+              </p>
+              <p className="mt-4 text-2xl font-semibold font-ui text-forest">
+                {formatPrice(enriched.price)}
+                {enriched.originalPrice && enriched.originalPrice > enriched.price && (
+                  <span className="ml-2 text-base text-muted-foreground line-through">
+                    {formatPrice(enriched.originalPrice)}
                   </span>
                 )}
-              </div>
-              <p className="mb-6 text-muted-foreground">{product.description}</p>
+              </p>
 
-              {renderPurchaseControls(false)}
+              <div className="mt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold uppercase tracking-wider font-ui">
+                    Size (EU) · {inStockCount} in stock
+                  </p>
+                  <Link to="/size-guide" className="text-xs font-semibold text-primary font-ui">
+                    Size guide
+                  </Link>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {enriched.variants.map((v) => (
+                    <button
+                      key={v.id || String(v.size)}
+                      type="button"
+                      disabled={!v.inStock}
+                      onClick={() => pickSize(v.size)}
+                      className={`h-11 min-w-11 rounded-md border px-2 text-sm font-semibold font-ui ${
+                        !v.inStock
+                          ? "line-through text-muted-foreground/40 border-transparent"
+                          : selectedSize != null && String(selectedSize) === String(v.size)
+                            ? "border-primary bg-primary text-white"
+                            : "border-border bg-card hover:border-primary"
+                      }`}
+                    >
+                      {v.size}
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-2 text-sm text-muted-foreground font-ui">
+                  {selectedSize != null
+                    ? `✓ Size ${selectedSize} in stock · ${FIT_NOTE_LABELS[enriched.fitNote || "true_to_size"]}`
+                    : FIT_NOTE_LABELS[enriched.fitNote || "true_to_size"]}
+                </p>
+              </div>
+
+              <p className="mt-4 rounded-lg bg-sage/50 px-3 py-2 text-sm font-ui text-forest">
+                {cutoffLeft.active
+                  ? `Order in the next ${cutoffLeft.h}h ${cutoffLeft.m}m for same-day delivery in the CBD.`
+                  : "Same-day CBD cut-off passed today — order for next-day / courier."}
+              </p>
+
+              <div className="mt-5 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  disabled={selectedSize == null}
+                  onClick={add}
+                  className="h-12 rounded-full bg-primary px-6 text-sm font-semibold text-white font-ui disabled:opacity-40"
+                >
+                  {selectedSize != null
+                    ? `Add size ${selectedSize} to bag`
+                    : "Choose a size"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() =>
+                    openWhatsAppOrderMessage({
+                      productName: enriched.name,
+                      productPrice: enriched.price,
+                      imageUrl: images[0]?.url || "",
+                      productUrl: `${window.location.origin}/shoes/${enriched.slug}`,
+                      currency: siteConfig.currency,
+                      quantity: 1,
+                      sizeLabel: selectedSize != null ? String(selectedSize) : undefined,
+                    })
+                  }
+                  className="h-12 inline-flex items-center gap-2 rounded-full bg-whatsapp px-5 text-sm font-semibold text-white font-ui"
+                >
+                  <WhatsAppIcon className="h-5 w-5" />
+                  Ask about this pair on WhatsApp
+                </button>
+              </div>
+
+              <div className="mt-5 grid grid-cols-3 gap-2 text-center text-xs font-ui">
+                <div className="rounded-lg border border-border p-3">
+                  <p className="font-semibold">M-Pesa</p>
+                  <p className="text-muted-foreground">or card, COD</p>
+                </div>
+                <div className="rounded-lg border border-border p-3">
+                  <p className="font-semibold">Swap size</p>
+                  <p className="text-muted-foreground">
+                    {siteConfig.delivery.exchangeDays} days
+                  </p>
+                </div>
+                <div className="rounded-lg border border-border p-3">
+                  <p className="font-semibold">Try in store</p>
+                  <p className="text-muted-foreground">Luthuli Ave</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-14 grid gap-10 lg:grid-cols-2">
+            <div>
+              <h2 className="font-heading text-2xl font-semibold text-forest">Who it is for</h2>
+              <p className="mt-3 text-muted-foreground font-ui leading-relaxed">
+                {enriched.forWhom}
+              </p>
+              <div className="mt-4 grid sm:grid-cols-2 gap-3">
+                <div className="rounded-lg bg-sage/40 p-4">
+                  <p className="text-xs font-bold uppercase tracking-wider text-leaf font-ui">
+                    Choose it if
+                  </p>
+                  <p className="mt-1 text-sm font-ui">{enriched.forWhom}</p>
+                </div>
+                <div className="rounded-lg bg-paper p-4 border border-border">
+                  <p className="text-xs font-bold uppercase tracking-wider text-sale font-ui">
+                    Skip it if
+                  </p>
+                  <p className="mt-1 text-sm font-ui">{enriched.skipIf}</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h2 className="font-heading text-2xl font-semibold text-forest mb-4">
+                How it feels
+              </h2>
+              <div className="space-y-3">
+                {FEEL_KEYS.map((key) => {
+                  const val = Number(feel[key] || 3);
+                  return (
+                    <div key={key}>
+                      <div className="flex justify-between text-xs font-ui mb-1 capitalize">
+                        <span>{key}</span>
+                        <span>{val}/5</span>
+                      </div>
+                      <div className="h-2 rounded-full bg-sage">
+                        <div
+                          className="h-2 rounded-full bg-leaf"
+                          style={{ width: `${(val / 5) * 100}%` }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <table className="mt-6 w-full text-sm font-ui">
+                <tbody>
+                  {[
+                    ["Brand", enriched.brand],
+                    ["Use", `${enriched.category} · ${PURPOSE_LABELS[enriched.purpose || "daily"]}`],
+                    ["Fit", FIT_NOTE_LABELS[enriched.fitNote || "true_to_size"]],
+                    ["Sizes", enriched.variants.map((v) => v.size).join(", ")],
+                  ].map(([k, v]) => (
+                    <tr key={k} className="border-b border-border">
+                      <td className="py-2 text-muted-foreground">{k}</td>
+                      <td className="py-2 font-medium">{v}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {accessories.length > 0 && (
+            <div className="mt-14">
+              <h2 className="font-heading text-2xl font-semibold text-forest mb-4">
+                Pairs well with
+              </h2>
+              <ProductGrid products={accessories} columns={4} className="py-0" />
+            </div>
+          )}
+
+          {related.length > 0 && (
+            <div className="mt-10">
+              <h2 className="font-heading text-2xl font-semibold text-forest mb-4">
+                You may also like
+              </h2>
+              <ProductGrid products={related} columns={4} className="py-0" />
+            </div>
+          )}
+        </div>
+      </main>
+
+      {showSticky && (
+        <div className="fixed inset-x-0 bottom-14 lg:bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur">
+          <div className="container flex flex-wrap items-center justify-between gap-3 py-3">
+            <div className="min-w-0">
+              <p className="font-heading font-semibold truncate">
+                {enriched.brand} {enriched.name}
+              </p>
+              <p className="text-sm font-ui text-muted-foreground">
+                {selectedSize != null ? `Size ${selectedSize} · ` : ""}
+                {formatPrice(enriched.price)}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  openWhatsAppOrderMessage({
+                    productName: enriched.name,
+                    productPrice: enriched.price,
+                    imageUrl: images[0]?.url || "",
+                    productUrl: `${window.location.origin}/shoes/${enriched.slug}`,
+                    currency: siteConfig.currency,
+                    quantity: 1,
+                    sizeLabel: selectedSize != null ? String(selectedSize) : undefined,
+                  })
+                }
+                className="h-10 inline-flex items-center gap-1.5 rounded-full border border-border bg-whatsapp/10 px-4 text-sm font-semibold font-ui text-leaf"
+              >
+                <WhatsAppIcon className="h-4 w-4 text-whatsapp" />
+                WhatsApp
+              </button>
+              <button
+                type="button"
+                disabled={selectedSize == null}
+                onClick={add}
+                className="h-10 rounded-md bg-primary px-4 text-sm font-semibold text-white font-ui disabled:opacity-40"
+              >
+                Add to bag
+              </button>
             </div>
           </div>
         </div>
-
-        {/* Below product: most ordered → how to confirm → you may also like */}
-        {mostOrdered.length > 0 && (
-          <ProductGrid
-            title="What Most People Order"
-            products={mostOrdered}
-            columns={4}
-            className="bg-secondary/30"
-          />
-        )}
-
-        <section className="border-y border-border/60 bg-background">
-          <div className="container py-10 md:py-12 max-w-3xl">
-            <h2 className="font-heading text-xl md:text-2xl font-semibold mb-3">
-              How They Confirm
-            </h2>
-            <p className="text-muted-foreground text-sm md:text-base mb-5">
-              Same flow as our Nairobi store — pick your size, send the order on WhatsApp, and we confirm availability and share payment details before you pay.
-            </p>
-            <ol className="space-y-3 text-sm md:text-base text-foreground">
-              <li className="flex gap-3">
-                <span className="font-semibold text-muted-foreground w-6 shrink-0">1.</span>
-                <span>Open this product and tap through the photo angles so you know the exact pair.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="font-semibold text-muted-foreground w-6 shrink-0">2.</span>
-                <span>Select your size (required), then Add to Cart or Order on WhatsApp.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="font-semibold text-muted-foreground w-6 shrink-0">3.</span>
-                <span>Our team replies on WhatsApp to confirm availability and share payment details.</span>
-              </li>
-              <li className="flex gap-3">
-                <span className="font-semibold text-muted-foreground w-6 shrink-0">4.</span>
-                <span>You pay via M-Pesa Paybill 247247 (Acc 0708749473) after confirmation — we pack and deliver.</span>
-              </li>
-            </ol>
-          </div>
-        </section>
-
-        {youMayAlsoLike.length > 0 && (
-          <ProductGrid
-            title="You May Also Like"
-            products={youMayAlsoLike}
-            columns={4}
-          />
-        )}
-      </main>
+      )}
 
       <Footer />
-      
-      {/* Image Lightbox */}
-      {product.images.length > 0 && (
-        <ImageLightbox
-          images={product.images.map(img => ({ url: img.url, alt: img.alt }))}
-          initialIndex={selectedImageIndex}
-          isOpen={isLightboxOpen}
-          onClose={() => setIsLightboxOpen(false)}
-        />
-      )}
     </div>
   );
-};
-
-export default ProductDetail;
+}

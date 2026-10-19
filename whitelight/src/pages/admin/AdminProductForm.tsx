@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ArrowLeft, Loader2, Save, Sparkles, Upload, X } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Upload, X } from "lucide-react";
 import { toast } from "sonner";
 import { ADMIN_BRAND_OPTIONS } from "@/config/brands";
 
@@ -79,6 +79,11 @@ const AdminProductForm = () => {
     isNew: false,
     isBestSeller: false,
     isOnOffer: false,
+    purpose: "" as "" | "race_day" | "daily" | "long_run" | "trail" | "gym" | "court",
+    fitNote: "" as "" | "true_to_size" | "half_up" | "runs_small" | "runs_large",
+    forWhom: "",
+    skipIf: "",
+    saleEndsAt: "",
   });
 
   // Available shoe sizes (36-47)
@@ -185,6 +190,13 @@ const AdminProductForm = () => {
             isNew: product.isNew || false,
             isBestSeller: product.isBestSeller || false,
             isOnOffer: product.isOnOffer || false,
+            purpose: product.purpose || "",
+            fitNote: product.fitNote || "",
+            forWhom: product.forWhom || "",
+            skipIf: product.skipIf || "",
+            saleEndsAt: product.saleEndsAt
+              ? String(product.saleEndsAt).slice(0, 16)
+              : "",
           });
           
           // Load existing images
@@ -407,6 +419,11 @@ const AdminProductForm = () => {
       isNew: formData.isNew,
       isBestSeller: formData.isBestSeller,
       isOnOffer: formData.isOnOffer,
+      purpose: formData.purpose || undefined,
+      fitNote: formData.fitNote || undefined,
+      forWhom: formData.forWhom.trim() || undefined,
+      skipIf: formData.skipIf.trim() || undefined,
+      saleEndsAt: formData.saleEndsAt ? new Date(formData.saleEndsAt).toISOString() : null,
     };
 
     try {
@@ -492,7 +509,7 @@ const AdminProductForm = () => {
                     }}
                   >
                     <SelectTrigger id="brand-select">
-                      <SelectValue placeholder="Select brand (Nike, Adidas, Brooks…)" />
+                      <SelectValue placeholder="Select brand (Nike, Asics, Adidas…)" />
                     </SelectTrigger>
                     <SelectContent>
                       {ADMIN_BRAND_OPTIONS.map((brand) => (
@@ -594,20 +611,11 @@ const AdminProductForm = () => {
                     >
                       {analyzingImage ? (
                         <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      ) : (
-                        <Sparkles className="h-3.5 w-3.5" />
-                      )}
-                      Generate SEO (AI)
+                      ) : null}
+                      Fill from photo
                     </Button>
                   )}
                 </div>
-                {aiConfigured && aiModel && (
-                  <p className="text-[11px] text-muted-foreground">
-                    {aiProvider === "gemini" ? "Gemini" : "Groq"} vision · {aiModel}
-                    {aiFallback ? " · Gemini fallback if Groq fails" : ""} · Upload a photo to auto-fill
-                    name, brand, tags & description
-                  </p>
-                )}
                 <Textarea
                   id="description"
                   value={formData.description}
@@ -852,6 +860,88 @@ const AdminProductForm = () => {
                   Please select at least one size
                 </p>
               )}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="p-3">
+              <CardTitle className="text-sm">Blueprint fit notes</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3 p-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="purpose" className="text-xs">Purpose label</Label>
+                <select
+                  id="purpose"
+                  className="w-full h-8 rounded-md border border-input bg-background px-2 text-xs"
+                  value={formData.purpose}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      purpose: e.target.value as typeof formData.purpose,
+                    })
+                  }
+                >
+                  <option value="">Auto from category</option>
+                  <option value="race_day">Race day</option>
+                  <option value="daily">Daily</option>
+                  <option value="long_run">Long run</option>
+                  <option value="trail">Trail</option>
+                  <option value="gym">Gym</option>
+                  <option value="court">Court</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="fitNote" className="text-xs">Fit note</Label>
+                <select
+                  id="fitNote"
+                  className="w-full h-8 rounded-md border border-input bg-background px-2 text-xs"
+                  value={formData.fitNote}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      fitNote: e.target.value as typeof formData.fitNote,
+                    })
+                  }
+                >
+                  <option value="">True to size (default)</option>
+                  <option value="true_to_size">Fits true to size</option>
+                  <option value="half_up">Consider half size up</option>
+                  <option value="runs_small">Runs small</option>
+                  <option value="runs_large">Runs large</option>
+                </select>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="forWhom" className="text-xs">Who it is for</Label>
+                <Textarea
+                  id="forWhom"
+                  rows={2}
+                  className="text-xs"
+                  placeholder="A light, quick racing shoe for tempo and race day…"
+                  value={formData.forWhom}
+                  onChange={(e) => setFormData({ ...formData, forWhom: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="skipIf" className="text-xs">Skip if…</Label>
+                <Textarea
+                  id="skipIf"
+                  rows={2}
+                  className="text-xs"
+                  placeholder="Skip it if you want one soft shoe for every easy mile."
+                  value={formData.skipIf}
+                  onChange={(e) => setFormData({ ...formData, skipIf: e.target.value })}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="saleEndsAt" className="text-xs">Sale ends (optional)</Label>
+                <Input
+                  id="saleEndsAt"
+                  type="datetime-local"
+                  className="h-8 text-xs"
+                  value={formData.saleEndsAt}
+                  onChange={(e) => setFormData({ ...formData, saleEndsAt: e.target.value })}
+                />
+              </div>
             </CardContent>
           </Card>
 

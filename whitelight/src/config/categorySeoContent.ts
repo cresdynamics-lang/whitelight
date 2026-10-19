@@ -26,7 +26,7 @@ export const categorySeoContent: Record<string, PageSeoContent> = {
       },
       {
         heading: "Running Shoes by Brand",
-        body: "Shop Nike, Adidas, HOKA, ASICS and New Balance running shoes curated for Kenyan runners. Whether you prefer classic Nike Pegasus, HOKA max-cushion or responsive Adidas trainers, we guide you to models that match your stride, mileage and budget in Nairobi.",
+        body: "Shop Nike, Asics and Adidas running shoes curated for Kenyan runners. Whether you prefer classic Nike Pegasus, Asics Gel cushioning or responsive Adidas trainers, we guide you to models that match your stride, mileage and budget in Nairobi.",
       },
       {
         heading: "How to Choose Running Shoes",
@@ -39,7 +39,7 @@ export const categorySeoContent: Record<string, PageSeoContent> = {
 
   trail: {
     intro:
-      "White Light Store is Nairobi's trusted trail shoe specialist for Karura Forest loops, Ngong Hills climbs, Kereita Forest adventures and red-dirt tracks beyond the city. We stock Nike, HOKA, Salomon and more with real grip for Kenyan terrain—not just road shoes rebranded for trails.",
+      "White Light Store is Nairobi's trusted trail shoe specialist for Karura Forest loops, Ngong Hills climbs, Kereita Forest adventures and red-dirt tracks beyond the city. We stock Nike, Asics and Adidas trail options with real grip for Kenyan terrain—not just road shoes rebranded for trails.",
     sections: [
       {
         heading: "Trail Shoes for Kenyan Terrain",
@@ -51,7 +51,7 @@ export const categorySeoContent: Record<string, PageSeoContent> = {
       },
       {
         heading: "Trail Shoes by Brand",
-        body: "Explore Nike, HOKA and Salomon trail running shoes for forest loops and mountain routes. We help you choose between softer HOKA cushioning, precise Salomon fit and versatile Nike trail options based on your weekly terrain around Nairobi.",
+        body: "Explore Nike, Asics and Adidas trail running shoes for forest loops and mountain routes. We help you choose grip, cushioning and fit based on your weekly terrain around Nairobi.",
       },
       {
         heading: "How to Choose Trail Shoes in Nairobi",
@@ -64,7 +64,7 @@ export const categorySeoContent: Record<string, PageSeoContent> = {
 
   gym: {
     intro:
-      "White Light Store is Nairobi's trusted gym shoe destination for lifters, HIIT athletes and studio members. We fit you with stable, grippy trainers from Nike, Adidas, Reebok and more—built for Kenyan gym floors, platforms and functional training spaces across the city.",
+      "White Light Store is Nairobi's trusted gym shoe destination for lifters, HIIT athletes and studio members. We fit you with stable, grippy trainers from Nike, Asics and Adidas—built for Kenyan gym floors, platforms and functional training spaces across the city.",
     sections: [
       {
         heading: "Women's Gym Shoes Nairobi",
@@ -80,7 +80,7 @@ export const categorySeoContent: Record<string, PageSeoContent> = {
       },
       {
         heading: "Gym Shoes by Brand",
-        body: "Compare Nike, Adidas, Reebok and more in one Nairobi store. We explain fit, cushioning and heel-to-toe drop so your pair feels locked in from warm-up to your last set.",
+        body: "Compare Nike, Asics and Adidas in one Nairobi store. We explain fit, cushioning and heel-to-toe drop so your pair feels locked in from warm-up to your last set.",
       },
     ],
     footer:
@@ -101,7 +101,7 @@ export const categorySeoContent: Record<string, PageSeoContent> = {
       },
       {
         heading: "Training Shoes by Brand",
-        body: "Shop Nike, Adidas, Puma and more training lines chosen for Kenyan athletes. We match brand technologies to how you train: speed days, strength days or all-round conditioning.",
+        body: "Shop Nike, Asics and Adidas training lines chosen for Kenyan athletes. We match brand technologies to how you train: speed days, strength days or all-round conditioning.",
       },
       {
         heading: "How to Choose Training Shoes",
@@ -114,7 +114,7 @@ export const categorySeoContent: Record<string, PageSeoContent> = {
 
   basketball: {
     intro:
-      "White Light Store is Nairobi's trusted basketball shoe shop for outdoor tarmac, indoor leagues and streetball. From Air Jordan to Nike and Puma, we stock cushioning, grip and support tuned for crossovers, landings and quick cuts on Kenyan courts.",
+      "White Light Store is Nairobi's trusted basketball shoe shop for outdoor tarmac, indoor leagues and streetball. From Nike and Jordan to Adidas court pairs, we stock cushioning, grip and support tuned for crossovers, landings and quick cuts on Kenyan courts.",
     sections: [
       {
         heading: "Jordan Brand in Nairobi",
@@ -194,7 +194,7 @@ export const aboutSeoContent: PageSeoContent = {
   sections: [
     {
       heading: "Nairobi's Performance Shoe Hub",
-      body: "From CBD lunch-break runs to Ngong Hills weekends and evening gym sessions, Nairobi moves fast—and your shoes should keep up. We curate Nike, Adidas, HOKA, ASICS, New Balance and more for Kenyan roads, trails and courts.",
+      body: "From CBD lunch-break runs to Ngong Hills weekends and evening gym sessions, Nairobi moves fast—and your shoes should keep up. We curate Nike, Asics and Adidas for Kenyan roads, trails and courts.",
     },
     {
       heading: "Trusted Running & Trail Expertise",

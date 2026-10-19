@@ -1,409 +1,137 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Instagram, Twitter, Facebook, MapPin, Phone, Mail, Check } from "lucide-react";
+import { Instagram, Twitter, Facebook } from "lucide-react";
 import { siteConfig } from "@/config/site";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 
-// TikTok icon component
 const TikTokIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+  <svg className={className} viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
   </svg>
 );
 
+const footerLinks = [
+  { label: "New In", href: "/new" },
+  { label: "Sale", href: "/sale" },
+  { label: "Size guide", href: "/size-guide" },
+  { label: "Delivery & exchanges", href: "/delivery" },
+  { label: "Store & contact", href: "/store" },
+  { label: "Journal", href: "/journal" },
+  { label: "About", href: "/about" },
+  { label: "Privacy", href: "/privacy" },
+];
+
 export function Footer() {
-  // Rotating helper messages attached to the floating WhatsApp button.
-  const whatsappMessages = [
-    "We’re here – chat with us on WhatsApp.",
-    "Need help choosing a size? Chat us.",
-    "Confirm your fit with incoming stock on WhatsApp.",
-  ];
-
-  const [activeMessageIndex, setActiveMessageIndex] = useState(0);
-  const [showBubble, setShowBubble] = useState(true);
-
-  useEffect(() => {
-    if (whatsappMessages.length === 0) return;
-
-    let hideTimeout: number | undefined;
-
-    const showCycle = () => {
-      setShowBubble(true);
-      hideTimeout = window.setTimeout(() => {
-        setShowBubble(false);
-      }, 8000); // bubble visible for ~8 seconds
-    };
-
-    // Initial show
-    showCycle();
-
-    const rotateInterval = window.setInterval(() => {
-      setActiveMessageIndex((prev) => (prev + 1) % whatsappMessages.length);
-      showCycle();
-    }, 25000); // change message roughly every 25 seconds (not rapid)
-
-    return () => {
-      window.clearInterval(rotateInterval);
-      if (hideTimeout) {
-        window.clearTimeout(hideTimeout);
-      }
-    };
-  }, [whatsappMessages.length]);
-
   return (
-    <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white relative overflow-hidden">
-      {/* Subtle diagonal gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-transparent via-slate-700/20 to-transparent" />
-      
-      <div className="container relative py-10 md:py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          
-          {/* Column 1 - Brand Identity */}
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-xl font-bold text-white mb-1">
-                {siteConfig.name}
-              </h2>
-              <p className="text-green-400 font-medium text-sm mb-3">
-                Walk the Talk — Style that Speaks.
-              </p>
-              <p className="text-gray-300 text-xs leading-relaxed">
-                5+ years of trust in the Kenyan fashion industry. 
-                Quality original shoes from authentic brands only.
-              </p>
-            </div>
-            
-            {/* Social Media Icons */}
-            <div className="flex gap-2.5">
-              <a
-                href={siteConfig.social.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 bg-slate-700 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-blue-600 transition-all duration-300"
-              >
-                <Facebook className="h-4 w-4" />
-              </a>
+    <footer className="border-t border-border bg-forest text-white">
+      <div className="container py-8 md:py-10">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+          <div className="max-w-sm">
+            <Link to="/" className="inline-flex items-center gap-2.5">
+              <img
+                src={siteConfig.logo}
+                alt=""
+                width={40}
+                height={40}
+                className="h-10 w-10 rounded-full bg-white object-cover ring-2 ring-white/20"
+              />
+              <div className="leading-tight">
+                <span className="font-heading text-lg font-semibold tracking-wide block">
+                  {siteConfig.name}
+                </span>
+                <span className="text-[10px] uppercase tracking-[0.14em] text-white/70 font-ui">
+                  Running · Trail · Training
+                </span>
+              </div>
+            </Link>
+            <p className="mt-3 text-sm text-white/75 font-ui leading-relaxed">
+              {siteConfig.contact.address}. Same-day CBD · M-Pesa · size help on WhatsApp.
+            </p>
+            <div className="mt-4 flex gap-2">
               <a
                 href={siteConfig.social.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 bg-slate-700 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-pink-600 transition-all duration-300"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="Instagram"
               >
                 <Instagram className="h-4 w-4" />
-              </a>
-              <a
-                href={siteConfig.social.twitter}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-9 h-9 bg-slate-700 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-blue-400 transition-all duration-300"
-              >
-                <Twitter className="h-4 w-4" />
               </a>
               <a
                 href={siteConfig.social.tiktok}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-9 h-9 bg-slate-700 rounded-full flex items-center justify-center text-gray-300 hover:text-white hover:bg-black transition-all duration-300"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="TikTok"
               >
                 <TikTokIcon className="h-4 w-4" />
               </a>
-            </div>
-          </div>
-
-          {/* Mobile: Quick Links and Services side by side */}
-          <div className="md:hidden grid grid-cols-2 gap-8 col-span-1">
-            {/* Quick Links */}
-            <div>
-              <h3 className="text-white font-bold text-base mb-4 uppercase tracking-wide">
-                Quick Links
-              </h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link to="/" className="text-gray-300 hover:text-white transition-colors text-sm">
-                    Home
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/products" className="text-gray-300 hover:text-white transition-colors text-sm">
-                    All Collections
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/about" className="text-gray-300 hover:text-white transition-colors text-sm">
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/blog" className="text-gray-300 hover:text-white transition-colors text-sm">
-                    Updates
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/category/running" className="text-gray-300 hover:text-white transition-colors text-sm">
-                    Officials
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/category/gym" className="text-gray-300 hover:text-white transition-colors text-sm">
-                    Casuals
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/category/training" className="text-gray-300 hover:text-white transition-colors text-sm">
-                    Training
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/contact" className="text-gray-300 hover:text-white transition-colors text-sm">
-                    Contact Us
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            {/* Services */}
-            <div>
-              <h3 className="text-white font-bold text-base mb-4 uppercase tracking-wide">
-                Services
-              </h3>
-              <ul className="space-y-2">
-                <li className="flex items-center gap-2">
-                  <Check className="h-3 w-3 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-xs">Quality Original</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-3 w-3 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-xs">Free Delivery</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-3 w-3 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-xs">Custom Designs</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-3 w-3 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-xs">Authentic Brands</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-3 w-3 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-xs">5+ Years Trust</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-3 w-3 text-green-400 flex-shrink-0" />
-                  <span className="text-gray-300 text-xs">Best Sellers</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          {/* Desktop: Column 2 - Quick Links */}
-          <div className="hidden md:block">
-            <h3 className="text-white font-bold text-base mb-4 uppercase tracking-wide">
-              Quick Links
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/products" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  All Collections
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  About Us
-                </Link>
-              </li>
-              <li>
-                <Link to="/blog" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Updates
-                </Link>
-              </li>
-              <li>
-                <Link to="/category/running" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Officials
-                </Link>
-              </li>
-              <li>
-                <Link to="/category/gym" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Casuals
-                </Link>
-              </li>
-              <li>
-                <Link to="/category/training" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Training
-                </Link>
-              </li>
-              <li>
-                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors text-sm">
-                  Contact Us
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          {/* Desktop: Column 3 - Services */}
-          <div className="hidden md:block">
-            <h3 className="text-white font-bold text-base mb-4 uppercase tracking-wide">
-              Services
-            </h3>
-            <ul className="space-y-2">
-              <li className="flex items-center gap-3">
-                <Check className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
-                <span className="text-gray-300 text-sm">Quality Original Shoes</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Check className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
-                <span className="text-gray-300 text-sm">Free Delivery in Nairobi</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Check className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
-                <span className="text-gray-300 text-sm">Custom Designs Available</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Check className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
-                <span className="text-gray-300 text-sm">Authentic Brands Only</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Check className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
-                <span className="text-gray-300 text-sm">5+ Years Trusted Service</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Check className="h-3.5 w-3.5 text-green-400 flex-shrink-0" />
-                <span className="text-gray-300 text-sm">Best Sellers & Trending Styles</span>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 4 - Contact Information */}
-          <div>
-            <h3 className="text-white font-bold text-base mb-4 uppercase tracking-wide">
-              Contact Us
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <MapPin className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                <div className="text-gray-300 text-sm">
-                  <p>Nairobi CBD, Moi Avenue</p>
-                  <p>{siteConfig.contact.address}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4 text-green-400 flex-shrink-0" />
-                <span className="text-gray-300 text-sm">{siteConfig.contact.phone}</span>
-              </div>
-              
-              <div className="flex items-center gap-3">
-                <svg className="h-4 w-4 text-green-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
-                </svg>
-                <span className="text-gray-300 text-sm">WhatsApp: {siteConfig.contact.whatsapp}</span>
-              </div>
-              
-              {(siteConfig.contact.paybillNumber || siteConfig.contact.paybillAccount) && (
-                <div className="flex items-start gap-3">
-                  <Mail className="h-4 w-4 text-green-400 mt-0.5 flex-shrink-0" />
-                  <div className="text-gray-300 text-sm space-y-0.5">
-                    <p>Paybill: {siteConfig.contact.paybillNumber}</p>
-                    <p>Acc: {siteConfig.contact.paybillAccount}</p>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Bottom Section */}
-        <div className="mt-8 pt-6 border-t border-slate-700">
-          <div className="text-center text-gray-400 text-xs sm:text-sm">
-            <p>
-              © {new Date().getFullYear()} {siteConfig.name}. All rights reserved.{" "}
-              <Link to="/terms" className="hover:text-white transition-colors underline underline-offset-4">
-                Terms of Service
-              </Link>
-            </p>
-            <p className="mt-2">
-              Built by{" "}
               <a
-                href="https://cresdynamics.com"
+                href={siteConfig.social.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hover:text-white transition-colors underline underline-offset-4"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="Facebook"
               >
-                Cred Dynamics
+                <Facebook className="h-4 w-4" />
               </a>
-              {" · "}
-              <Link
-                to="/admin"
-                className="hover:text-white transition-colors underline underline-offset-4"
+              <a
+                href={siteConfig.social.twitter}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+                aria-label="X"
               >
-                Staff to help on admin login
+                <Twitter className="h-4 w-4" />
+              </a>
+            </div>
+          </div>
+
+          <nav aria-label="Footer" className="grid grid-cols-2 sm:grid-cols-4 gap-x-6 gap-y-2">
+            {footerLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                className="text-sm text-white/80 hover:text-white font-ui transition-colors"
+              >
+                {link.label}
               </Link>
-            </p>
-          </div>
+            ))}
+          </nav>
+
+          <a
+            href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, "")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-whatsapp px-5 text-sm font-semibold text-white font-ui hover:opacity-90 shrink-0"
+          >
+            <WhatsAppIcon className="h-4 w-4" />
+            WhatsApp size help
+          </a>
         </div>
-      </div>
-      
-      {/* Floating WhatsApp Button + rotating helper bubble */}
-      <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2">
-        {showBubble && whatsappMessages[activeMessageIndex] && (
-          <div className="max-w-xs rounded-2xl bg-slate-900 text-white text-xs md:text-sm px-3 py-2 shadow-lg border border-white/10 animate-in fade-in slide-in-from-bottom-2">
-            {whatsappMessages[activeMessageIndex]}
-          </div>
-        )}
 
-        <a
-          href={`https://wa.me/${siteConfig.contact.whatsapp.replace(/[^0-9]/g, '')}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-14 h-14 bg-green-500 hover:bg-green-600 rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300"
-        >
-          <svg className="h-8 w-8 text-white" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
-          </svg>
-        </a>
-      </div>
-
-      {/* Floating social icons (left side) */}
-      <div className="fixed left-4 md:left-6 bottom-24 z-50 flex flex-col gap-2.5">
-        <a
-          href={siteConfig.social.facebook}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-9 h-9 bg-slate-700/95 rounded-full flex items-center justify-center text-gray-200 hover:text-white hover:bg-blue-600 transition-all duration-300 shadow-md"
-          aria-label="Visit our Facebook page"
-        >
-          <Facebook className="h-4 w-4" />
-        </a>
-        <a
-          href={siteConfig.social.instagram}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-9 h-9 bg-slate-700/95 rounded-full flex items-center justify-center text-gray-200 hover:text-white hover:bg-pink-600 transition-all duration-300 shadow-md"
-          aria-label="Visit our Instagram page"
-        >
-          <Instagram className="h-4 w-4" />
-        </a>
-        <a
-          href={siteConfig.social.twitter}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-9 h-9 bg-slate-700/95 rounded-full flex items-center justify-center text-gray-200 hover:text-white hover:bg-blue-400 transition-all duration-300 shadow-md"
-          aria-label="Visit our X page"
-        >
-          <Twitter className="h-4 w-4" />
-        </a>
-        <a
-          href={siteConfig.social.tiktok}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="w-9 h-9 bg-slate-700/95 rounded-full flex items-center justify-center text-gray-200 hover:text-white hover:bg-black transition-all duration-300 shadow-md"
-          aria-label="Visit our TikTok page"
-        >
-          <TikTokIcon className="h-4 w-4" />
-        </a>
+        <div className="mt-8 pt-5 border-t border-white/15 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-xs text-white/55 font-ui">
+          <p>
+            © {new Date().getFullYear()} {siteConfig.name}.{" "}
+            <Link to="/terms" className="underline underline-offset-2 hover:text-white/80">
+              Terms
+            </Link>
+            {" · "}
+            <Link to="/privacy" className="underline underline-offset-2 hover:text-white/80">
+              Privacy
+            </Link>
+          </p>
+          <p>
+            Built by{" "}
+            <a
+              href="https://cresdynamics.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline underline-offset-2 hover:text-white/80"
+            >
+              Cres Dynamics
+            </a>
+          </p>
+        </div>
       </div>
     </footer>
   );

@@ -16,7 +16,7 @@ interface CartContextType {
     category?: string;
     slug?: string;
   }) => void;
-  addToCart: (product: Product, size: number, quantity?: number) => void;
+  addToCart: (product: Product, size: number | string, quantity?: number) => void;
   removeFromCart: (productId: string, size: number | string) => void;
   updateQuantity: (productId: string, size: number | string, quantity: number) => void;
   clearCart: () => void;
@@ -105,10 +105,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setIsOpen(true);
   };
 
-  const addToCart = (product: Product, size: number, quantity: number = 1) => {
+  const addToCart = (product: Product, size: number | string, quantity: number = 1) => {
     setItems((currentItems) => {
       const existingIndex = currentItems.findIndex(
-        (item) => item.product.id === product.id && item.size === size
+        (item) => item.product.id === product.id && String(item.size) === String(size)
       );
 
       if (existingIndex >= 0) {

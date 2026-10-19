@@ -26,8 +26,12 @@ const HERO_SIZES = "100vw";
 const DETAIL_SIZES = "(max-width: 1024px) 100vw, 50vw";
 const THUMB_SIZES = "(max-width: 1024px) 45vw, 80px";
 
+function isUploadSrc(src: string) {
+  return src.startsWith("/uploads/") || src.includes("/uploads/");
+}
+
 function isProductAsset(src: string) {
-  return src.includes("digitaloceanspaces.com") || src.startsWith("/uploads/");
+  return src.includes("digitaloceanspaces.com") || isUploadSrc(src);
 }
 
 /** Lightweight image — WebP + srcSet for /uploads and Spaces */
@@ -42,7 +46,7 @@ export function FastImage({
 }: FastImageProps) {
   const [error, setError] = useState(false);
   const isCdn = src.includes("digitaloceanspaces.com");
-  const isUpload = src.startsWith("/uploads/");
+  const isUpload = isUploadSrc(src);
   const isPublicStatic = src.startsWith("/") && !isUpload;
 
   useEffect(() => {

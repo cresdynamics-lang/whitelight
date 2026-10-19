@@ -1,15 +1,45 @@
 // Product types - Ready for API integration
 // These types define the shape of all product data
 
+export type ProductPurpose =
+  | "race_day"
+  | "daily"
+  | "long_run"
+  | "trail"
+  | "gym"
+  | "court";
+
+export type FitNote = "true_to_size" | "half_up" | "runs_small" | "runs_large";
+
+export type ImageAngleRole = "side" | "front" | "heel" | "sole" | "detail" | "spin";
+
+export interface ProductFeel {
+  cushion?: number;
+  response?: number;
+  grip?: number;
+  stability?: number;
+  weight?: number;
+  durability?: number;
+}
+
+export interface ProductHotspot {
+  id: string;
+  label: string;
+  body: string;
+  x: number;
+  y: number;
+}
+
 export interface ProductImage {
   id: string;
   url: string;
   alt: string;
+  angleRole?: ImageAngleRole;
 }
 
 export interface ProductVariant {
   id: string;
-  size: number | string; // Support both shoe sizes (number) and clothing sizes (string)
+  size: number | string;
   inStock: boolean;
   stockQuantity?: number;
 }
@@ -19,8 +49,8 @@ export interface Product {
   slug: string;
   name: string;
   brand: string;
-  category: "running" | "trail" | "gym" | "basketball" | "accessories" | "training" | "tennis"; // Primary category (backward compatibility)
-  categories?: ("running" | "trail" | "gym" | "basketball" | "accessories" | "training" | "tennis")[]; // Multiple categories
+  category: "running" | "trail" | "gym" | "basketball" | "accessories" | "training" | "tennis";
+  categories?: ("running" | "trail" | "gym" | "basketball" | "accessories" | "training" | "tennis")[];
   price: number;
   originalPrice?: number;
   images: ProductImage[];
@@ -32,7 +62,6 @@ export interface Product {
   isOnOffer?: boolean;
   createdAt: string;
   updatedAt?: string;
-  // Optional SEO fields from Supabase
   seo_title?: string | null;
   seo_description?: string | null;
   product_h1?: string | null;
@@ -42,6 +71,14 @@ export interface Product {
   seo_keywords?: string[] | null;
   gender?: string | null;
   structured_data?: unknown;
+  /** Blueprint fields */
+  purpose?: ProductPurpose;
+  feel?: ProductFeel;
+  fitNote?: FitNote;
+  forWhom?: string;
+  skipIf?: string;
+  hotspots?: ProductHotspot[];
+  saleEndsAt?: string | null;
 }
 
 export interface ProductsResponse {
@@ -51,10 +88,8 @@ export interface ProductsResponse {
   limit: number;
 }
 
-// Category type for filtering
 export type ProductCategory = Product["category"];
 
-// Filter options
 export interface ProductFilters {
   category?: ProductCategory;
   brand?: string;
@@ -65,10 +100,9 @@ export interface ProductFilters {
   search?: string;
 }
 
-// Cart types
 export interface CartItem {
   product: Product;
-  size: number | string; // Support both shoe and clothing sizes
+  size: number | string;
   selectedSizes?: (number | string)[];
   referenceLink?: string;
   quantity: number;

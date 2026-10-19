@@ -32,6 +32,7 @@ export function mapProductRow(row, images = [], variants = []) {
       id: String(img.id),
       url: img.url,
       alt: img.alt_text || row.name || "Product",
+      angleRole: img.angle_role || undefined,
     })),
     variants: variants.map((v) => ({
       id: String(v.id),
@@ -41,6 +42,13 @@ export function mapProductRow(row, images = [], variants = []) {
     })),
     createdAt: row.created_at ?? "",
     updatedAt: row.updated_at ?? "",
+    purpose: row.purpose || undefined,
+    feel: row.feel && typeof row.feel === "object" ? row.feel : undefined,
+    fitNote: row.fit_note || undefined,
+    forWhom: row.for_whom || undefined,
+    skipIf: row.skip_if || undefined,
+    hotspots: Array.isArray(row.hotspots) ? row.hotspots : [],
+    saleEndsAt: row.sale_ends_at ? String(row.sale_ends_at) : null,
   };
 }
 

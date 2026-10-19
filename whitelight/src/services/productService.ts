@@ -20,7 +20,17 @@ const transformProduct = (backendProduct: any): Product => {
     isNew: backendProduct.isNew || false,
     isBestSeller: backendProduct.isBestSeller || false,
     isOnOffer: backendProduct.isOnOffer || false,
-    createdAt: backendProduct.createdAt
+    createdAt: backendProduct.createdAt,
+    purpose: backendProduct.purpose,
+    feel: backendProduct.feel,
+    fitNote: backendProduct.fitNote,
+    forWhom: backendProduct.forWhom,
+    skipIf: backendProduct.skipIf,
+    hotspots: backendProduct.hotspots,
+    saleEndsAt: backendProduct.saleEndsAt ?? null,
+    seo_title: backendProduct.seo_title,
+    seo_description: backendProduct.seo_description,
+    alt_text_main: backendProduct.alt_text_main,
   };
 };
 
@@ -45,6 +55,13 @@ const transformProductForBackend = (product: Omit<Product, "id" | "createdAt">, 
   formData.append('isBestSeller', product.isBestSeller?.toString() || 'false');
   formData.append('isOnOffer', product.isOnOffer?.toString() || 'false');
   formData.append('variants', JSON.stringify(product.variants));
+  if (product.purpose) formData.append('purpose', product.purpose);
+  if (product.fitNote) formData.append('fitNote', product.fitNote);
+  if (product.forWhom) formData.append('forWhom', product.forWhom);
+  if (product.skipIf) formData.append('skipIf', product.skipIf);
+  if (product.saleEndsAt) formData.append('saleEndsAt', String(product.saleEndsAt));
+  if (product.feel) formData.append('feel', JSON.stringify(product.feel));
+  if (product.hotspots) formData.append('hotspots', JSON.stringify(product.hotspots));
   
   // Add pre-uploaded image URLs if provided
   if (imageUrls && imageUrls.length > 0) {

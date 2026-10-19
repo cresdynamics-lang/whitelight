@@ -7,11 +7,14 @@ import { HelmetProvider } from "react-helmet-async";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { CartProvider } from "@/context/CartContext";
 import { SearchProvider } from "@/context/SearchContext";
+import { SizePreferenceProvider } from "@/context/SizePreferenceContext";
 import { AdminAuthProvider } from "@/context/AdminAuthContext";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { AnalyticsScripts } from "@/components/analytics/AnalyticsScripts";
 import { CatalogPrefetch } from "@/components/CatalogPrefetch";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { WhatsAppFloat } from "@/components/layout/WhatsAppFloat";
+import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 import { ProtectedRoute } from "@/components/admin/ProtectedRoute";
 import Index from "./pages/Index";
@@ -30,6 +33,10 @@ const BuyingGuidePage = lazy(() => import("./pages/BuyingGuidePage"));
 const BlogPage = lazy(() => import("./pages/BlogPage"));
 const BlogPostPage = lazy(() => import("./pages/BlogPostPage"));
 const TermsOfServicePage = lazy(() => import("./pages/TermsOfServicePage"));
+const SizeGuidePage = lazy(() => import("./pages/SizeGuidePage"));
+const DeliveryPage = lazy(() => import("./pages/DeliveryPage"));
+const StorePage = lazy(() => import("./pages/StorePage"));
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
@@ -65,6 +72,7 @@ const App = () => {
     <HelmetProvider>
       <AdminAuthProvider>
       <SearchProvider>
+        <SizePreferenceProvider>
         <CartProvider>
           <TooltipProvider>
             <Toaster />
@@ -73,11 +81,14 @@ const App = () => {
               <CatalogPrefetch />
               <AnalyticsScripts />
               <CartDrawer />
+              <WhatsAppFloat />
+              <MobileBottomBar />
             <Suspense fallback={<PageLoader />}>
             <Routes>
               {/* Public routes */}
               <Route path="/" element={<Index />} />
               <Route path="/product/:slug" element={<ProductDetail />} />
+              <Route path="/shoes/:slug" element={<ProductDetail />} />
               <Route path="/category/:category" element={<CategoryPage />} />
               <Route path="/brand/:brand" element={<BrandPage />} />
               <Route path="/contact" element={<ContactPage />} />
@@ -86,13 +97,20 @@ const App = () => {
               <Route path="/buying-guide" element={<BuyingGuidePage />} />
               <Route path="/blog" element={<BlogPage />} />
               <Route path="/blog/:slug" element={<BlogPostPage />} />
+              <Route path="/journal" element={<BlogPage />} />
+              <Route path="/journal/:slug" element={<BlogPostPage />} />
               <Route path="/terms" element={<TermsOfServicePage />} />
+              <Route path="/privacy" element={<PrivacyPage />} />
+              <Route path="/size-guide" element={<SizeGuidePage />} />
+              <Route path="/delivery" element={<DeliveryPage />} />
+              <Route path="/store" element={<StorePage />} />
               <Route path="/new-arrivals" element={<NewArrivalsPage />} />
+              <Route path="/new" element={<NewArrivalsPage />} />
               <Route path="/sale" element={<SalePage />} />
               <Route path="/products" element={<AllProductsPage />} />
               <Route path="/payment/success" element={<PaymentSuccessPage />} />
               
-              {/* Legacy routes redirect */}
+              {/* Blueprint clean category paths */}
               <Route path="/running" element={<CategoryPage />} />
               <Route path="/trail" element={<CategoryPage />} />
               <Route path="/gym" element={<CategoryPage />} />
@@ -181,6 +199,7 @@ const App = () => {
           </BrowserRouter>
           </TooltipProvider>
         </CartProvider>
+        </SizePreferenceProvider>
       </SearchProvider>
     </AdminAuthProvider>
     </HelmetProvider>

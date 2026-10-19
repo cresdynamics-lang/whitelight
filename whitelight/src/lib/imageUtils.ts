@@ -27,13 +27,13 @@ function uploadPathOnly(url: string): string {
 }
 
 /** On-droplet resized WebP via Node sharp cache */
-export function getLocalUploadImgUrl(url: string, width: number, quality = 68): string {
+export function getLocalUploadImgUrl(url: string, width: number, quality = 78): string {
   const src = encodeURIComponent(uploadPathOnly(url));
   return `/api/img?src=${src}&w=${width}&q=${quality}`;
 }
 
-/** Product card thumbnail — small file size, fast decode */
-export function getCardImageUrl(url?: string, width = 280, quality = 62): string {
+/** Product card thumbnail — small file size, sharp enough for retina */
+export function getCardImageUrl(url?: string, width = 360, quality = 76): string {
   return getOptimizedProductUrl(url ?? "", width, quality);
 }
 
@@ -56,31 +56,31 @@ export function getOptimizedProductUrl(
   return url.startsWith("/") ? resolveStaticImage(url) : url;
 }
 
-/** Product detail main view — ~960px cap */
+/** Product detail main view — ~1100px cap, high quality WebP */
 export function getDetailImageUrl(url?: string): string {
-  return getOptimizedProductUrl(url ?? "", 960, 75);
+  return getOptimizedProductUrl(url ?? "", 1100, 82);
 }
 
 /** Product detail thumbnail strip — sized for 2-column mobile grid */
 export function getDetailThumbUrl(url?: string): string {
-  return getOptimizedProductUrl(url ?? "", 240, 65);
+  return getOptimizedProductUrl(url ?? "", 200, 74);
 }
 
 /** Responsive srcSet for product detail main image */
 export function getDetailImageSrcSet(url: string): string | undefined {
   if (isLocalUpload(url)) {
     return [
-      `${getLocalUploadImgUrl(url, 480, 68)} 480w`,
-      `${getLocalUploadImgUrl(url, 720, 72)} 720w`,
-      `${getLocalUploadImgUrl(url, 960, 75)} 960w`,
+      `${getLocalUploadImgUrl(url, 480, 78)} 480w`,
+      `${getLocalUploadImgUrl(url, 800, 80)} 800w`,
+      `${getLocalUploadImgUrl(url, 1100, 82)} 1100w`,
     ].join(", ");
   }
   if (!url.includes("digitaloceanspaces.com")) return undefined;
 
   return [
-    `${url}?w=480&q=68&f=webp&auto=compress&dpr=1 480w`,
-    `${url}?w=720&q=72&f=webp&auto=compress&dpr=1 720w`,
-    `${url}?w=960&q=75&f=webp&auto=compress&dpr=1 960w`,
+    `${url}?w=480&q=78&f=webp&auto=compress&dpr=1 480w`,
+    `${url}?w=800&q=80&f=webp&auto=compress&dpr=1 800w`,
+    `${url}?w=1100&q=82&f=webp&auto=compress&dpr=1 1100w`,
   ].join(", ");
 }
 
@@ -93,21 +93,21 @@ export function getOriginalProductUrl(url: string): string {
 export function getCardImageSrcSet(url: string): string | undefined {
   if (isLocalUpload(url)) {
     return [
-      `${getLocalUploadImgUrl(url, 200, 58)} 200w`,
-      `${getLocalUploadImgUrl(url, 280, 62)} 280w`,
-      `${getLocalUploadImgUrl(url, 400, 65)} 400w`,
+      `${getLocalUploadImgUrl(url, 240, 74)} 240w`,
+      `${getLocalUploadImgUrl(url, 360, 76)} 360w`,
+      `${getLocalUploadImgUrl(url, 520, 78)} 520w`,
     ].join(", ");
   }
   if (!url.includes("digitaloceanspaces.com")) return undefined;
   return [
-    `${url}?w=200&q=58&f=webp&auto=compress&dpr=1 200w`,
-    `${url}?w=280&q=62&f=webp&auto=compress&dpr=1 280w`,
-    `${url}?w=400&q=65&f=webp&auto=compress&dpr=1 400w`,
+    `${url}?w=240&q=74&f=webp&auto=compress&dpr=1 240w`,
+    `${url}?w=360&q=76&f=webp&auto=compress&dpr=1 360w`,
+    `${url}?w=520&q=78&f=webp&auto=compress&dpr=1 520w`,
   ].join(", ");
 }
 
 /** Hero / carousel — medium width, capped for LCP */
-export function getHeroImageUrl(url: string, width = 960, quality = 68): string {
+export function getHeroImageUrl(url: string, width = 900, quality = 80): string {
   if (isLocalUpload(url)) {
     return getLocalUploadImgUrl(url, width, quality);
   }

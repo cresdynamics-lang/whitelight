@@ -25,5 +25,6 @@ dist-ssr
 .env
 .env.do
 scripts/migrate-to-do/export/
+scripts/.blog-posts.snapshot.json
 uploads/
 server/node_modules/

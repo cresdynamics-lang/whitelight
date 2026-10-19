@@ -263,8 +263,12 @@ app.post("/api/admin/products", requireAdmin, async (req, res) => {
     const p = req.body || {};
     await client.query("BEGIN");
     const { rows } = await client.query(
-      `INSERT INTO products (slug, name, brand, category, categories, price, original_price, description, tags, is_new, is_best_seller, is_on_offer)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING id`,
+      `INSERT INTO products (
+         slug, name, brand, category, categories, price, original_price, description, tags,
+         is_new, is_best_seller, is_on_offer,
+         purpose, fit_note, for_whom, skip_if, feel, hotspots, sale_ends_at
+       )
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19) RETURNING id`,
       [
         p.slug,
         p.name,
@@ -278,13 +282,20 @@ app.post("/api/admin/products", requireAdmin, async (req, res) => {
         Boolean(p.isNew),
         Boolean(p.isBestSeller),
         Boolean(p.isOnOffer),
+        p.purpose || null,
+        p.fitNote || null,
+        p.forWhom || null,
+        p.skipIf || null,
+        p.feel ? JSON.stringify(p.feel) : null,
+        JSON.stringify(p.hotspots || []),
+        p.saleEndsAt || null,
       ]
     );
     const id = rows[0].id;
     for (const img of p.images || []) {
       await client.query(
-        `INSERT INTO product_images (product_id, url, alt_text) VALUES ($1,$2,$3)`,
-        [id, img.url, img.alt || p.name]
+        `INSERT INTO product_images (product_id, url, alt_text, angle_role) VALUES ($1,$2,$3,$4)`,
+        [id, img.url, img.alt || p.name, img.angleRole || null]
       );
     }
     for (const v of p.variants || []) {
@@ -324,8 +335,15 @@ app.put("/api/admin/products/:id", requireAdmin, async (req, res) => {
         tags = COALESCE($9, tags),
         is_new = COALESCE($10, is_new),
         is_best_seller = COALESCE($11, is_best_seller),
-        is_on_offer = COALESCE($12, is_on_offer)
-       WHERE id = $13`,
+        is_on_offer = COALESCE($12, is_on_offer),
+        purpose = COALESCE($13, purpose),
+        fit_note = COALESCE($14, fit_note),
+        for_whom = COALESCE($15, for_whom),
+        skip_if = COALESCE($16, skip_if),
+        feel = COALESCE($17, feel),
+        hotspots = COALESCE($18, hotspots),
+        sale_ends_at = COALESCE($19, sale_ends_at)
+       WHERE id = $20`,
       [
         p.slug ?? null,
         p.name ?? null,
@@ -339,6 +357,13 @@ app.put("/api/admin/products/:id", requireAdmin, async (req, res) => {
         p.isNew ?? null,
         p.isBestSeller ?? null,
         p.isOnOffer ?? null,
+        p.purpose ?? null,
+        p.fitNote ?? null,
+        p.forWhom ?? null,
+        p.skipIf ?? null,
+        p.feel ? JSON.stringify(p.feel) : null,
+        p.hotspots ? JSON.stringify(p.hotspots) : null,
+        p.saleEndsAt ?? null,
         id,
       ]
     );
@@ -346,8 +371,8 @@ app.put("/api/admin/products/:id", requireAdmin, async (req, res) => {
       await client.query(`DELETE FROM product_images WHERE product_id = $1`, [id]);
       for (const img of p.images) {
         await client.query(
-          `INSERT INTO product_images (product_id, url, alt_text) VALUES ($1,$2,$3)`,
-          [id, img.url, img.alt || p.name || ""]
+          `INSERT INTO product_images (product_id, url, alt_text, angle_role) VALUES ($1,$2,$3,$4)`,
+          [id, img.url, img.alt || p.name || "", img.angleRole || null]
         );
       }
     }
