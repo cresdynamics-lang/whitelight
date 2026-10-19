@@ -8,6 +8,10 @@ const ROOT = path.resolve(process.cwd());
 const OUTPUT = path.join(ROOT, "public", "sitemap.xml");
 
 const blogSlugs = [
+  "asics-running-shoes-nairobi",
+  "nike-shoes-nairobi",
+  "adidas-shoes-nairobi",
+  "asics-nike-adidas-kenya",
   "best-running-shoes-nairobi",
   "buy-running-shoes-nairobi-cbd-luthuli-avenue",
   "running-shoes-price-kenya",
